@@ -1,0 +1,54 @@
+package ml
+
+import (
+	"strconv"
+	"encoding/xml"
+)
+
+//some xml types aliasing to decrease number of imports
+type Name xml.Name
+type Attr xml.Attr
+type CharData xml.CharData
+
+//OptionalIndex is custom type to allow encode/decode optional 0-based indexes
+type OptionalIndex *int
+
+//Property is common type of property - we need it to simplify process of encoding/decoding prop types. E.g.: <propName val="123"/>
+type Property string
+
+//PropertyBool is special type of property for booleans - we need this to unify boolean value: 1/true, 0/false
+type PropertyBool bool
+
+//AttrPreserveSpace is common attr to preserve space
+var AttrPreserveSpace = xml.Attr{
+	Name:  xml.Name{Space: NamespaceXML, Local: "space"},
+	Value: "preserve",
+}
+
+func (p *Property) MarshalXML(e *xml.Encoder, start xml.StartElement) (error) {
+	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: string(*p)})
+	return e.EncodeElement(struct{}{}, start)
+}
+
+func (p *Property) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (error) {
+	if len(start.Attr) > 0 {
+		*p = Property(start.Attr[0].Value)
+	}
+
+	return d.Skip()
+}
+
+func (p *PropertyBool) MarshalXML(e *xml.Encoder, start xml.StartElement) (error) {
+	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: strconv.FormatBool(bool(*p))})
+	return e.EncodeElement(struct{}{}, start)
+}
+
+func (p *PropertyBool) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (error) {
+	if len(start.Attr) > 0 {
+		if b, err := strconv.ParseBool(start.Attr[0].Value); err != nil {
+			*p = PropertyBool(b)
+		}
+	}
+
+	return d.Skip()
+}
