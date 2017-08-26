@@ -20,9 +20,10 @@ type Package interface {
 //DocumentFactoryFn is factory to in a OOXML type specific type
 type DocumentFactoryFn func(pkg *PackageInfo) (interface{}, error)
 
+//DocumentValidatorFn is callback to validate OOXML document. Using right before saving
 type DocumentValidatorFn func() error
 
-//PackageReader is a wrapper around ZIP file to unify proccessing
+//PackageReader is a wrapper around ZIP file to unify processing
 type PackageReader struct {
 	*zip.Reader
 	io.Closer
