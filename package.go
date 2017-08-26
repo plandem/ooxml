@@ -1,13 +1,14 @@
 package shared
 
 import (
-	"archive/zip"
-	"bytes"
-	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
+	"fmt"
+	"path"
+	"bytes"
 	"reflect"
+	"io/ioutil"
+	"archive/zip"
 )
 
 //Package is interface to expose some of PackageInfo methods via embedded struct
@@ -133,7 +134,23 @@ func (pkg *PackageInfo) Save() error {
 		return fmt.Errorf("No filename defined for file, try to use SaveAs")
 	}
 
-	return pkg.SaveAs(pkg.fileName)
+	//create file with a temp name
+	tmpFile, err := ioutil.TempFile(path.Dir(pkg.fileName), path.Base(pkg.fileName))
+	if err != nil {
+		return err
+	}
+
+	//save content
+	err = pkg.SavePackage(tmpFile)
+	if err != nil {
+		os.Remove(tmpFile.Name())
+		return err
+	}
+
+	tmpFile.Close()
+
+	//rename temp file into original name
+	return os.Rename(tmpFile.Name(), pkg.fileName)
 }
 
 //SaveAs saves current OOXML package with fileName
