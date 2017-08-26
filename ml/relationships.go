@@ -4,11 +4,19 @@ import (
 	"encoding/xml"
 )
 
+//TargetMode is a type to encode XSD type
 type TargetMode byte
+
+//RelationType is a type to encode XSD type
 type RelationType string
+
+//RID is a helper type for marshaling references for relationship - r:id
 type RID string
+
+//RIDName is a helper type for marshaling namespace for relationships
 type RIDName string
 
+//Relation is a direct mapping of XSD type
 type Relation struct {
 	ID         string       `xml:"Id,attr"`
 	Target     string       `xml:",attr"`
@@ -16,6 +24,7 @@ type Relation struct {
 	TargetMode TargetMode   `xml:",attr,omitempty"`
 }
 
+//Relationships is a direct mapping of XSD type
 type Relationships struct {
 	XMLName       Name       `xml:"http://schemas.openxmlformats.org/package/2006/relationships Relationships"`
 	Relationships []Relation `xml:"Relationship"`
