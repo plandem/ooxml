@@ -1,8 +1,8 @@
 package shared
 
 import (
-	"fmt"
 	"archive/zip"
+	"fmt"
 )
 
 //PackageFileLoadFn is a callback that will be called right after loading related zipped file, if there is any
@@ -19,7 +19,7 @@ type PackageFile struct {
 }
 
 //NewPackageFile creates and returns package file that attached target via file f with source of information to save
-func NewPackageFile(pkg *PackageInfo, f interface{}, target interface{}, source interface{}) (*PackageFile) {
+func NewPackageFile(pkg *PackageInfo, f interface{}, target interface{}, source interface{}) *PackageFile {
 	if source == nil {
 		source = target
 	}
@@ -47,12 +47,12 @@ func NewPackageFile(pkg *PackageInfo, f interface{}, target interface{}, source 
 }
 
 //FileName returns name of file
-func (pf *PackageFile) FileName() (string) {
+func (pf *PackageFile) FileName() string {
 	return pf.fileName
 }
 
 //IsNew returns true if this file is a new file or false in other case
-func (pf *PackageFile) IsNew() (bool) {
+func (pf *PackageFile) IsNew() bool {
 	return pf.isNew
 }
 

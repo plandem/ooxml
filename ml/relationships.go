@@ -10,14 +10,14 @@ type RID string
 type RIDName string
 
 type Relation struct {
-	ID         string `xml:"Id,attr"`
-	Target     string `xml:",attr"`
+	ID         string       `xml:"Id,attr"`
+	Target     string       `xml:",attr"`
 	Type       RelationType `xml:",attr"`
-	TargetMode TargetMode `xml:",attr,omitempty"`
+	TargetMode TargetMode   `xml:",attr,omitempty"`
 }
 
 type Relationships struct {
-	XMLName       Name   `xml:"http://schemas.openxmlformats.org/package/2006/relationships Relationships"`
+	XMLName       Name       `xml:"http://schemas.openxmlformats.org/package/2006/relationships Relationships"`
 	Relationships []Relation `xml:"Relationship"`
 }
 
@@ -39,7 +39,7 @@ func (r *TargetMode) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	return attr, nil
 }
 
-func (r *TargetMode) UnmarshalXMLAttr(attr xml.Attr) (error) {
+func (r *TargetMode) UnmarshalXMLAttr(attr xml.Attr) error {
 	switch attr.Value {
 	case "External":
 		*r = TargetModeExternal

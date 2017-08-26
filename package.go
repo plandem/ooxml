@@ -1,26 +1,26 @@
 package shared
 
 import (
-	"os"
-	"io"
-	"fmt"
-	"bytes"
-	"reflect"
-	"io/ioutil"
 	"archive/zip"
+	"bytes"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"reflect"
 )
 
 //Package is interface to expose some of PackageInfo methods via embedded struct
 type Package interface {
 	Close()
-	Save() (error)
-	SaveAs(fileName string) (error)
+	Save() error
+	SaveAs(fileName string) error
 }
 
 //DocumentFactoryFn is factory to in a OOXML type specific type
 type DocumentFactoryFn func(pkg *PackageInfo) (interface{}, error)
 
-type DocumentValidatorFn func() (error)
+type DocumentValidatorFn func() error
 
 //PackageReader is a wrapper around ZIP file to unify proccessing
 type PackageReader struct {
@@ -39,12 +39,12 @@ type PackageInfo struct {
 }
 
 //ErrorUnknownPackage returns a common error if DocumentFactoryFn returned invalid result
-func ErrorUnknownPackage(p interface{}) (error) {
+func ErrorUnknownPackage(p interface{}) error {
 	return fmt.Errorf("Unknown type of document. Expects: %s", reflect.Indirect(reflect.ValueOf(p)).Type().Name())
 }
 
 //NewPackage returns a new package with zip reader if there is any
-func NewPackage(reader interface{}) (*PackageInfo) {
+func NewPackage(reader interface{}) *PackageInfo {
 	pkg := &PackageInfo{}
 
 	if zipFile, ok := reader.(*zip.ReadCloser); ok {
@@ -115,7 +115,7 @@ func OpenStream(stream io.Reader, docFactory DocumentFactoryFn) (interface{}, er
 }
 
 //IsNew returns true if package is a new one or false in other case
-func (pkg *PackageInfo) IsNew() (bool) {
+func (pkg *PackageInfo) IsNew() bool {
 	return pkg.reader == nil
 }
 
@@ -127,7 +127,7 @@ func (pkg *PackageInfo) Close() {
 }
 
 //Save saves current OOXML package
-func (pkg *PackageInfo) Save() (error) {
+func (pkg *PackageInfo) Save() error {
 	if pkg.fileName == "" {
 		return fmt.Errorf("No filename defined for file, try to use SaveAs")
 	}
@@ -136,7 +136,7 @@ func (pkg *PackageInfo) Save() (error) {
 }
 
 //SaveAs saves current OOXML package with fileName
-func (pkg *PackageInfo) SaveAs(fileName string) (error) {
+func (pkg *PackageInfo) SaveAs(fileName string) error {
 	f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
 	if err != nil {
 		return err
@@ -168,12 +168,12 @@ func (pkg *PackageInfo) Remove(fileName string) {
 }
 
 //Files is a private method to get list of all files inside of package
-func (pkg *PackageInfo) Files() (map[string]interface{}) {
+func (pkg *PackageInfo) Files() map[string]interface{} {
 	return pkg.files
 }
 
 //SavePackage is private method with implementation of saving OOXML document to file
-func (pkg *PackageInfo) SavePackage(f io.Writer) (error) {
+func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 	//If there is a validator, then validate and exit if there is any error and package can't be saved
 	if pkg.Validator != nil {
 		if err := pkg.Validator(); err != nil {
@@ -217,12 +217,12 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) (error) {
 }
 
 //Relationships is a getter that returns top-level relationships of package
-func (pkg *PackageInfo) Relationships() (*Relationships) {
+func (pkg *PackageInfo) Relationships() *Relationships {
 	return pkg.relationships
 }
 
 //ContentTypes is a getter that returns content types of package
-func (pkg *PackageInfo) ContentTypes() (*ContentTypes) {
+func (pkg *PackageInfo) ContentTypes() *ContentTypes {
 	return pkg.contentTypes
 }
 

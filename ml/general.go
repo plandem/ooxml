@@ -1,8 +1,8 @@
 package ml
 
 import (
-	"strconv"
 	"encoding/xml"
+	"strconv"
 )
 
 //some xml types aliasing to decrease number of imports
@@ -25,12 +25,12 @@ var AttrPreserveSpace = xml.Attr{
 	Value: "preserve",
 }
 
-func (p *Property) MarshalXML(e *xml.Encoder, start xml.StartElement) (error) {
+func (p *Property) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: string(*p)})
 	return e.EncodeElement(struct{}{}, start)
 }
 
-func (p *Property) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (error) {
+func (p *Property) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if len(start.Attr) > 0 {
 		*p = Property(start.Attr[0].Value)
 	}
@@ -38,12 +38,12 @@ func (p *Property) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (error) 
 	return d.Skip()
 }
 
-func (p *PropertyBool) MarshalXML(e *xml.Encoder, start xml.StartElement) (error) {
+func (p *PropertyBool) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: strconv.FormatBool(bool(*p))})
 	return e.EncodeElement(struct{}{}, start)
 }
 
-func (p *PropertyBool) UnmarshalXML(d *xml.Decoder, start xml.StartElement) (error) {
+func (p *PropertyBool) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if len(start.Attr) > 0 {
 		if b, err := strconv.ParseBool(start.Attr[0].Value); err != nil {
 			*p = PropertyBool(b)

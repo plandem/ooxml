@@ -10,11 +10,11 @@ type ContentTypes struct {
 }
 
 type TypeOverride struct {
-	PartName    string `xml:",attr"`
+	PartName    string      `xml:",attr"`
 	ContentType ContentType `xml:",attr"`
 }
 
 type TypeDefault struct {
-	Extension   string `xml:",attr"`
+	Extension   string      `xml:",attr"`
 	ContentType ContentType `xml:",attr"`
 }

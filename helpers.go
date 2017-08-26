@@ -1,26 +1,26 @@
 package shared
 
 import (
-	"io"
+	"archive/zip"
 	"bytes"
+	"encoding/xml"
+	"io"
 	"regexp"
 	"strconv"
-	"archive/zip"
-	"encoding/xml"
 )
 
 //MarshalPreparation is interface that must be implemented by complex data if it requires some preparation steps before marshaling
 type MarshalPreparation interface {
-	BeforeMarshalXML()(interface{})
+	BeforeMarshalXML() interface{}
 }
 
 //MarshalFixation is interface that must be implemented by complex data if it requires some after marshal fixation
 type MarshalFixation interface {
-	AfterMarshalXML(content []byte)([]byte)
+	AfterMarshalXML(content []byte) []byte
 }
 
 //GetLettersFn is a strings.Map walker to return [a-zA-Z] runes from string
-func GetLettersFn(rune rune) (rune) {
+func GetLettersFn(rune rune) rune {
 	switch {
 	case 'A' <= rune && rune <= 'Z':
 		return rune
@@ -31,7 +31,7 @@ func GetLettersFn(rune rune) (rune) {
 }
 
 //GetNumbersFn is a strings.Map walker to return [0-9] runes from string
-func GetNumbersFn(rune rune) (rune) {
+func GetNumbersFn(rune rune) rune {
 	if rune >= 48 && rune < 58 {
 		return rune
 	}
@@ -39,7 +39,7 @@ func GetNumbersFn(rune rune) (rune) {
 }
 
 //UnmarshalZipFile unpacks a zip file into target object
-func UnmarshalZipFile(f *zip.File, target interface{}) (error) {
+func UnmarshalZipFile(f *zip.File, target interface{}) error {
 	xmlReader, err := f.Open()
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func UnmarshalZipFile(f *zip.File, target interface{}) (error) {
 }
 
 //MarshalZipFile add a file with content of marshaled source to zip
-func MarshalZipFile(fileName string, source interface{}, to *zip.Writer) (error) {
+func MarshalZipFile(fileName string, source interface{}, to *zip.Writer) error {
 	writer, err := to.Create(fileName)
 	if err != nil {
 		return err
@@ -79,7 +79,7 @@ func MarshalZipFile(fileName string, source interface{}, to *zip.Writer) (error)
 }
 
 //CopyZipFile copies a zip file as is to a new zip
-func CopyZipFile(from *zip.File, to *zip.Writer) (error) {
+func CopyZipFile(from *zip.File, to *zip.Writer) error {
 	writer, err := to.Create(from.Name)
 	if err != nil {
 		return err
@@ -105,7 +105,7 @@ func CopyZipFile(from *zip.File, to *zip.Writer) (error) {
 }
 
 //UniqueName returns next valid unique name with a valid length
-func UniqueName(name string, names []string, nameLimit int) (string) {
+func UniqueName(name string, names []string, nameLimit int) string {
 	sanityChecked := 0
 	regTitle := regexp.MustCompile(`[\d]+$`)
 

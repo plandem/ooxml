@@ -12,7 +12,7 @@ type ContentTypes struct {
 }
 
 //newContentTypes creates and returns content types information
-func newContentTypes(f interface{}, pkg *PackageInfo) (*ContentTypes) {
+func newContentTypes(f interface{}, pkg *PackageInfo) *ContentTypes {
 	content := &ContentTypes{
 		pkg: pkg,
 	}
@@ -57,7 +57,7 @@ func (ct *ContentTypes) RegisterContent(fileName string, contentType ml.ContentT
 func (ct *ContentTypes) RemoveContent(fileName string) {
 	for i, part := range ct.ml.Overrides {
 		if part.PartName == fileName {
-			ct.ml.Overrides = append(ct.ml.Overrides [:i], ct.ml.Overrides[i+1:]...)
+			ct.ml.Overrides = append(ct.ml.Overrides[:i], ct.ml.Overrides[i+1:]...)
 			ct.file.MarkAsUpdated()
 			return
 		}

@@ -2,11 +2,11 @@ package shared
 
 import (
 	"fmt"
+	"github.com/plandem/ooxml/ml"
 	"math"
 	"regexp"
 	"strconv"
 	"strings"
-	"github.com/plandem/ooxml/ml"
 )
 
 //Relationships is a higher level object that wraps OOXML relationships with functionality
@@ -17,7 +17,7 @@ type Relationships struct {
 }
 
 //NewRelationships creates and returns relationships
-func NewRelationships(f interface{}, pkg *PackageInfo) (*Relationships) {
+func NewRelationships(f interface{}, pkg *PackageInfo) *Relationships {
 	rels := &Relationships{
 		pkg: pkg,
 	}
@@ -34,7 +34,7 @@ func NewRelationships(f interface{}, pkg *PackageInfo) (*Relationships) {
 }
 
 // GetTargetById returns target of relation for provided id
-func (rels *Relationships) GetTargetById(id string) (string) {
+func (rels *Relationships) GetTargetById(id string) string {
 	for _, r := range rels.ml.Relationships {
 		if r.ID == id {
 			return string(r.Target)
@@ -45,7 +45,7 @@ func (rels *Relationships) GetTargetById(id string) (string) {
 }
 
 // GetIdByTarget returns id of relation for provided target
-func (rels *Relationships) GetIdByTarget(target string) (string) {
+func (rels *Relationships) GetIdByTarget(target string) string {
 	for _, r := range rels.ml.Relationships {
 		if strings.Contains(target, string(r.Target)) {
 			return r.ID
