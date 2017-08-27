@@ -1,4 +1,4 @@
-package shared
+package ooxml
 
 import (
 	"github.com/plandem/ooxml/ml"

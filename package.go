@@ -1,14 +1,14 @@
-package shared
+package ooxml
 
 import (
-	"io"
-	"os"
-	"fmt"
-	"path"
-	"bytes"
-	"reflect"
-	"io/ioutil"
 	"archive/zip"
+	"bytes"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"path"
+	"reflect"
 )
 
 //Package is interface to expose some of PackageInfo methods via embedded struct
