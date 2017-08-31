@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"errors"
 )
 
 //Package is interface to expose some of PackageInfo methods via embedded struct
@@ -87,33 +88,36 @@ func NewPackage(reader interface{}) *PackageInfo {
 	return pkg
 }
 
-//OpenFile opens a file with fileName and returns an instance of document
-func OpenFile(fileName string, docFactory DocumentFactoryFn) (interface{}, error) {
-	zipFile, err := zip.OpenReader(fileName)
-	if err != nil {
-		return nil, err
+//Open opens a file with fileName or io.Reader and returns an instance of document
+func Open(f interface{}, docFactory DocumentFactoryFn) (interface{}, error) {
+	var pkg *PackageInfo
+
+	if fileName, ok := f.(string); ok {
+		zipFile, err := zip.OpenReader(fileName)
+		if err != nil {
+			return nil, err
+		}
+
+		pkg = NewPackage(zipFile)
+		pkg.fileName = fileName
+	} else if reader, ok := f.(io.Reader); ok {
+		b, err := ioutil.ReadAll(reader)
+		if err != nil {
+			panic(err)
+		}
+
+		readerAt := bytes.NewReader(b)
+		zipStream, err := zip.NewReader(readerAt, int64(readerAt.Len()))
+		if err != nil {
+			return nil, err
+		}
+
+		pkg = NewPackage(zipStream)
+	} else {
+		return nil, errors.New("Unsupported type of f. It must be name of file or io.Reader")
 	}
 
-	pkg := NewPackage(zipFile)
-	pkg.fileName = fileName
 	return docFactory(pkg)
-}
-
-//OpenStream opens a zip stream and returns an instance of document
-//Note: True streams can't be supported, due to zip files (can't be streamed)
-func OpenStream(stream io.Reader, docFactory DocumentFactoryFn) (interface{}, error) {
-	b, err := ioutil.ReadAll(stream)
-	if err != nil {
-		panic(err)
-	}
-
-	readerAt := bytes.NewReader(b)
-	zipStream, err := zip.NewReader(readerAt, int64(readerAt.Len()))
-	if err != nil {
-		return nil, err
-	}
-
-	return docFactory(NewPackage(zipStream))
 }
 
 //IsNew returns true if package is a new one or false in other case
