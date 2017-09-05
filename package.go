@@ -3,13 +3,13 @@ package ooxml
 import (
 	"archive/zip"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"reflect"
-	"errors"
 )
 
 //Package is interface to expose some of PackageInfo methods via embedded struct
@@ -43,24 +43,25 @@ type PackageInfo struct {
 
 //ErrorUnknownPackage returns a common error if DocumentFactoryFn returned invalid result
 func ErrorUnknownPackage(p interface{}) error {
-	return fmt.Errorf("Unknown type of document. Expects: %s", reflect.Indirect(reflect.ValueOf(p)).Type().Name())
+	return fmt.Errorf("unknown type of document, expects: %s", reflect.Indirect(reflect.ValueOf(p)).Type().Name())
 }
 
 //NewPackage returns a new package with zip reader if there is any
 func NewPackage(reader interface{}) *PackageInfo {
 	pkg := &PackageInfo{}
 
-	if zipFile, ok := reader.(*zip.ReadCloser); ok {
+	switch rt := reader.(type) {
+	case *zip.ReadCloser:
 		pkg = &PackageInfo{
 			reader: &PackageReader{
-				&zipFile.Reader,
-				zipFile,
+				&rt.Reader,
+				rt,
 			},
 		}
-	} else if zipStream, ok := reader.(*zip.Reader); ok {
+	case *zip.Reader:
 		pkg = &PackageInfo{
 			reader: &PackageReader{
-				zipStream,
+				rt,
 				nil,
 			},
 		}
@@ -92,29 +93,32 @@ func NewPackage(reader interface{}) *PackageInfo {
 func Open(f interface{}, docFactory DocumentFactoryFn) (interface{}, error) {
 	var pkg *PackageInfo
 
-	if fileName, ok := f.(string); ok {
-		zipFile, err := zip.OpenReader(fileName)
+	switch ft := f.(type) {
+	case string:
+		//f is name of file to open
+		zipFile, err := zip.OpenReader(ft)
 		if err != nil {
 			return nil, err
 		}
 
 		pkg = NewPackage(zipFile)
-		pkg.fileName = fileName
-	} else if reader, ok := f.(io.Reader); ok {
-		b, err := ioutil.ReadAll(reader)
+		pkg.fileName = ft
+	case io.Reader:
+		//f is reader to read from
+		b, err := ioutil.ReadAll(ft)
 		if err != nil {
 			panic(err)
 		}
 
 		readerAt := bytes.NewReader(b)
-		zipStream, err := zip.NewReader(readerAt, int64(readerAt.Len()))
+		zipReader, err := zip.NewReader(readerAt, int64(readerAt.Len()))
 		if err != nil {
 			return nil, err
 		}
 
-		pkg = NewPackage(zipStream)
-	} else {
-		return nil, errors.New("Unsupported type of f. It must be name of file or io.Reader")
+		pkg = NewPackage(zipReader)
+	default:
+		return nil, errors.New("unsupported type of f. It must be name of file or io.Reader")
 	}
 
 	return docFactory(pkg)
@@ -135,7 +139,7 @@ func (pkg *PackageInfo) Close() {
 //Save saves current OOXML package
 func (pkg *PackageInfo) Save() error {
 	if pkg.fileName == "" {
-		return fmt.Errorf("No filename defined for file, try to use SaveAs")
+		return fmt.Errorf("no filename defined for file. Try to use SaveAs")
 	}
 
 	//create file with a temp name
@@ -203,9 +207,11 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 		}
 	}
 
-	//files holds two kind of information:
+	//files holds differ kind of information:
 	// 1) pointers to original files (*zip.File) that where not changed and must be coped as is
 	// 2) pointers to structs that must be marshaled to get content for a new file
+	// 3) pointers to read only files (*stream.ReadStream) that can not be marshaled or saved
+	// 4) pointers to write only files (*stream.WriteStream) that already saved
 
 	var err error
 
@@ -214,16 +220,15 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 
 	//add files to zip
 	for fileName, content := range pkg.files {
-		if f, ok := content.(*zip.File); ok {
+		switch ft := content.(type) {
+		case *zip.File:
 			//file was not updated, so lets copy it as is
-			err = CopyZipFile(f, zipper)
-		} else {
+			err = CopyZipFile(ft, zipper)
+		//case *stream.ReadStream:
+		//case *stream.WriteStream:
+		default:
 			//file was probably updated, so let's marshal it and save with a new content
 			err = MarshalZipFile(fileName, content, zipper)
-		}
-
-		if err != nil {
-			return err
 		}
 	}
 

@@ -2,7 +2,9 @@ package ooxml
 
 import (
 	"archive/zip"
+	"errors"
 	"fmt"
+	"io"
 )
 
 //PackageFileLoadFn is a callback that will be called right after loading related zipped file, if there is any
@@ -10,12 +12,23 @@ type PackageFileLoadFn func()
 
 //PackageFile is helper object that implements common functionality for any file of package. E.g. lazy loading, marking as updated.
 type PackageFile struct {
+	//name of file
 	fileName string
-	zipFile  *zip.File
-	target   interface{}
-	source   interface{}
-	pkg      *PackageInfo
-	isNew    bool
+
+	//pointer to *zip.File or nil in case of a new file
+	zipFile *zip.File
+
+	//pointer to target-object to unmarshal content from a file
+	target interface{}
+
+	//pointer to source-object to marshal content into a file
+	source interface{}
+
+	//package owner of this file
+	pkg *PackageInfo
+
+	//flag that indicate new file or not
+	isNew bool
 }
 
 //NewPackageFile creates and returns package file that attached target via file f with source of information to save
@@ -31,12 +44,15 @@ func NewPackageFile(pkg *PackageInfo, f interface{}, target interface{}, source 
 		isNew:  true,
 	}
 
-	if zf, ok := f.(*zip.File); ok && zf != nil {
-		pkgFile.fileName = zf.Name
-		pkgFile.zipFile = zf
-		pkgFile.isNew = false
-	} else if fileName, ok := f.(string); ok {
-		pkgFile.fileName = fileName
+	if f != nil {
+		switch ft := f.(type) {
+		case *zip.File:
+			pkgFile.fileName = ft.Name
+			pkgFile.zipFile = ft
+			pkgFile.isNew = false
+		case string:
+			pkgFile.fileName = ft
+		}
 	}
 
 	if len(pkgFile.fileName) == 0 {
@@ -56,7 +72,15 @@ func (pf *PackageFile) IsNew() bool {
 	return pf.isNew
 }
 
-//LoadIfRequired lazy loads content of file into target and call required callback if there is any
+//MarkAsUpdated marks file as updated, so content will be replaced with source's content during packing document
+func (pf *PackageFile) MarkAsUpdated() {
+	if pf.zipFile == nil {
+		//only new or fully loaded (via LoadIfRequired) can be marked as updated.
+		pf.pkg.Add(pf.fileName, pf.source)
+	}
+}
+
+//LoadIfRequired lazy loads whole content of file into target and call required callback if there is any
 func (pf *PackageFile) LoadIfRequired(callback PackageFileLoadFn) {
 	if pf.zipFile != nil {
 		if err := UnmarshalZipFile(pf.zipFile, pf.target); err != nil {
@@ -71,7 +95,11 @@ func (pf *PackageFile) LoadIfRequired(callback PackageFileLoadFn) {
 	}
 }
 
-//MarkAsUpdated marks file as updated, so content will be replaced with source's content during packing document
-func (pf *PackageFile) MarkAsUpdated() {
-	pf.pkg.Add(pf.fileName, pf.source)
+//Open opens a zip file for reading and return handler for it or error in case of any issue
+func (pf *PackageFile) Open() (io.ReadCloser, error) {
+	if pf.zipFile != nil {
+		return pf.zipFile.Open()
+	}
+
+	return nil, errors.New("can't open zip file for reading")
 }
