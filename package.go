@@ -210,8 +210,7 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 	//files holds differ kind of information:
 	// 1) pointers to original files (*zip.File) that where not changed and must be coped as is
 	// 2) pointers to structs that must be marshaled to get content for a new file
-	// 3) pointers to read only files (*stream.ReadStream) that can not be marshaled or saved
-	// 4) pointers to write only files (*stream.WriteStream) that already saved
+	// 3) pointers to write only files (*stream.WriteStream) that already saved
 
 	var err error
 
@@ -224,7 +223,6 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 		case *zip.File:
 			//file was not updated, so lets copy it as is
 			err = CopyZipFile(ft, zipper)
-		//case *stream.ReadStream:
 		//case *stream.WriteStream:
 		default:
 			//file was probably updated, so let's marshal it and save with a new content
