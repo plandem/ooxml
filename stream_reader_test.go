@@ -1,13 +1,13 @@
-package stream_test
+package ooxml_test
 
 import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"github.com/plandem/ooxml/stream"
+	"github.com/plandem/ooxml"
 )
 
-func ExampleReadStream() {
+func ExampleStreamReader() {
 	type Email struct {
 		Where string `xml:"where,attr"`
 		Addr  string
@@ -45,9 +45,9 @@ func ExampleReadStream() {
   		</Person>
   	`
 
-	rs := stream.NewReadStream(bytes.NewReader([]byte(data)))
+	rs := ooxml.StreamReader{Decoder: xml.NewDecoder(bytes.NewReader([]byte(data)))}
 
-	for next, hasNext := rs.ElementIterator(nil); hasNext; {
+	for next, hasNext := rs.StartIterator(nil); hasNext; {
 		hasNext = next(func(decoder *xml.Decoder, start *xml.StartElement) bool {
 			fmt.Println(start.Name.Local)
 			return true

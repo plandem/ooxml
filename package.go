@@ -14,7 +14,7 @@ import (
 
 //Package is interface to expose some of PackageInfo methods via embedded struct
 type Package interface {
-	Close()
+	io.Closer
 	Save() error
 	SaveAs(fileName string) error
 }
@@ -25,21 +25,17 @@ type DocumentFactoryFn func(pkg *PackageInfo) (interface{}, error)
 //DocumentValidatorFn is callback to validate OOXML document. Using right before saving
 type DocumentValidatorFn func() error
 
-//PackageReader is a wrapper around ZIP file to unify processing
-type PackageReader struct {
-	*zip.Reader
-	io.Closer
-}
-
 //PackageInfo holds all required information for OOXML package
 type PackageInfo struct {
 	Validator     DocumentValidatorFn
-	reader        *PackageReader
+	reader        interface{}
 	contentTypes  *ContentTypes
 	relationships *Relationships
 	files         map[string]interface{}
 	fileName      string
 }
+
+var _ Package = (*PackageInfo)(nil)
 
 //ErrorUnknownPackage returns a common error if DocumentFactoryFn returned invalid result
 func ErrorUnknownPackage(p interface{}) error {
@@ -50,28 +46,22 @@ func ErrorUnknownPackage(p interface{}) error {
 func NewPackage(reader interface{}) *PackageInfo {
 	pkg := &PackageInfo{}
 
+	var zipReader *zip.Reader
+
 	switch rt := reader.(type) {
-	case *zip.ReadCloser:
-		pkg = &PackageInfo{
-			reader: &PackageReader{
-				&rt.Reader,
-				rt,
-			},
-		}
 	case *zip.Reader:
-		pkg = &PackageInfo{
-			reader: &PackageReader{
-				rt,
-				nil,
-			},
-		}
+		pkg.reader = rt
+		zipReader = rt
+	case *zip.ReadCloser:
+		pkg.reader = rt
+		zipReader = &rt.Reader
 	}
 
 	pkg.files = make(map[string]interface{})
 
 	if pkg.reader != nil {
 		//if there is a reader, than populate files with minimal information
-		for _, f := range pkg.reader.File {
+		for _, f := range zipReader.File {
 			pkg.files[f.Name] = f
 
 			switch {
@@ -130,10 +120,20 @@ func (pkg *PackageInfo) IsNew() bool {
 }
 
 //Close closes current OOXML package
-func (pkg *PackageInfo) Close() {
-	if pkg.reader != nil && pkg.reader.Closer != nil {
-		pkg.reader.Closer.Close()
+func (pkg *PackageInfo) Close() error {
+	//close all opened reading streams
+	for _, content := range pkg.files {
+		if sr, ok := content.(*StreamFileReader); ok {
+			sr.Close()
+		}
 	}
+
+	//close zip reader
+	if closer, ok := pkg.reader.(*zip.ReadCloser); ok {
+		return closer.Close()
+	}
+
+	return nil
 }
 
 //Save saves current OOXML package
@@ -210,7 +210,8 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 	//files holds differ kind of information:
 	// 1) pointers to original files (*zip.File) that where not changed and must be coped as is
 	// 2) pointers to structs that must be marshaled to get content for a new file
-	// 3) pointers to write only files (*stream.WriteStream) that already saved
+	// 3) pointers to read only files (*StreamFileReader) that can't be changed and must be saved as is
+	// 4) pointers to write only files (*StreamFileWriter) that required callback execution to save information
 
 	var err error
 
@@ -223,7 +224,12 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 		case *zip.File:
 			//file was not updated, so lets copy it as is
 			err = CopyZipFile(ft, zipper)
-		//case *stream.WriteStream:
+		case *StreamFileReader:
+			//file was opened as read stream, so was not changed - copy it as is
+			err = CopyZipFile(ft.f, zipper)
+		case *StreamFileWriter:
+			//file was created as write stream, so need an additional callback execution to finalize postponed updates
+			err = ft.Save(zipper)
 		default:
 			//file was probably updated, so let's marshal it and save with a new content
 			err = MarshalZipFile(fileName, content, zipper)

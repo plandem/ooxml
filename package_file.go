@@ -2,13 +2,7 @@ package ooxml
 
 import (
 	"archive/zip"
-	"errors"
-	"fmt"
-	"io"
 )
-
-//PackageFileLoadFn is a callback that will be called right after loading related zipped file, if there is any
-type PackageFileLoadFn func()
 
 //PackageFile is helper object that implements common functionality for any file of package. E.g. lazy loading, marking as updated.
 type PackageFile struct {
@@ -72,19 +66,21 @@ func (pf *PackageFile) IsNew() bool {
 	return pf.isNew
 }
 
-//MarkAsUpdated marks file as updated, so content will be replaced with source's content during packing document
+//MarkAsUpdated marks file as updated, so content will be replaced with source's content during packing document.
+//Works only with new files or files that where fully loaded (via LoadIfRequired).
+//Files that were manually opened via Open can't be marked as updated
 func (pf *PackageFile) MarkAsUpdated() {
 	if pf.zipFile == nil {
-		//only new or fully loaded (via LoadIfRequired) can be marked as updated.
 		pf.pkg.Add(pf.fileName, pf.source)
 	}
 }
 
 //LoadIfRequired lazy loads whole content of file into target and call required callback if there is any
-func (pf *PackageFile) LoadIfRequired(callback PackageFileLoadFn) {
-	if pf.zipFile != nil {
+func (pf *PackageFile) LoadIfRequired(callback func()) {
+	//first time request?
+	if !pf.isNew && pf.zipFile != nil {
 		if err := UnmarshalZipFile(pf.zipFile, pf.target); err != nil {
-			panic(fmt.Sprintln("Can't load zipped data: ", err))
+			panic(err)
 		}
 
 		pf.zipFile = nil
@@ -95,11 +91,49 @@ func (pf *PackageFile) LoadIfRequired(callback PackageFileLoadFn) {
 	}
 }
 
-//Open opens a zip file for reading and return handler for it or error in case of any issue
-func (pf *PackageFile) Open() (io.ReadCloser, error) {
-	if pf.zipFile != nil {
-		return pf.zipFile.Open()
+//ReadStream opens a zip file for manual reading as stream and return *StreamReader for it
+//Files that were opened as stream can't be marked as updated via MarkAsUpdated and will be saved as is
+//File can be opened as stream only once, any further requests will return previously opened stream
+func (pf *PackageFile) ReadStream() *StreamReader {
+	if pf.isNew {
+		panic("Can't open a new file for reading.")
 	}
 
-	return nil, errors.New("can't open zip file for reading")
+	if pf.zipFile == nil {
+		panic("Can't open as stream file that was already fully loaded.")
+	}
+
+	//is stream already opened, then return it
+	if s, ok := pf.source.(*StreamFileReader); ok {
+		return s.StreamReader
+	}
+
+	stream, err := NewStreamFileReader(pf.zipFile)
+	if err != nil {
+		panic(err)
+	}
+
+	pf.zipFile = nil
+	pf.source = stream
+	pf.pkg.Add(pf.fileName, pf.source)
+	return stream.StreamReader
+}
+
+//WriteStream creates a zip file for manual writing as stream and return StreamWriter for it
+//File can be created as stream only once, any further requests will return previously created stream
+func (pf *PackageFile) WriteStream(finalize StreamWriterCallback) *StreamWriter {
+	if !pf.isNew {
+		panic("Can't overwrite already existing file.")
+	}
+
+	//is stream already created, then return it
+	if s, ok := pf.source.(*StreamFileWriter); ok {
+		return s.StreamWriter
+	}
+
+	stream := NewStreamFileWriter(pf.fileName, finalize)
+	pf.source = stream
+	pf.pkg.Add(pf.fileName, pf.source)
+
+	return stream.StreamWriter
 }
