@@ -68,7 +68,6 @@ func (pf *PackageFile) IsNew() bool {
 
 //MarkAsUpdated marks file as updated, so content will be replaced with source's content during packing document.
 //Works only with new files or files that where fully loaded (via LoadIfRequired).
-//Files that were manually opened via Open can't be marked as updated
 func (pf *PackageFile) MarkAsUpdated() {
 	if pf.zipFile == nil {
 		pf.pkg.Add(pf.fileName, pf.source)
@@ -93,9 +92,10 @@ func (pf *PackageFile) LoadIfRequired(callback func()) {
 
 //ReadStream opens a zip file for manual reading as stream and return *StreamReader for it
 //Files that were opened as stream can't be marked as updated via MarkAsUpdated and will be saved as is
+//Files that were opened as stream must be manually closed via calling Close() to prevent memory leaks
 func (pf *PackageFile) ReadStream() *StreamReader {
 	if pf.isNew {
-		panic("Can't open a new file for reading.")
+		panic("Can't open a new file as stream.")
 	}
 
 	if pf.zipFile == nil {
