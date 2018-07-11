@@ -167,7 +167,6 @@ func ExampleStreamFileReader() {
 	}
 
 	//Output:
-	// {A2:N28}
 	// 1
 	// 2
 	// 3
