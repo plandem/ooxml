@@ -77,38 +77,25 @@ func (pf *PackageFile) MarkAsUpdated() {
 
 //LoadIfRequired lazy loads whole content of file into target and call required callback if there is any
 func (pf *PackageFile) LoadIfRequired(callback func()) {
-	if !pf.isNew {
-		//is file already opened as read stream?
-		if _, ok := pf.source.(*StreamFileReader); ok {
-			panic("Can't load file that already opened as stream.")
+	if !pf.isNew && pf.zipFile != nil {
+		//first time request?
+		if err := UnmarshalZipFile(pf.zipFile, pf.target); err != nil {
+			panic(err)
 		}
 
-		//first time request?
-		if pf.zipFile != nil {
-			if err := UnmarshalZipFile(pf.zipFile, pf.target); err != nil {
-				panic(err)
-			}
+		pf.zipFile = nil
 
-			pf.zipFile = nil
-
-			if callback != nil {
-				callback()
-			}
+		if callback != nil {
+			callback()
 		}
 	}
 }
 
 //ReadStream opens a zip file for manual reading as stream and return *StreamReader for it
 //Files that were opened as stream can't be marked as updated via MarkAsUpdated and will be saved as is
-//File can be opened as stream only once, any further requests will return previously opened stream
 func (pf *PackageFile) ReadStream() *StreamReader {
 	if pf.isNew {
 		panic("Can't open a new file for reading.")
-	}
-
-	//if file was already opened as stream, then return it
-	if s, ok := pf.source.(*StreamFileReader); ok {
-		return s.StreamReader
 	}
 
 	if pf.zipFile == nil {
@@ -120,8 +107,6 @@ func (pf *PackageFile) ReadStream() *StreamReader {
 		panic(err)
 	}
 
-	pf.source = stream
-	pf.pkg.Add(pf.fileName, pf.source)
 	return stream.StreamReader
 }
 
