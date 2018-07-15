@@ -90,10 +90,10 @@ func (pf *PackageFile) LoadIfRequired(callback func()) {
 	}
 }
 
-//ReadStream opens a zip file for manual reading as stream and return *StreamReader for it
+//ReadStream opens a zip file for manual reading as stream and return *StreamFileReader for it
 //Files that were opened as stream can't be marked as updated via MarkAsUpdated and will be saved as is
 //Files that were opened as stream must be manually closed via calling Close() to prevent memory leaks
-func (pf *PackageFile) ReadStream() *StreamReader {
+func (pf *PackageFile) ReadStream() *StreamFileReader {
 	if pf.isNew {
 		panic("Can't open a new file as stream.")
 	}
@@ -107,24 +107,24 @@ func (pf *PackageFile) ReadStream() *StreamReader {
 		panic(err)
 	}
 
-	return stream.StreamReader
+	return stream
 }
 
-//WriteStream creates a zip file for manual writing as stream and return StreamWriter for it
+//WriteStream creates a zip file for manual writing as stream and return StreamFileWriter for it
 //File can be created as stream only once, any further requests will return previously created stream
-func (pf *PackageFile) WriteStream(finalize StreamWriterCallback) *StreamWriter {
+func (pf *PackageFile) WriteStream(finalize StreamWriterCallback) *StreamFileWriter {
 	if !pf.isNew {
 		panic("Can't overwrite already existing file.")
 	}
 
 	//is stream already created, then return it
 	if s, ok := pf.source.(*StreamFileWriter); ok {
-		return s.StreamWriter
+		return s
 	}
 
 	stream := NewStreamFileWriter(pf.fileName, finalize)
 	pf.source = stream
 	pf.pkg.Add(pf.fileName, pf.source)
 
-	return stream.StreamWriter
+	return stream
 }

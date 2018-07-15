@@ -151,7 +151,7 @@ func ExampleStreamFileReader() {
 				var row Row
 				if decoder.DecodeElement(&row, start) == nil {
 					for _, c := range row.Cells {
-						if c.Type == "s"  || c.Value == "" {
+						if c.Type == "s" || c.Value == "" {
 							continue
 						}
 
