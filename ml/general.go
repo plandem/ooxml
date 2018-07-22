@@ -17,16 +17,16 @@ type CharData xml.CharData
 //OptionalIndex is custom type to allow encode/decode optional 0-based indexes
 type OptionalIndex *int
 
-//Property is common type of property for strings - we need it to simplify process of encoding/decoding prop types. E.g.: <propName val="123"/>
+//Property is common type of property for strings. E.g.: <propName val="abcdef"/>
 type Property string
 
-//PropertyBool is special type of property for booleans - we need this to unify boolean value: 1/true, 0/false
+//PropertyBool is special type of property for booleans. E.g.: <propName val="true"/>, <propName/>, <propName val="false"/>
 type PropertyBool bool
 
-//PropertyInt is special type of property for integers
+//PropertyInt is special type of property for integers. E.g.: <propName val="123"/>
 type PropertyInt int
 
-//PropertyDouble is special type of property for doubles
+//PropertyDouble is special type of property for doubles. E.g.: <propName val="123.456"/>
 type PropertyDouble float64
 
 //AttrPreserveSpace is common attr to preserve space
@@ -55,9 +55,11 @@ func (p *PropertyBool) MarshalXML(e *xml.Encoder, start xml.StartElement) error 
 
 func (p *PropertyBool) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if len(start.Attr) > 0 {
-		if b, err := strconv.ParseBool(start.Attr[0].Value); err != nil {
+		if b, err := strconv.ParseBool(start.Attr[0].Value); err == nil {
 			*p = PropertyBool(b)
 		}
+	} else {
+		*p = PropertyBool(true)
 	}
 
 	return d.Skip()
@@ -70,7 +72,7 @@ func (p *PropertyInt) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 func (p *PropertyInt) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if len(start.Attr) > 0 {
-		if i, err := strconv.ParseInt(start.Attr[0].Value, 10, 0); err != nil {
+		if i, err := strconv.ParseInt(start.Attr[0].Value, 10, 0); err == nil {
 			*p = PropertyInt(i)
 		}
 	}
@@ -85,7 +87,7 @@ func (p *PropertyDouble) MarshalXML(e *xml.Encoder, start xml.StartElement) erro
 
 func (p *PropertyDouble) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	if len(start.Attr) > 0 {
-		if f, err := strconv.ParseFloat(start.Attr[0].Value, 64); err != nil {
+		if f, err := strconv.ParseFloat(start.Attr[0].Value, 64); err == nil {
 			*p = PropertyDouble(f)
 		}
 	}
