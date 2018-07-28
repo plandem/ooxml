@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/plandem/ooxml)](https://goreportcard.com/report/github.com/plandem/ooxml)
 [![GoDoc](https://godoc.org/github.com/plandem/ooxml?status.svg)](https://godoc.org/github.com/plandem/ooxml)
 [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/plandem/ooxml/master/LICENSE) 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/plandem)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/gayvoronsky)
 
 # Introduction
 Helper library to read OOXML documents. 
