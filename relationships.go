@@ -47,7 +47,14 @@ func (rels *Relationships) GetTargetById(id string) string {
 // GetIdByTarget returns id of relation for provided target
 func (rels *Relationships) GetIdByTarget(target string) string {
 	for _, r := range rels.ml.Relationships {
-		if strings.Contains(target, string(r.Target)) {
+		rTarget := r.Target
+
+		//is weird case when link is related?
+		if rTarget[0] != '/' {
+			rTarget = "/xl/" + rTarget
+		}
+
+		if strings.Contains(string(rTarget), target) {
 			return r.ID
 		}
 	}
