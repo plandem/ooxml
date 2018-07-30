@@ -33,6 +33,11 @@ func NewRelationships(f interface{}, pkg *PackageInfo) *Relationships {
 	return rels
 }
 
+//FileName returns file name of relations
+func (rels *Relationships) FileName() string {
+	return rels.file.fileName
+}
+
 // GetTargetById returns target of relation for provided id
 func (rels *Relationships) GetTargetById(id string) string {
 	for _, r := range rels.ml.Relationships {

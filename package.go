@@ -182,7 +182,7 @@ func (pkg *PackageInfo) Add(fileName string, content interface{}) {
 	pkg.files[fileName] = content
 }
 
-//Remove is a private method that removes  file from a package
+//Remove is a private method that removes file from a package
 func (pkg *PackageInfo) Remove(fileName string) {
 	if _, ok := pkg.files[fileName]; ok {
 		//remove content
