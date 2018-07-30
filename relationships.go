@@ -38,6 +38,11 @@ func (rels *Relationships) FileName() string {
 	return rels.file.fileName
 }
 
+//Total returns total number of relationships
+func (rels *Relationships) Total() int {
+	return len(rels.ml.Relationships)
+}
+
 // GetTargetById returns target of relation for provided id
 func (rels *Relationships) GetTargetById(id string) string {
 	for _, r := range rels.ml.Relationships {
