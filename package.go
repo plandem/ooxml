@@ -182,6 +182,17 @@ func (pkg *PackageInfo) Add(fileName string, content interface{}) {
 	pkg.files[fileName] = content
 }
 
+//File is a private method that returns file with required name
+func (pkg *PackageInfo) File(fileName string) interface{} {
+	for pkgFileName, content := range pkg.files {
+		if pkgFileName == fileName {
+			return content
+		}
+	}
+
+	return nil
+}
+
 //Remove is a private method that removes file from a package
 func (pkg *PackageInfo) Remove(fileName string) {
 	if _, ok := pkg.files[fileName]; ok {
