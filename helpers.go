@@ -53,13 +53,18 @@ func UnmarshalZipFile(f *zip.File, target interface{}) error {
 
 //MarshalZipFile add a file with content of marshaled source to zip
 func MarshalZipFile(fileName string, source interface{}, to *zip.Writer) error {
+	if prep, ok := source.(MarshalPreparation); ok {
+		source = prep.BeforeMarshalXML()
+
+		//if BeforeMarshalXML returns nil, then consider it like file must not be added to package
+		if source == nil {
+			return nil
+		}
+	}
+
 	writer, err := to.Create(fileName)
 	if err != nil {
 		return err
-	}
-
-	if prep, ok := source.(MarshalPreparation); ok {
-		source = prep.BeforeMarshalXML()
 	}
 
 	content, err := xml.Marshal(source)
