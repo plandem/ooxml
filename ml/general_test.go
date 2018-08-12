@@ -102,7 +102,7 @@ func TestPropertyBool(t *testing.T) {
 	}
 
 	list := map[string]ml.PropertyBool{
-		"true": true,
+		"true":  true,
 		"false": false,
 	}
 

@@ -70,7 +70,7 @@ func (r *RIDName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 }
 
 //BeforeMarshalXML mark Relationships as non valid in case if there is no any relations inside
-func (r *Relationships)BeforeMarshalXML() interface{} {
+func (r *Relationships) BeforeMarshalXML() interface{} {
 	if len(r.Relationships) == 0 {
 		return nil
 	}

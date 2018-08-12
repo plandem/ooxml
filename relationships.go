@@ -59,13 +59,20 @@ func (rels *Relationships) GetIdByTarget(target string) string {
 	for _, r := range rels.ml.Relationships {
 		rTarget := r.Target
 
-		//is weird case when link is related?
-		if rTarget[0] != '/' {
-			rTarget = "/xl/" + rTarget
-		}
+		switch r.TargetMode {
+		case ml.TargetModeInternal:
+			//is weird case when link is related?
+			if rTarget[0] != '/' {
+				rTarget = "/xl/" + rTarget
+			}
 
-		if strings.Contains(string(rTarget), target) {
-			return r.ID
+			if strings.Contains(string(rTarget), target) {
+				return r.ID
+			}
+		case ml.TargetModeExternal:
+			if rTarget == target {
+				return r.ID
+			}
 		}
 	}
 
