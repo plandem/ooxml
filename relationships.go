@@ -55,7 +55,7 @@ func (rels *Relationships) GetTargetById(id string) string {
 }
 
 // GetIdByTarget returns id of relation for provided target
-func (rels *Relationships) GetIdByTarget(target string) string {
+func (rels *Relationships) GetIdByTarget(target string) ml.RID {
 	for _, r := range rels.ml.Relationships {
 		rTarget := r.Target
 
@@ -67,11 +67,11 @@ func (rels *Relationships) GetIdByTarget(target string) string {
 			}
 
 			if strings.Contains(string(rTarget), target) {
-				return r.ID
+				return ml.RID(r.ID)
 			}
 		case ml.TargetModeExternal:
 			if rTarget == target {
-				return r.ID
+				return ml.RID(r.ID)
 			}
 		}
 	}
