@@ -12,6 +12,15 @@ import (
 	"reflect"
 )
 
+type PackageModeType byte
+
+//List of all possible open modes for Package
+const (
+	PackageModeDefault      PackageModeType = 0
+	PackageModeUnpackToDisk                 = 1 //Unpack package to temp folder and use these it after
+	PackageModeStreamToDisk                 = 2 //Streams will work with file in temp folder
+)
+
 //Package is interface to expose some of PackageInfo methods via embedded struct
 type Package interface {
 	io.Closer
@@ -43,7 +52,7 @@ func ErrorUnknownPackage(p interface{}) error {
 }
 
 //NewPackage returns a new package with zip reader if there is any
-func NewPackage(reader interface{}) *PackageInfo {
+func NewPackage(reader interface{}, mode ...PackageModeType) *PackageInfo {
 	pkg := &PackageInfo{}
 
 	var zipReader *zip.Reader
@@ -80,7 +89,7 @@ func NewPackage(reader interface{}) *PackageInfo {
 }
 
 //Open opens a file with fileName or io.Reader and returns an instance of document
-func Open(f interface{}, docFactory DocumentFactoryFn) (interface{}, error) {
+func Open(f interface{}, docFactory DocumentFactoryFn, mode ...PackageModeType) (interface{}, error) {
 	var pkg *PackageInfo
 
 	switch ft := f.(type) {
@@ -124,7 +133,7 @@ func (pkg *PackageInfo) Close() error {
 	//close all opened reading streams
 	for _, content := range pkg.files {
 		if sr, ok := content.(*StreamFileReader); ok {
-			sr.Close()
+			_= sr.Close()
 		}
 	}
 
@@ -151,11 +160,11 @@ func (pkg *PackageInfo) Save() error {
 	//save content
 	err = pkg.SavePackage(tmpFile)
 	if err != nil {
-		os.Remove(tmpFile.Name())
+		_= os.Remove(tmpFile.Name())
 		return err
 	}
 
-	tmpFile.Close()
+	_= tmpFile.Close()
 
 	//rename temp file into original name
 	return os.Rename(tmpFile.Name(), pkg.fileName)
@@ -168,7 +177,10 @@ func (pkg *PackageInfo) SaveAs(fileName string) error {
 		return err
 	}
 
-	defer f.Close()
+	defer func() {
+		_= f.Close()
+	}()
+
 	return pkg.SavePackage(f)
 }
 

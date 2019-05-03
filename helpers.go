@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"encoding/xml"
 	"io"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 )
@@ -45,7 +47,9 @@ func UnmarshalZipFile(f *zip.File, target interface{}) error {
 		return err
 	}
 
-	defer xmlReader.Close()
+	defer func() {
+		_ = xmlReader.Close()
+	}()
 
 	decoder := xml.NewDecoder(xmlReader)
 	return decoder.Decode(target)
@@ -141,4 +145,74 @@ func UniqueName(name string, names []string, nameLimit int) string {
 	}
 
 	return name
+}
+
+func cloneZipItem(output string, f *zip.File) (fileName string, err error)  {
+	var fileDst *os.File
+	var fileSrc io.ReadCloser
+
+	if fileSrc, err = f.Open(); err != nil {
+		return
+	}
+
+	defer func() {
+		if err = fileSrc.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	path := filepath.Join(output, f.Name)
+	if err = os.MkdirAll(filepath.Dir(path), os.ModeDir|os.ModePerm); err != nil {
+		return
+	}
+
+	if !f.FileInfo().IsDir() {
+		if fileDst, err = os.Create(path); err != nil {
+			return
+		}
+
+		defer func() {
+			if err = fileDst.Close(); err != nil {
+				panic(err)
+			}
+		}()
+
+		if _, err = io.Copy(fileDst, fileSrc); err != nil {
+			return
+		}
+
+		fileName = f.Name
+	}
+
+	return
+}
+
+// Unzip will decompress a zip archive to an output directory and returns names of extracted files
+func Unzip(archive string, output string) ([]string, error) {
+	r, err := zip.OpenReader(archive)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		if err := r.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	_ = os.MkdirAll(output, os.ModeDir|os.ModePerm)
+
+	var filenames []string
+	for _, f := range r.File {
+		fileName, err := cloneZipItem(output, f)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(fileName) > 0 {
+			filenames = append(filenames, fileName)
+		}
+	}
+
+	return filenames, nil
 }

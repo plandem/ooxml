@@ -43,7 +43,7 @@ func (s *StreamFileWriter) Save(to *zip.Writer) error {
 	}
 
 	//save current state of stream
-	writer.Write(s.buff.Bytes())
+	_, _ = writer.Write(s.buff.Bytes())
 
 	//if there is a callback to get postponed changes, then stream it directly to zip writer
 	if s.cb != nil {

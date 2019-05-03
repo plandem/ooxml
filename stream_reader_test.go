@@ -115,7 +115,9 @@ func ExampleStreamFileReader() {
 	//ok for zip.ReadCloser
 	doc, _ := ooxml.Open("./test_files/example_simple.xlsx", factory)
 	odoc, _ := doc.(*OOXmlDoc)
-	defer odoc.Close()
+	defer func () {
+		_ = odoc.Close()
+	}()
 
 	var sheetStream *ooxml.StreamFileReader
 

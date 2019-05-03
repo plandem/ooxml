@@ -70,7 +70,7 @@ func TestClose(t *testing.T) {
 	require.Implements(t, (*ooxml.Package)(nil), doc)
 
 	odoc, _ := doc.(*OOXmlDoc)
-	odoc.Close()
+	_ = odoc.Close()
 
 	//zip file
 	zipFile, _ := os.Open("./test_files/example_simple.xlsx")
@@ -82,5 +82,5 @@ func TestClose(t *testing.T) {
 	require.Implements(t, (*ooxml.Package)(nil), doc)
 
 	odoc, _ = doc.(*OOXmlDoc)
-	odoc.Close()
+	_= odoc.Close()
 }
