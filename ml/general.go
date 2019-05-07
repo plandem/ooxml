@@ -14,6 +14,7 @@ type Attr xml.Attr
 //CharData is alias for xml.CharData to decrease number of imports
 type CharData xml.CharData
 
+//OptionalIndex is custom type to allow encode/decode optional 0-based indexes
 type OptionalIndex *int
 
 //Property is common type of property for strings. E.g.: <propName val="abcdef"/>
