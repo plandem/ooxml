@@ -14,9 +14,6 @@ type Attr xml.Attr
 //CharData is alias for xml.CharData to decrease number of imports
 type CharData xml.CharData
 
-//OptionalIndex is custom type to allow encode/decode optional 0-based indexes
-type OptionalIndex *int
-
 //Property is common type of property for strings. E.g.: <propName val="abcdef"/>
 type Property string
 
@@ -33,6 +30,16 @@ type PropertyDouble float64
 var AttrPreserveSpace = xml.Attr{
 	Name:  xml.Name{Space: NamespaceXML, Local: "space"},
 	Value: "preserve",
+}
+
+//OptionalIndex is used to get pointer for integer in case where 0 should not be omitted, mostly for optional 0-based indexes
+func OptionalIndex(v int) *int {
+	return &v
+}
+
+//OptionalBool is used to get pointer for boolean, in case where false shlould not be omitted, mostly for booleans with default true value
+func OptionalBool(v bool) *bool {
+	return &v
 }
 
 func (p *Property) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
