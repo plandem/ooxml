@@ -79,16 +79,16 @@ func ExampleStreamFileReader() {
 
 	//Cell is a direct mapping of XSD CT_Cell
 	type Cell struct {
-		Formula   *ml.Reserved `xml:"f,omitempty"`
-		Value     string       `xml:"v,omitempty"`
-		InlineStr *ml.Reserved `xml:"is,omitempty"`
-		ExtLst    *ml.Reserved `xml:"extLst,omitempty"`
-		Ref       string       `xml:"r,attr"`
-		Style     int          `xml:"s,attr,omitempty"`
-		Type      string       `xml:"t,attr,omitempty"`
-		Cm        *int         `xml:"cm,attr,omitempty"`
-		Vm        *int         `xml:"vm,attr,omitempty"`
-		Ph        bool         `xml:"ph,attr,omitempty"`
+		Formula   *ml.Reserved     `xml:"f,omitempty"`
+		Value     string           `xml:"v,omitempty"`
+		InlineStr *ml.Reserved     `xml:"is,omitempty"`
+		ExtLst    *ml.Reserved     `xml:"extLst,omitempty"`
+		Ref       string           `xml:"r,attr"`
+		Style     int              `xml:"s,attr,omitempty"`
+		Type      string           `xml:"t,attr,omitempty"`
+		Cm        ml.OptionalIndex `xml:"cm,attr,omitempty"`
+		Vm        ml.OptionalIndex `xml:"vm,attr,omitempty"`
+		Ph        bool             `xml:"ph,attr,omitempty"`
 	}
 
 	type Row struct {
