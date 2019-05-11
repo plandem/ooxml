@@ -17,9 +17,6 @@ type CharData xml.CharData
 //OptionalIndex is custom type to allow encode/decode optional 0-based indexes, where 0 should not be omitted
 type OptionalIndex *int
 
-//OptionalBool is custom type to allow encode/decode optional boolean, where false should not be omitted - mostly for booleans with default true value
-type OptionalBool *bool
-
 //Property is common type of property for strings. E.g.: <propName val="abcdef"/>
 type Property string
 
