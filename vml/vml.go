@@ -5,8 +5,8 @@ import (
 	"github.com/plandem/ooxml/ml"
 )
 
-// VML is outdated and deprecated format with broken XML rules here and there. So to the main purpose of that package:
-// 1) unmarshal content into structures and provide access to few core attributes to analyze it if required
+// VML is outdated and deprecated format with broken XML rules here and there. So the main purpose of that package:
+// 1) unmarshal content into structures and provide access attributes
 // 2) marshal these structures as is to keep unrelated or untouched information in original state
 
 //Name type used to encode VML namespace
