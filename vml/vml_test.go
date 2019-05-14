@@ -60,9 +60,20 @@ func TestVML(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, "_x0000_t202", entity.ShapeType[0].ID())
+	require.Equal(t, "#81835a", entity.ShapeType[0].Attr("strokecolor"))
+	require.Equal(t, "", entity.ShapeType[0].Type())
+	require.Equal(t, entity.ShapeType[0].ID(), entity.ShapeType[0].Attr("id"))
+	require.Equal(t, entity.ShapeType[0].Type(), entity.ShapeType[0].Attr("type"))
+
 	require.Equal(t, "_x0000_s1025", entity.Shape[0].ID())
 	require.Equal(t, "#_x0000_t202", entity.Shape[0].Type())
+	require.Equal(t, "auto", entity.Shape[0].Attr("o:insetmode"))
+	require.Equal(t, entity.Shape[0].ID(), entity.Shape[0].Attr("id"))
+	require.Equal(t, entity.Shape[0].Type(), entity.Shape[0].Attr("type"))
+
 	require.Equal(t, "_x0000_s1026", entity.Shape[1].ID())
 	require.Equal(t, "#_x0000_t202", entity.Shape[1].Type())
+	require.Equal(t, entity.Shape[1].ID(), entity.Shape[1].Attr("id"))
+	require.Equal(t, entity.Shape[1].Type(), entity.Shape[1].Attr("type"))
 	require.Equal(t, data, string(encoded))
 }
