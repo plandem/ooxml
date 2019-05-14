@@ -1,6 +1,7 @@
 package css
 
 import (
+	"encoding/xml"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -49,7 +50,7 @@ var (
 	toPosition   map[string]position
 	fromPosition map[position]string
 
-	regExpCss = regexp.MustCompile("(?P<key>[a-zA-z-]+):(?P<value>[0-9a-z.]+)+")
+	regExpCss    = regexp.MustCompile("(?P<key>[a-zA-z-]+):(?P<value>[0-9a-z.]+)+")
 	regExpNumber = regexp.MustCompile("^([0-9.]+)(cm|mm|in|pt|pc|px)?$")
 )
 
@@ -86,6 +87,83 @@ func (e visibility) String() string {
 
 func (e position) String() string {
 	return fromPosition[e]
+}
+
+//Decode decodes VML CSS string into Style type
+func Decode(s string) Style {
+	parsed := regExpCss.FindAllStringSubmatch(s, -1)
+	mapped := make(map[string]string)
+	for _, p := range parsed {
+		mapped[p[1]] = p[2]
+	}
+
+	style := Style{}
+	v := reflect.ValueOf(&style).Elem()
+	vt := reflect.TypeOf(style)
+
+	for i := 0; i < vt.NumField(); i++ {
+		field := v.Field(i)
+		tags := vt.Field(i).Tag
+
+		if cssName, ok := tags.Lookup("css"); ok && cssName != "" {
+			if value, ok := mapped[cssName]; ok {
+				switch field.Interface().(type) {
+				case position:
+					field.Set(reflect.ValueOf(toPosition[value]))
+				case visibility:
+					field.Set(reflect.ValueOf(toVisibility[value]))
+				case int:
+					if i, ok := strconv.ParseInt(value, 10, 64); ok == nil {
+						field.SetInt(int64(i))
+					}
+				default:
+					field.Set(reflect.ValueOf(toNumber(value)))
+				}
+			}
+		}
+	}
+
+	return style
+}
+
+//Encode encodes Style type into VML CSS string
+func (s Style) Encode() string {
+	var result []string
+
+	v := reflect.ValueOf(&s).Elem()
+	vt := reflect.TypeOf(s)
+
+	for i := 0; i < vt.NumField(); i++ {
+		tags := vt.Field(i).Tag
+		field := v.Field(i)
+		if cssName, ok := tags.Lookup("css"); ok && cssName != "" && field.IsValid() && !isEmptyValue(field) {
+			switch field.Kind() {
+			case reflect.Interface:
+				result = append(result, fmt.Sprintf("%s:%s", cssName, fromNumber(field.Interface())))
+			default:
+				result = append(result, fmt.Sprintf("%s:%+v", cssName, field.Interface()))
+			}
+		}
+	}
+
+	return strings.Join(result, ";")
+}
+
+//MarshalXMLAttr marshal Style
+func (s *Style) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	if s != nil {
+		if v := s.Encode(); len(v) > 0 {
+			return xml.Attr{Name: name, Value: v}, nil
+		}
+	}
+
+	return xml.Attr{}, nil
+}
+
+//UnmarshalXMLAttr unmarshal Style
+func (s *Style) UnmarshalXMLAttr(attr xml.Attr) error {
+	*s = Decode(attr.Value)
+	return nil
 }
 
 func fromNumber(n Number) string {
@@ -136,66 +214,20 @@ func toNumber(n string) Number {
 	return 0
 }
 
-
-//Decode decodes VML CSS string into Style type
-func Decode(s string) Style {
-	parsed := regExpCss.FindAllStringSubmatch(s, -1)
-	mapped := make(map[string]string)
-	for _, p := range parsed {
-		mapped[p[1]] = p[2]
+func isEmptyValue(v reflect.Value) bool {
+	switch v.Kind() {
+	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
+		return v.Len() == 0
+	case reflect.Bool:
+		return !v.Bool()
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v.Int() == 0
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return v.Uint() == 0
+	case reflect.Float32, reflect.Float64:
+		return v.Float() == 0
+	case reflect.Interface, reflect.Ptr:
+		return v.IsNil()
 	}
-
-	style := Style{}
-	v := reflect.ValueOf(&style).Elem()
-	vt := reflect.TypeOf(style)
-
-	for i := 0; i < vt.NumField(); i++ {
-		field := v.Field(i)
-		tags := vt.Field(i).Tag
-
-		if cssName, ok := tags.Lookup("css"); ok && cssName != "" {
-			if value, ok := mapped[cssName]; ok {
-				switch field.Interface().(type) {
-				case position:
-					field.Set(reflect.ValueOf(toPosition[value]))
-				case visibility:
-					field.Set(reflect.ValueOf(toVisibility[value]))
-				case int:
-					if i, ok := strconv.ParseInt(value, 10, 64); ok == nil {
-						field.SetInt(int64(i))
-					}
-				default:
-					field.Set(reflect.ValueOf(toNumber(value)))
-				}
-			}
-		}
-	}
-
-	return style
-}
-
-//Encode encodes Style type into VML CSS string
-func (s Style) Encode() string {
-	var result []string
-
-	v := reflect.ValueOf(&s).Elem()
-	vt := reflect.TypeOf(s)
-
-	for i := 0; i < vt.NumField(); i++ {
-		tags := vt.Field(i).Tag
-		field := v.Field(i)
-		if cssName, ok := tags.Lookup("css"); ok && cssName != "" && field.IsValid() {
-
-			switch field.Kind() {
-			case reflect.Interface:
-				if !field.IsNil() {
-					result = append(result, fmt.Sprintf("%s:%s", cssName, fromNumber(field.Interface())))
-				}
-			default:
-				result = append(result, fmt.Sprintf("%s:%+v", cssName, field.Interface()))
-			}
-		}
-	}
-
-	return strings.Join(result, ";")
+	return false
 }
