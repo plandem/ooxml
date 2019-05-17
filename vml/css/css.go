@@ -126,6 +126,11 @@ func Decode(s string) Style {
 	return style
 }
 
+//String is alias for Encode that return string version of styles
+func (s Style) String() string {
+	return s.Encode()
+}
+
 //Encode encodes Style type into VML CSS string
 func (s Style) Encode() string {
 	var result []string
