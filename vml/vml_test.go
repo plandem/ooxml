@@ -9,6 +9,43 @@ import (
 	"testing"
 )
 
+func TestReserved(t *testing.T) {
+	type Entity struct {
+		vml.Reserved
+	}
+
+	data := strings.NewReplacer("\t", "", "\n", "", "\r", "").Replace(`
+		<v:shapetype id="_x0000_t202" coordsize="21600,21600" o:spt="202" path="m,l,21600r21600,l21600,xe" strokecolor="#81835a" o:insetmode="auto">
+			<v:fill color="red"/>
+			<v:shadow on="t" color="silver" opacity="1" obscured="true" />
+			<v:stroke joinstyle="miter"/>
+			<v:path gradientshapeok="t" o:connecttype="rect"/>
+			<v:path o:connecttype="none"/>
+		</v:shapetype>
+	`)
+
+	decoder := xml.NewDecoder(bytes.NewReader([]byte(data)))
+	entity := &Entity{}
+	err := decoder.DecodeElement(entity, nil)
+	require.Nil(t, err)
+
+	//check decoded data
+	require.Equal(t, "_x0000_t202", entity.Attrs["id"])
+	require.Equal(t, "#81835a", entity.Attrs["strokecolor"])
+	require.Equal(t, "auto", entity.Attrs["o:insetmode"])
+
+	//encode previously decoded info and compare
+	encoded, err := xml.Marshal(&entity)
+	require.Nil(t, err)
+
+	entity2 := &Entity{}
+	decoder = xml.NewDecoder(bytes.NewReader([]byte(encoded)))
+	err = decoder.DecodeElement(entity2, nil)
+	require.Nil(t, err)
+
+	require.Equal(t, entity, entity2)
+}
+
 func TestVML(t *testing.T) {
 	data := strings.NewReplacer("\t", "", "\n", "", "\r", "").Replace(`
 		<xml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
@@ -51,29 +88,60 @@ func TestVML(t *testing.T) {
 		</xml>
 	`)
 
+	//data := strings.NewReplacer("\t", "", "\n", "", "\r", "").Replace(`
+	//	<xml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+	//		<v:shapetype id="_x0000_t202" coordsize="21600,21600" o:spt="202" path="m,l,21600r21600,l21600,xe" strokecolor="#81835a" o:insetmode="auto">
+	//			<v:fill color="red"/>
+	//			<v:shadow on="t" color="silver" opacity="1" obscured="true" />
+	//			<v:stroke joinstyle="miter"/>
+	//			<v:path gradientshapeok="t" o:connecttype="rect"/>
+	//		</v:shapetype>
+	//	</xml>
+	//`)
+
+
+//	data := strings.NewReplacer("\t", "", "\n", "", "\r", "").Replace(`
+//		<xml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+//			<v:shapetype id="_x0000_t202" coordsize="21600,21600" o:spt="202" path="m,l,21600r21600,l21600,xe" strokecolor="#81835a" o:insetmode="auto">
+//xyz
+//			</v:shapetype>
+//		</xml>
+//	`)
+
 	decoder := xml.NewDecoder(bytes.NewReader([]byte(data)))
 	entity := &vml.Excel{}
 	err := decoder.DecodeElement(entity, nil)
 	require.Nil(t, err)
 
+	//check decoded data
+	require.Equal(t, "_x0000_t202", entity.ShapeType[0].Attrs["id"])
+	require.Equal(t, "#81835a", entity.ShapeType[0].Attrs["strokecolor"])
+	require.Equal(t, nil, entity.ShapeType[0].Attrs["type"])
+
+	require.Equal(t, "_x0000_s1025", entity.Shape[0].Attrs["id"])
+	require.Equal(t, "#_x0000_t202", entity.Shape[0].Attrs["type"])
+	require.Equal(t, "auto", entity.Shape[0].Attrs["o:insetmode"])
+
+	require.Equal(t, "_x0000_s1026", entity.Shape[1].Attrs["id"])
+	require.Equal(t, "#_x0000_t202", entity.Shape[1].Attrs["type"])
+	//
+	//entity.Shape[0].Attrs["style"] = &css.Style{
+	//	ZIndex: 100,
+	//}
+	//entity.Shape[0].Attrs["id"] = 100
+	//entity.Shape[0].Nested[0].InnerXML = 100
+	//encode previously decoded info and compare
 	encoded, err := xml.Marshal(&entity)
+	//encoded, err := xml.MarshalIndent(&entity, "", " ")
+	//fmt.Println(string(encoded))
+
 	require.Nil(t, err)
 
-	require.Equal(t, "_x0000_t202", entity.ShapeType[0].ID())
-	require.Equal(t, "#81835a", entity.ShapeType[0].Attr("strokecolor"))
-	require.Equal(t, "", entity.ShapeType[0].Type())
-	require.Equal(t, entity.ShapeType[0].ID(), entity.ShapeType[0].Attr("id"))
-	require.Equal(t, entity.ShapeType[0].Type(), entity.ShapeType[0].Attr("type"))
+	entity2 := &vml.Excel{}
+	decoder = xml.NewDecoder(bytes.NewReader([]byte(encoded)))
+	err = decoder.DecodeElement(entity2, nil)
+	require.Nil(t, err)
 
-	require.Equal(t, "_x0000_s1025", entity.Shape[0].ID())
-	require.Equal(t, "#_x0000_t202", entity.Shape[0].Type())
-	require.Equal(t, "auto", entity.Shape[0].Attr("o:insetmode"))
-	require.Equal(t, entity.Shape[0].ID(), entity.Shape[0].Attr("id"))
-	require.Equal(t, entity.Shape[0].Type(), entity.Shape[0].Attr("type"))
+	require.Equal(t, entity, entity2)
 
-	require.Equal(t, "_x0000_s1026", entity.Shape[1].ID())
-	require.Equal(t, "#_x0000_t202", entity.Shape[1].Type())
-	require.Equal(t, entity.Shape[1].ID(), entity.Shape[1].Attr("id"))
-	require.Equal(t, entity.Shape[1].Type(), entity.Shape[1].Attr("type"))
-	require.Equal(t, data, string(encoded))
 }
