@@ -1,6 +1,7 @@
 package vml
 
 import (
+	"encoding"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -122,57 +123,80 @@ func resolveName(a xml.Name) xml.Name {
 	return a
 }
 
-func toString(v interface{}) string {
+func toString(v interface{}) (string, error) {
 	switch vv := v.(type) {
-	case float32:
-		return strconv.FormatFloat(float64(vv), 'g', -1, 64)
-	case float64:
-		return strconv.FormatFloat(vv, 'g', -1, 64)
-	case uint:
-		return strconv.FormatUint(uint64(vv), 10)
-	case uint8:
-		return strconv.FormatUint(uint64(vv), 10)
-	case uint16:
-		return strconv.FormatUint(uint64(vv), 10)
-	case uint32:
-		return strconv.FormatUint(uint64(vv), 10)
-	case uint64:
-		return strconv.FormatUint(vv, 10)
-	case int:
-		return strconv.FormatInt(int64(vv), 10)
-	case int8:
-		return strconv.FormatInt(int64(vv), 10)
-	case int16:
-		return strconv.FormatInt(int64(vv), 10)
-	case int32:
-		return strconv.FormatInt(int64(vv), 10)
-	case int64:
-		return strconv.FormatInt(vv, 10)
-	case bool:
-		return strconv.FormatBool(vv)
 	case string:
-		return vv
-	case interface{}:
-		if stringer, ok := vv.(fmt.Stringer); ok {
-			return stringer.String()
-		}
+		return vv, nil
+	case float32:
+		return strconv.FormatFloat(float64(vv), 'g', -1, 64), nil
+	case float64:
+		return strconv.FormatFloat(vv, 'g', -1, 64), nil
+	case uint:
+		return strconv.FormatUint(uint64(vv), 10), nil
+	case uint8:
+		return strconv.FormatUint(uint64(vv), 10), nil
+	case uint16:
+		return strconv.FormatUint(uint64(vv), 10), nil
+	case uint32:
+		return strconv.FormatUint(uint64(vv), 10), nil
+	case uint64:
+		return strconv.FormatUint(vv, 10), nil
+	case int:
+		return strconv.FormatInt(int64(vv), 10), nil
+	case int8:
+		return strconv.FormatInt(int64(vv), 10), nil
+	case int16:
+		return strconv.FormatInt(int64(vv), 10), nil
+	case int32:
+		return strconv.FormatInt(int64(vv), 10), nil
+	case int64:
+		return strconv.FormatInt(vv, 10), nil
+	case bool:
+		return strconv.FormatBool(vv), nil
+	case nil:
+		return "", nil
+	default:
+		return "", fmt.Errorf("can't convert value of type=%T", v)
 	}
-
-	return ""
 }
 
 //MarshalXML marshals Reserved
 func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	start.Name.Local = r.Name.Local
-	start.Attr = make([]xml.Attr, len(r.Attrs))
+	start.Attr = make([]xml.Attr, 0, len(r.Attrs))
 
-	idx := 0
+	var err error
+
 	for k, v := range r.Attrs {
-		start.Attr[idx] = xml.Attr{Name: xml.Name{Local: k}, Value: toString(v)}
-		idx++
+		attr := xml.Attr{ Name: xml.Name{Local: k} }
+
+		switch vt := v.(type) {
+		case xml.MarshalerAttr:
+			if attr, err = vt.MarshalXMLAttr(xml.Name{Local: k}); err != nil {
+				return err
+			}
+		case encoding.TextMarshaler:
+			if text, err := vt.MarshalText(); err != nil {
+				return err
+			} else {
+				attr.Value = string(text)
+			}
+		case fmt.Stringer:
+			attr.Value = vt.String()
+		default:
+			if value, err := toString(v); err != nil {
+				return err
+			} else {
+				attr.Value = value
+			}
+		}
+
+		if attr.Name.Local != "" {
+			start.Attr = append(start.Attr, attr)
+		}
 	}
 
-	err := e.EncodeToken(start)
+	err = e.EncodeToken(start)
 	if err != nil {
 		return err
 	}
@@ -183,9 +207,25 @@ func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		}
 	}
 
-	if err := e.EncodeToken(xml.CharData([]byte(toString(r.InnerXML)))); err != nil {
-		return err
+	if r.InnerXML != nil {
+		var value []byte
+		if marshaler, ok := r.InnerXML.(encoding.TextMarshaler); ok {
+			if value, err = marshaler.MarshalText(); err != nil {
+				return err
+			}
+		} else {
+			if s, err := toString(r.InnerXML); err != nil {
+				return err
+			} else {
+				value = []byte(s)
+			}
+		}
+
+		if err := e.EncodeToken(xml.CharData([]byte(value))); err != nil {
+			return err
+		}
 	}
+
 	return e.EncodeToken(start.End())
 }
 

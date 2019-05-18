@@ -132,6 +132,9 @@ func TestVML(t *testing.T) {
 	//entity.Shape[0].Nested[0].InnerXML = 100
 	//encode previously decoded info and compare
 	encoded, err := xml.Marshal(&entity)
+	//var p ml.PropertyBool = true
+	//_ = p
+	//entity.Shape[1].Nested[0] = p
 	//encoded, err := xml.MarshalIndent(&entity, "", " ")
 	//fmt.Println(string(encoded))
 
