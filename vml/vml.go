@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"reflect"
 	"strconv"
 )
 
@@ -59,7 +60,7 @@ type PowerPoint struct {
 type Reserved struct {
 	Name     xml.Name
 	Attrs    map[string]interface{}
-	Nested   []*Reserved
+	Nested   []interface{}
 	InnerXML interface{}
 }
 
@@ -71,6 +72,10 @@ type Shape = Reserved
 
 //ShapeType is alias for CT_ShapeType
 type ShapeType = Shape
+
+var (
+	marshalerType = reflect.TypeOf((*xml.Marshaler)(nil)).Elem()
+)
 
 //MarshalXMLAttr marshals VML namespace
 func (r *Name) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
@@ -160,6 +165,34 @@ func toString(v interface{}) (string, error) {
 	}
 }
 
+func marshalElement(val reflect.Value, e *xml.Encoder, start xml.StartElement) error {
+	//get underlying type
+	for val.Kind() == reflect.Interface || val.Kind() == reflect.Ptr {
+		if val.IsNil() {
+			return nil
+		}
+		val = val.Elem()
+	}
+
+	// Check for xml.Marshaler
+	if val.CanInterface() && val.Type().Implements(marshalerType) {
+		return val.Interface().(xml.Marshaler).MarshalXML(e, start)
+	}
+
+	if val.CanAddr() {
+		pv := val.Addr()
+		if pv.CanInterface() && pv.Type().Implements(marshalerType) {
+			return pv.Interface().(xml.Marshaler).MarshalXML(e, start)
+		}
+	}
+
+	//try to convert to pointer of value and check for xml.Marshaler again
+	pv := reflect.New(val.Type())
+	pv.Elem().Set(val)
+
+	return marshalElement(pv, e, start)
+}
+
 //MarshalXML marshals Reserved
 func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	start.Name.Local = r.Name.Local
@@ -167,6 +200,7 @@ func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 	var err error
 
+	//normalize attributes
 	for k, v := range r.Attrs {
 		attr := xml.Attr{ Name: xml.Name{Local: k} }
 
@@ -196,17 +230,22 @@ func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		}
 	}
 
+	//encode start token with attributes
 	err = e.EncodeToken(start)
 	if err != nil {
 		return err
 	}
 
+	//encode nested elements
 	for _, nested := range r.Nested {
-		if err := e.EncodeElement(nested, start); err != nil {
+		val := reflect.ValueOf(nested)
+		//by default we use name of type as name, set proper name in marshaller
+		if err := marshalElement(val, e, xml.StartElement{ Name: xml.Name{ Local: val.Type().Name() }}); err != nil {
 			return err
 		}
 	}
 
+	//encode inner xml
 	if r.InnerXML != nil {
 		var value []byte
 		if marshaler, ok := r.InnerXML.(encoding.TextMarshaler); ok {
@@ -226,6 +265,7 @@ func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		}
 	}
 
+	//encode end token
 	return e.EncodeToken(start.End())
 }
 
