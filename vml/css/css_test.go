@@ -8,15 +8,15 @@ import (
 )
 
 func TestCSS(t *testing.T) {
-	data := "position:absolute;margin-left:59.25pt;margin-top:1.50pt;width:96px;height:55px;z-index:1;visibility:hidden"
+	data := "position:absolute;margin-left:59.25pt;margin-top:1.50cm;width:96px;height:55px;z-index:1;visibility:hidden"
 	decoded := css.Decode(data)
 
 	require.Equal(t, css.Style{
 		Position:   css.PositionAbsolute,
-		MarginLeft: 59.25,
-		MarginTop:  1.5,
-		Width:      int64(96),
-		Height:     int64(55),
+		MarginLeft: css.NumberPt(59.25),
+		MarginTop:  css.NumberCm(1.5),
+		Width:      css.NumberPx(96),
+		Height:     css.NumberPx(55),
 		ZIndex:     1,
 		Visible:    css.VisibilityHidden,
 	}, decoded)
@@ -41,10 +41,10 @@ func TestXml(t *testing.T) {
 	//encode
 	s := css.Style{
 		Position:   css.PositionAbsolute,
-		MarginLeft: 59.25,
-		MarginTop:  1.5,
-		Width:      int64(96),
-		Height:     int64(55),
+		MarginLeft: css.NumberPt(59.25),
+		MarginTop:  css.NumberPt(1.5),
+		Width:      css.NumberPx(96),
+		Height:     css.NumberPx(55),
 		ZIndex:     1,
 		Visible:    css.VisibilityHidden,
 	}
