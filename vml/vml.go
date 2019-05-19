@@ -169,7 +169,8 @@ func toString(v interface{}) (string, error) {
 	}
 }
 
-func marshalElement(elem interface{}, e *xml.Encoder, start *xml.StartElement) error {
+//try to encode pointer to element, because marshaller uses by pointer to value, not value
+func marshalElement(elem interface{}, e *xml.Encoder) error {
 	val := reflect.ValueOf(elem)
 
 	// Drill into interfaces and pointers.
@@ -186,11 +187,7 @@ func marshalElement(elem interface{}, e *xml.Encoder, start *xml.StartElement) e
 	pv := reflect.New(val.Type())
 	pv.Elem().Set(val)
 
-	if start == nil {
-		start = &xml.StartElement{Name: xml.Name{Local: val.Type().Name()}}
-	}
-
-	return e.EncodeElement(pv.Interface(), *start)
+	return e.Encode(pv.Interface())
 }
 
 //MarshalXML marshals Reserved
@@ -238,7 +235,7 @@ func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 	//encode nested elements
 	for _, nested := range r.Nested {
-		if err := marshalElement(nested, e, nil); err != nil {
+		if err := marshalElement(nested, e); err != nil {
 			return err
 		}
 	}
