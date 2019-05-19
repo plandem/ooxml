@@ -3,6 +3,7 @@ package vml_test
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"github.com/plandem/ooxml/ml"
 	"github.com/plandem/ooxml/vml"
 	"github.com/plandem/ooxml/vml/css"
@@ -119,6 +120,17 @@ func TestVML(t *testing.T) {
 }
 
 func TestVML_replace(t *testing.T) {
+	type ClientData struct {
+		XMLName        xml.Name `xml:"ClientData,omitempty"`
+		AttrObjectType string   `xml:"ObjectType,attr,omitempty"`
+		MoveWithCells  bool     `xml:"MoveWithCells,omitempty"`
+		SizeWithCells  bool     `xml:"SizeWithCells,omitempty"`
+		Anchor         string   `xml:"Anchor,omitempty"`
+		AutoFill       bool     `xml:"AutoFill,omitempty"`
+		Row            int      `xml:"Row,omitempty"`
+		Column         int      `xml:"Column,omitempty"`
+	}
+
 	data := strings.NewReplacer("\t", "", "\n", "", "\r", "").Replace(`
 		<xml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
 			<v:shape id="_x0000_s1025" type="#_x0000_t202" style="position:absolute;margin-left:59.25pt;margin-top:1.5pt;width:96pt;height:55.5pt;z-index:1;visibility:hidden" o:insetmode="auto">
@@ -157,9 +169,17 @@ func TestVML_replace(t *testing.T) {
 
 	//replace nested element with custom object
 	entity.Shape[0].Nested[0] = ml.PropertyBool(true)
-	encoded, err := xml.Marshal(&entity)
+	entity.Shape[0].Nested[1] = ClientData{
+		MoveWithCells: true,
+		Row: 10,
+		Column: 11,
+	}
+
+	//encoded, err := xml.Marshal(&entity)
+	encoded, err := xml.MarshalIndent(&entity, "", " ")
 	require.Nil(t, err)
 
+	fmt.Println(string(encoded))
 	entity2 := &vml.Excel{}
 	decoder = xml.NewDecoder(bytes.NewReader([]byte(encoded)))
 	err = decoder.DecodeElement(entity2, nil)
@@ -168,10 +188,10 @@ func TestVML_replace(t *testing.T) {
 	require.Equal(t, "z-index:100", entity2.Shape[0].Attrs["style"])
 	require.Equal(t, &vml.Reserved{
 		Name: xml.Name{
-			Local:"PropertyBool",
+			Local: "PropertyBool",
 		},
-		Attrs: map[string]interface {}{
-			"val":"true",
+		Attrs: map[string]interface{}{
+			"val": "true",
 		},
 	}, entity2.Shape[0].Nested[0])
 
