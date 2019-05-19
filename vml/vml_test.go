@@ -119,6 +119,17 @@ func TestVML(t *testing.T) {
 }
 
 func TestVML_replace(t *testing.T) {
+	type ClientData struct {
+		XMLName        xml.Name `xml:"x:ClientData"`
+		AttrObjectType string   `xml:"x:ObjectType,attr,omitempty"`
+		MoveWithCells  bool     `xml:"x:MoveWithCells,omitempty"`
+		SizeWithCells  bool     `xml:"x:SizeWithCells,omitempty"`
+		Anchor         string   `xml:"x:Anchor,omitempty"`
+		AutoFill       bool     `xml:"x:AutoFill,omitempty"`
+		Row            int      `xml:"x:Row,omitempty"`
+		Column         int      `xml:"x:Column,omitempty"`
+	}
+
 	data := strings.NewReplacer("\t", "", "\n", "", "\r", "").Replace(`
 		<xml xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
 			<v:shape id="_x0000_s1025" type="#_x0000_t202" style="position:absolute;margin-left:59.25pt;margin-top:1.5pt;width:96pt;height:55.5pt;z-index:1;visibility:hidden" o:insetmode="auto">
@@ -157,6 +168,12 @@ func TestVML_replace(t *testing.T) {
 
 	//replace nested element with custom object
 	entity.Shape[0].Nested[0] = ml.PropertyBool(true)
+	entity.Shape[0].Nested[1] = ClientData{
+		MoveWithCells: true,
+		Row:           10,
+		Column:        11,
+	}
+
 	encoded, err := xml.Marshal(&entity)
 	require.Nil(t, err)
 
@@ -168,10 +185,10 @@ func TestVML_replace(t *testing.T) {
 	require.Equal(t, "z-index:100", entity2.Shape[0].Attrs["style"])
 	require.Equal(t, &vml.Reserved{
 		Name: xml.Name{
-			Local:"PropertyBool",
+			Local: "PropertyBool",
 		},
-		Attrs: map[string]interface {}{
-			"val":"true",
+		Attrs: map[string]interface{}{
+			"val": "true",
 		},
 	}, entity2.Shape[0].Nested[0])
 

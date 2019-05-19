@@ -73,51 +73,55 @@ type Shape = Reserved
 //ShapeType is alias for CT_ShapeType
 type ShapeType = Shape
 
-var (
-	marshalerType = reflect.TypeOf((*xml.Marshaler)(nil)).Elem()
+const (
+	NamespaceVML        = "urn:schemas-microsoft-com:vml"
+	NamespaceOffice     = "urn:schemas-microsoft-com:office:office"
+	NamespaceExcel      = "urn:schemas-microsoft-com:office:excel"
+	NamespaceWord       = "urn:schemas-microsoft-com:office:word"
+	NamespacePowerPoint = "urn:schemas-microsoft-com:office:powerpoint"
 )
 
 //MarshalXMLAttr marshals VML namespace
 func (r *Name) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:v"}, Value: "urn:schemas-microsoft-com:vml"}
+	attr := xml.Attr{Name: xml.Name{Local: "xmlns:v"}, Value: NamespaceVML}
 	return attr, nil
 }
 
 //MarshalXMLAttr marshals OfficeName namespace
 func (r *OfficeName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:o"}, Value: "urn:schemas-microsoft-com:office:office"}
+	attr := xml.Attr{Name: xml.Name{Local: "xmlns:o"}, Value: NamespaceOffice}
 	return attr, nil
 }
 
 //MarshalXMLAttr marshals ExcelName namespace
 func (r *ExcelName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:x"}, Value: "urn:schemas-microsoft-com:office:excel"}
+	attr := xml.Attr{Name: xml.Name{Local: "xmlns:x"}, Value: NamespaceExcel}
 	return attr, nil
 }
 
 //MarshalXMLAttr marshals WordName namespace
 func (r *WordName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:w"}, Value: "urn:schemas-microsoft-com:office:word"}
+	attr := xml.Attr{Name: xml.Name{Local: "xmlns:w"}, Value: NamespaceWord}
 	return attr, nil
 }
 
 //MarshalXMLAttr marshals PowerPoint namespace
 func (r *PowerPoint) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:p"}, Value: "urn:schemas-microsoft-com:office:powerpoint"}
+	attr := xml.Attr{Name: xml.Name{Local: "xmlns:p"}, Value: NamespacePowerPoint}
 	return attr, nil
 }
 
 func resolveName(a xml.Name) xml.Name {
 	switch a.Space {
-	case "urn:schemas-microsoft-com:vml":
+	case NamespaceVML:
 		return xml.Name{Local: "v:" + a.Local}
-	case "urn:schemas-microsoft-com:office:office":
+	case NamespaceOffice:
 		return xml.Name{Local: "o:" + a.Local}
-	case "urn:schemas-microsoft-com:office:excel":
+	case NamespaceExcel:
 		return xml.Name{Local: "x:" + a.Local}
-	case "urn:schemas-microsoft-com:office:word":
+	case NamespaceWord:
 		return xml.Name{Local: "w:" + a.Local}
-	case "urn:schemas-microsoft-com:office:powerpoint":
+	case NamespacePowerPoint:
 		return xml.Name{Local: "p:" + a.Local}
 	}
 
@@ -165,8 +169,13 @@ func toString(v interface{}) (string, error) {
 	}
 }
 
-func marshalElement(val reflect.Value, e *xml.Encoder, start xml.StartElement) error {
-	//get underlying type
+//try to encode pointer to element, because marshaller uses by pointer to value, not value
+func marshalElement(elem interface{}, e *xml.Encoder) error {
+	val := reflect.ValueOf(elem)
+
+	// Drill into interfaces and pointers.
+	// This can turn into an infinite loop given a cyclic chain,
+	// but it matches the Go 1 behavior.
 	for val.Kind() == reflect.Interface || val.Kind() == reflect.Ptr {
 		if val.IsNil() {
 			return nil
@@ -174,23 +183,11 @@ func marshalElement(val reflect.Value, e *xml.Encoder, start xml.StartElement) e
 		val = val.Elem()
 	}
 
-	// Check for xml.Marshaler
-	if val.CanInterface() && val.Type().Implements(marshalerType) {
-		return val.Interface().(xml.Marshaler).MarshalXML(e, start)
-	}
-
-	if val.CanAddr() {
-		pv := val.Addr()
-		if pv.CanInterface() && pv.Type().Implements(marshalerType) {
-			return pv.Interface().(xml.Marshaler).MarshalXML(e, start)
-		}
-	}
-
-	//try to convert to pointer of value and check for xml.Marshaler again
+	//convert into pointer to value
 	pv := reflect.New(val.Type())
 	pv.Elem().Set(val)
 
-	return marshalElement(pv, e, start)
+	return e.Encode(pv.Interface())
 }
 
 //MarshalXML marshals Reserved
@@ -202,7 +199,7 @@ func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 	//normalize attributes
 	for k, v := range r.Attrs {
-		attr := xml.Attr{ Name: xml.Name{Local: k} }
+		attr := xml.Attr{Name: xml.Name{Local: k}}
 
 		switch vt := v.(type) {
 		case xml.MarshalerAttr:
@@ -238,9 +235,7 @@ func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 	//encode nested elements
 	for _, nested := range r.Nested {
-		val := reflect.ValueOf(nested)
-		//by default we use name of type as name, set proper name in marshaller
-		if err := marshalElement(val, e, xml.StartElement{ Name: xml.Name{ Local: val.Type().Name() }}); err != nil {
+		if err := marshalElement(nested, e); err != nil {
 			return err
 		}
 	}
