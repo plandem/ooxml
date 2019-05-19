@@ -12,6 +12,9 @@ import (
 // VML is outdated and deprecated format with broken XML rules here and there. So the main purpose of that package:
 // 1) unmarshal content into structures and provide access attributes, nested nodes
 // 2) marshal these structures as is to keep unrelated or untouched information in original state
+// 3) during marshaling respect replaced objects and marshal it as required
+//
+// Recap: unmarshal vml - only 'Reserved' structs, marshal vml - respecting elements/attributes that were replaced with custom types
 
 //Name type used to encode VML namespace
 type Name string
