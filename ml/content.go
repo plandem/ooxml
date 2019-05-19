@@ -1,10 +1,14 @@
 package ml
 
+import (
+	"encoding/xml"
+)
+
 type ContentType string
 
 //ContentTypes is a direct mapping of XSD type
 type ContentTypes struct {
-	XMLName Name `xml:"http://schemas.openxmlformats.org/package/2006/content-types Types"`
+	XMLName xml.Name `xml:"http://schemas.openxmlformats.org/package/2006/content-types Types"`
 
 	Overrides []*TypeOverride `xml:"Override"`
 	Defaults  []*TypeDefault  `xml:"Default"`

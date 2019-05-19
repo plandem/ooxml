@@ -26,7 +26,7 @@ type Relation struct {
 
 //Relationships is a direct mapping of XSD type
 type Relationships struct {
-	XMLName       Name       `xml:"http://schemas.openxmlformats.org/package/2006/relationships Relationships"`
+	XMLName       xml.Name   `xml:"http://schemas.openxmlformats.org/package/2006/relationships Relationships"`
 	Relationships []Relation `xml:"Relationship"`
 }
 
