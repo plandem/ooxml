@@ -5,15 +5,6 @@ import (
 	"strconv"
 )
 
-//Name is alias for xml.Name to decrease number of imports
-type Name xml.Name
-
-//Attr is alias for xml.Attr to decrease number of imports
-type Attr xml.Attr
-
-//CharData is alias for xml.CharData to decrease number of imports
-type CharData xml.CharData
-
 //OptionalIndex is custom type to allow encode/decode optional 0-based indexes, where 0 should not be omitted
 type OptionalIndex *int
 
