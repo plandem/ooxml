@@ -28,6 +28,9 @@ type ExcelName string
 //WordName type used to encode Word namespace
 type WordName string
 
+//Word10Name type used to encode Word10 namespace
+type Word10Name string
+
 //PowerPointName type used to encode PowerPoint namespace
 type PowerPointName string
 
@@ -51,6 +54,7 @@ type Excel struct {
 type Word struct {
 	Office
 	WordName `xml:",attr"`
+	Word10Name `xml:",attr"`
 }
 
 //Basic support for PowerPoint specific VML
@@ -80,7 +84,8 @@ const (
 	NamespaceVML        = "urn:schemas-microsoft-com:vml"
 	NamespaceOffice     = "urn:schemas-microsoft-com:office:office"
 	NamespaceExcel      = "urn:schemas-microsoft-com:office:excel"
-	NamespaceWord       = "urn:schemas-microsoft-com:office:word"
+	NamespaceWord       = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+	NamespaceWord10     = "urn:schemas-microsoft-com:office:word"
 	NamespacePowerPoint = "urn:schemas-microsoft-com:office:powerpoint"
 )
 
@@ -108,9 +113,15 @@ func (r *WordName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	return attr, nil
 }
 
+//MarshalXMLAttr marshals Word10Name namespace
+func (r *Word10Name) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	attr := xml.Attr{Name: xml.Name{Local: "xmlns:w10"}, Value: NamespaceWord10}
+	return attr, nil
+}
+
 //MarshalXMLAttr marshals PowerPoint namespace
 func (r *PowerPoint) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:p"}, Value: NamespacePowerPoint}
+	attr := xml.Attr{Name: xml.Name{Local: "xmlns:pvml"}, Value: NamespacePowerPoint}
 	return attr, nil
 }
 
@@ -124,8 +135,10 @@ func resolveName(a xml.Name) xml.Name {
 		return xml.Name{Local: "x:" + a.Local}
 	case NamespaceWord:
 		return xml.Name{Local: "w:" + a.Local}
+	case NamespaceWord10:
+		return xml.Name{Local: "w10:" + a.Local}
 	case NamespacePowerPoint:
-		return xml.Name{Local: "p:" + a.Local}
+		return xml.Name{Local: "pvml:" + a.Local}
 	}
 
 	if len(a.Space) > 0 {
