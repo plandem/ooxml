@@ -74,12 +74,6 @@ type Reserved struct {
 //ShapeLayout is alias for CT_ShapeLayout
 type ShapeLayout = Reserved
 
-//Shape is alias for CT_Shape
-type Shape = Reserved
-
-//ShapeType is alias for CT_ShapeType
-type ShapeType = Shape
-
 const (
 	NamespaceVML        = "urn:schemas-microsoft-com:vml"
 	NamespaceOffice     = "urn:schemas-microsoft-com:office:office"
