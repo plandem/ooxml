@@ -4,6 +4,7 @@ import (
 	"encoding"
 	"encoding/xml"
 	"fmt"
+	_ "golang.org/x/net/webdav"
 	"io"
 	"reflect"
 	"strconv"
@@ -53,7 +54,7 @@ type Excel struct {
 //Basic support for Word specific VML
 type Word struct {
 	Office
-	WordName `xml:",attr"`
+	WordName   `xml:",attr"`
 	Word10Name `xml:",attr"`
 }
 
@@ -82,6 +83,22 @@ const (
 	NamespaceWord10     = "urn:schemas-microsoft-com:office:word"
 	NamespacePowerPoint = "urn:schemas-microsoft-com:office:powerpoint"
 )
+
+// Next returns the next token, ignore comments, processing instructions and directives.
+func next(d *xml.Decoder) (xml.Token, error) {
+	for {
+		t, err := d.Token()
+		if err != nil {
+			return t, err
+		}
+		switch t.(type) {
+		case xml.Comment, xml.Directive, xml.ProcInst:
+			continue
+		default:
+			return t, nil
+		}
+	}
+}
 
 //MarshalXMLAttr marshals VML namespace
 func (r *Name) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
