@@ -43,6 +43,7 @@ type Office struct {
 	ShapeLayout *ShapeLayout `xml:"shapelayout,omitempty"`
 	ShapeType   []*ShapeType `xml:"shapetype,omitempty"`
 	Shape       []*Shape     `xml:"shape,omitempty"`
+	Oval        []*Oval      `xml:"oval,omitempty"`
 }
 
 //Basic support for Excel specific VML

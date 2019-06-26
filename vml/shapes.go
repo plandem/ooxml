@@ -2,18 +2,16 @@ package vml
 
 import (
 	"encoding/xml"
-	"fmt"
-	"reflect"
-	"strings"
+	"github.com/plandem/ooxml/vml/internal"
 )
 
 //ShapeElements is direct mapping of EG_ShapeElements
 type ShapeElements struct {
-	Path          *Reserved `xml:"path,omitempty"`
+	Path          *Path
 	Formulas      *Reserved `xml:"formulas,omitempty"`
 	Handles       *Reserved `xml:"handles,omitempty"`
-	Fill          *Reserved `xml:"fill,omitempty"`
-	Stroke        *Reserved `xml:"stroke,omitempty"`
+	Fill          *Fill
+	Stroke        *Stroke
 	Shadow        *Reserved `xml:"shadow,omitempty"`
 	TextBox       *Reserved `xml:"textbox,omitempty"`
 	TextPath      *Reserved `xml:"textpath,omitempty"`
@@ -119,238 +117,108 @@ type ShapeType struct {
 	Complex *Reserved `xml:"complex,omitempty" namespace:"o"`
 }
 
-type Shape = ShapeType
+//Shape is direct mapping of CT_Shape
+type Shape struct {
+	XMLName xml.Name `xml:"shape" namespace:"v"`
+	Type    string   `xml:"type,attr,omitempty"`
 
-//func (r *CoreOfficeAttributes) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-//	return xml.Attr{}, nil
-//}
-
-//func marshalNamedAttributes() error {
-//
-//}
-type fieldFlags int
-
-const (
-	fElement fieldFlags = 1 << iota
-	fAttr
-	fCDATA
-	fCharData
-	fInnerXml
-	fComment
-	fAny
-
-	fOmitEmpty
-
-	fMode = fElement | fAttr | fCDATA | fCharData | fInnerXml | fComment | fAny
-)
-
-func getStart(t reflect.Type) xml.StartElement {
-	start := xml.StartElement{}
-
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		tag := f.Tag.Get("xml")
-
-		if (f.PkgPath != "" && !f.Anonymous) || tag == "-" {
-			continue // Private field
-		}
-
-		tokens := strings.Split(tag, ",")
-		if f.Name == "XMLName" {
-			start.Name.Local = tokens[0]
-
-			if namespace := f.Tag.Get("namespace"); len(namespace) > 0 {
-				start.Name.Local = namespace + ":" + start.Name.Local
-			}
-		}
-	}
-
-	return start
+	ShapeType
 }
 
-//func addNameSpace(value interface{}, start *xml.StartElement) {
-//	v := reflect.Indirect(reflect.ValueOf(value))
-//	vt := v.Type()
-//
-//	for i := 0; i < v.NumField(); i++ {
-//		f := vt.Field(i)
-//
-//		if f.Name == "XMLName" {
-//			if namespace := f.Tag.Get("namespace"); len(namespace) > 0 {
-//				start.Name.Local = namespace + ":" + start.Name.Local
-//			}
-//		}
-//	}
-//}
-
-func marshalNamedElement(value interface{}, e *xml.Encoder) error {
-	//if len(namespace) > 0 {
-	//	start.Name.Local = namespace + ":" + start.Name.Local
-	//}
-
-	v := reflect.Indirect(reflect.ValueOf(value))
-
-	if !v.IsValid() {
-		return nil
-	}
-
-	vt := v.Type()
-
-	start := getStart(vt)
-	err := e.EncodeToken(start)
-	_ = err
-
-	for i := 0; i < v.NumField(); i++ {
-		f := vt.Field(i)
-		tag := f.Tag.Get("xml")
-
-		if (f.PkgPath != "" && !f.Anonymous) || tag == "-" {
-			continue // Private field
-		}
-
-		flags := fieldFlags(0)
-		tokens := strings.Split(tag, ",")
-		if len(tokens) == 1 {
-			flags = fElement
-		} else {
-			tag = tokens[0]
-			for _, flag := range tokens[1:] {
-				switch flag {
-				case "attr":
-					flags |= fAttr
-				case "cdata":
-					flags |= fCDATA
-				case "chardata":
-					flags |= fCharData
-				case "innerxml":
-					flags |= fInnerXml
-				case "comment":
-					flags |= fComment
-				case "any":
-					flags |= fAny
-				case "omitempty":
-					flags |= fOmitEmpty
-				}
-			}
-		}
-
-
-		//switch vtt := vt.(type) {
-		//
-		//}
-		//
-
-		fmt.Println(i, tag, tokens, f.Name)
-	}
-
-	return e.EncodeToken(start.End())
+//Rect is direct mapping of CT_Rect
+type Rect struct {
+	XMLName xml.Name `xml:"rect" namespace:"v"`
+	Shape
 }
-//
-//func encodeNamedElement(v interface{}, e *xml.Encoder, start xml.StartElement) error {
-//	addNameSpace(v, &start)
-//	fmt.Println(start.Attr)
-//	return e.EncodeElement(v, start)
-//}
+
+//RoundRect is direct mapping of CT_RoundRect
+type RoundRect struct {
+	XMLName xml.Name `xml:"roundrect" namespace:"v"`
+	Shape
+}
+
+//Line is direct mapping of CT_Line
+type Line struct {
+	XMLName xml.Name `xml:"line" namespace:"v"`
+	Shape
+}
+
+//PolyLine is direct mapping of CT_PolyLine
+type PolyLine struct {
+	XMLName xml.Name `xml:"polyline" namespace:"v"`
+	Shape
+}
+
+//Curve is direct mapping of CT_Curve
+type Curve struct {
+	XMLName xml.Name `xml:"curve" namespace:"v"`
+	Shape
+}
+
+//Arc is alias of CT_Arc
+type Arc struct {
+	XMLName xml.Name `xml:"arc" namespace:"v"`
+	Shape
+}
+
+//Image is direct mapping of CT_Image
+type Image struct {
+	XMLName xml.Name `xml:"image" namespace:"v"`
+	Shape
+}
+
+//Oval is direct mapping of CT_Oval
+type Oval struct {
+	XMLName xml.Name `xml:"oval" namespace:"v"`
+	Shape
+}
+
+//Group is direct mapping of CT_Group
+type Group struct {
+	//TODO: implement
+}
 
 func (s *ShapeType) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return marshalNamedElement(s, e)
-	//addNameSpace(s, &start)
-	//return e.EncodeElement(*s, start)
-	//fmt.Printf("%+v", s)
-	//return encodeNamedElement(*s, e, start)
+	return internal.Encode(s, e)
 }
 
-func (r *CoreOfficeAttributes) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Name.Space = "o"
-	fmt.Println("CoreOfficeAttributes", start.Attr)
-	return nil
+func (s *Shape) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
 }
 
-func (r *ShapeOfficeAttributes) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Name.Space = "o"
-	fmt.Println("ShapeOfficeAttributes", start.Attr)
-	return nil
+func (s *Rect) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
 }
 
-func (r *CoreAttributes) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	fmt.Println("CoreAttributes", start.Attr)
-	return nil
+func (s *RoundRect) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
 }
 
-func (r *ShapeAttributes) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	fmt.Println("ShapeAttributes", start.Attr)
-	return nil
+func (s *Line) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
 }
 
-////Shape is direct mapping of CT_Shape
-//type Shape struct {
-//	ShapeType
-//	Type string
-//}
-//
-////Group is direct mapping of CT_Group
-//type Group struct {
-//}
-//
-////Rect is direct mapping of CT_Rect
-//type Rect struct {
-//	Shape
-//}
-//
-////RoundRect is direct mapping of CT_RoundRect
-//type RoundRect struct {
-//	Shape
-//}
-//
-////Line is direct mapping of CT_Line
-//type Line struct {
-//	Shape
-//}
-//
-////PolyLine is direct mapping of CT_PolyLine
-//type PolyLine struct {
-//	Shape
-//}
-//
-////Curve is direct mapping of CT_Curve
-//type Curve struct {
-//	Shape
-//}
-//
-////Oval is direct mapping of CT_Oval
-//type Oval struct {
-//	Shape
-//}
-//
-////Arc is alias of CT_Arc
-//type Arc struct {
-//	Shape
-//}
-//
-////Image is direct mapping of CT_Image
-//type Image struct {
-//	Shape
-//}
-//
-////Diagram is direct mapping of CT_Diagram
-//type Diagram struct {
-//	Shape
-//}
-
-func isEmptyValue(v reflect.Value) bool {
-	switch v.Kind() {
-	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
-		return v.Len() == 0
-	case reflect.Bool:
-		return !v.Bool()
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return v.Int() == 0
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		return v.Uint() == 0
-	case reflect.Float32, reflect.Float64:
-		return v.Float() == 0
-	case reflect.Interface, reflect.Ptr:
-		return v.IsNil()
-	}
-	return false
+func (s *PolyLine) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
 }
+
+func (s *Curve) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
+}
+
+func (s *Arc) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
+}
+
+func (s *Image) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
+}
+
+func (s *Oval) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
+}
+
+func (s *Group) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return internal.Encode(s, e)
+}
+
