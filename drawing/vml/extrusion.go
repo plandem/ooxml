@@ -19,7 +19,7 @@ type ExtrusionColorMode string //enum
 
 //Extrusion is direct mapping of CT_Extrusion
 type Extrusion struct {
-	XMLName        xml.Name `xml:"extrusion,omitempty" namespace:"o"`
+	XMLName            xml.Name           `xml:"extrusion,omitempty" namespace:"o"`
 	On                 bool               `xml:"on,attr,omitempty"`
 	Type               ExtrusionType      `xml:"type,attr,omitempty"`
 	Render             ExtrusionRender    `xml:"render,attr,omitempty"`
@@ -45,14 +45,14 @@ type Extrusion struct {
 	Edge               float64            `xml:"edge,attr,omitempty"`
 	Facet              float64            `xml:"facet,attr,omitempty"`
 	LightFace          *bool              `xml:"lightface,attr,omitempty"`
-	LightHarsh     *bool    `xml:"lightharsh,attr,omitempty"`
-	LightHarsh2    *bool    `xml:"lightharsh2,attr,omitempty"`
-	LightLevel     float64  `xml:"lightlevel,attr,omitempty"`
-	LightLevel2    float64  `xml:"lightlevel2,attr,omitempty"`
-	LightPosition  string   `xml:"lightposition,attr,omitempty"`
-	LightPosition2 string   `xml:"lightposition2,attr,omitempty"`
-	Brightness     float64  `xml:"brightness,attr,omitempty"`
-	Ext            Ext      `xml:"ext,attr,omitempty" namespace:"v"`
+	LightHarsh         *bool              `xml:"lightharsh,attr,omitempty"`
+	LightHarsh2        *bool              `xml:"lightharsh2,attr,omitempty"`
+	LightLevel         float64            `xml:"lightlevel,attr,omitempty"`
+	LightLevel2        float64            `xml:"lightlevel2,attr,omitempty"`
+	LightPosition      string             `xml:"lightposition,attr,omitempty"`
+	LightPosition2     string             `xml:"lightposition2,attr,omitempty"`
+	Brightness         float64            `xml:"brightness,attr,omitempty"`
+	Ext                Ext                `xml:"ext,attr,omitempty" namespace:"v"`
 }
 
 func (s *Extrusion) MarshalXML(e *xml.Encoder, start xml.StartElement) error {

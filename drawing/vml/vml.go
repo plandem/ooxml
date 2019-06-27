@@ -81,26 +81,9 @@ const (
 	NamespaceVML        = "urn:schemas-microsoft-com:vml"
 	NamespaceOffice     = "urn:schemas-microsoft-com:office:office"
 	NamespaceExcel      = "urn:schemas-microsoft-com:office:excel"
-	//NamespaceWord       = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-	NamespaceWord     = "urn:schemas-microsoft-com:office:word"
+	NamespaceWord       = "urn:schemas-microsoft-com:office:word"
 	NamespacePowerPoint = "urn:schemas-microsoft-com:office:powerpoint"
 )
-
-// Next returns the next token, ignore comments, processing instructions and directives.
-func next(d *xml.Decoder) (xml.Token, error) {
-	for {
-		t, err := d.Token()
-		if err != nil {
-			return t, err
-		}
-		switch t.(type) {
-		case xml.Comment, xml.Directive, xml.ProcInst:
-			continue
-		default:
-			return t, nil
-		}
-	}
-}
 
 //MarshalXMLAttr marshals VML namespace
 func (r *Name) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
