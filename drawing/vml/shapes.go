@@ -2,34 +2,27 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml/vml/internal"
+	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
 )
 
 //ShapeElements is direct mapping of EG_ShapeElements
 type ShapeElements struct {
 	Path          *Path
-	Formulas      *Reserved `xml:"formulas,omitempty"`
-	Handles       *Reserved `xml:"handles,omitempty"`
+	Formulas      *Formulas
+	Handles       *Handles
 	Fill          *Fill
 	Stroke        *Stroke
-	Shadow        *Reserved `xml:"shadow,omitempty"`
-	TextBox       *Reserved `xml:"textbox,omitempty"`
-	TextPath      *Reserved `xml:"textpath,omitempty"`
-	ImageData     *Reserved `xml:"imagedata,omitempty"`
-	Skew          *Reserved `xml:"skew,omitempty" namespace:"o"`
-	Extrusion     *Reserved `xml:"extrusion,omitempty" namespace:"o"`
-	Callout       *Reserved `xml:"callout,omitempty" namespace:"o"`
-	Lock          *Reserved `xml:"lock,omitempty" namespace:"o"`
-	ClipPath      *Reserved `xml:"clippath,omitempty" namespace:"o"`
-	SignatureLine *Reserved `xml:"signatureline,omitempty" namespace:"o"`
-	Wrap          *Reserved `xml:"wrap,omitempty" namespace:"w10"`
-	AnchorLock    *Reserved `xml:"anchorlock,omitempty" namespace:"w10"`
-	BorderTop     *Reserved `xml:"bordertop,omitempty" namespace:"w10"`
-	BorderBottom  *Reserved `xml:"borderbottom,omitempty" namespace:"w10"`
-	BorderLeft    *Reserved `xml:"borderleft,omitempty" namespace:"w10"`
-	BorderRight   *Reserved `xml:"borderright,omitempty" namespace:"w10"`
-	ClientData    *Reserved `xml:"ClientData,omitempty" namespace:"x"`
-	TextData      *Reserved `xml:"textdata,omitempty" namespace:"pvml"`
+	Shadow        *Shadow
+	TextBox       *TextBox
+	TextPath      *TextPath
+	ImageData     *ImageData
+	Skew          *Skew
+	Extrusion     *Extrusion
+	Callout       *Callout
+	Lock          *Lock
+	ClipPath      *ClipPath
+	SignatureLine *SignatureLine
+	ClientData    *ClientData
 }
 
 //CoreOfficeAttributes is direct mapping of AG_OfficeCoreAttributes
@@ -114,7 +107,7 @@ type ShapeType struct {
 	Adj    string `xml:"adj,attr,omitempty"`
 
 	ShapeElements
-	Complex *Reserved `xml:"complex,omitempty" namespace:"o"`
+	Complex *Complex
 }
 
 //Shape is direct mapping of CT_Shape
@@ -179,46 +172,45 @@ type Group struct {
 }
 
 func (s *ShapeType) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *Shape) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *Rect) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *RoundRect) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *Line) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *PolyLine) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *Curve) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *Arc) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *Image) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *Oval) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
 
 func (s *Group) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
-

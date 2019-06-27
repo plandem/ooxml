@@ -2,7 +2,7 @@ package css_test
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml/vml/css"
+	"github.com/plandem/ooxml/drawing/vml/css"
 	"github.com/stretchr/testify/require"
 	"testing"
 )

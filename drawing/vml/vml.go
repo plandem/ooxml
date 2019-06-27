@@ -4,7 +4,7 @@ import (
 	"encoding"
 	"encoding/xml"
 	"fmt"
-	_ "golang.org/x/net/webdav"
+	"github.com/plandem/ooxml/ml"
 	"io"
 	"reflect"
 	"strconv"
@@ -39,6 +39,7 @@ type PowerPointName string
 type Office struct {
 	XMLName     xml.Name     `xml:"xml"`
 	Name        Name         `xml:",attr"`
+	RIDName     ml.RIDName   `xml:",attr"`
 	OfficeName  OfficeName   `xml:",attr"`
 	ShapeLayout *ShapeLayout `xml:"shapelayout,omitempty"`
 	ShapeType   []*ShapeType `xml:"shapetype,omitempty"`
@@ -80,8 +81,8 @@ const (
 	NamespaceVML        = "urn:schemas-microsoft-com:vml"
 	NamespaceOffice     = "urn:schemas-microsoft-com:office:office"
 	NamespaceExcel      = "urn:schemas-microsoft-com:office:excel"
-	NamespaceWord       = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-	NamespaceWord10     = "urn:schemas-microsoft-com:office:word"
+	//NamespaceWord       = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+	NamespaceWord     = "urn:schemas-microsoft-com:office:word"
 	NamespacePowerPoint = "urn:schemas-microsoft-com:office:powerpoint"
 )
 
@@ -125,15 +126,9 @@ func (r *WordName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	return attr, nil
 }
 
-//MarshalXMLAttr marshals Word10Name namespace
-func (r *Word10Name) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:w10"}, Value: NamespaceWord10}
-	return attr, nil
-}
-
 //MarshalXMLAttr marshals PowerPoint namespace
 func (r *PowerPoint) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:pvml"}, Value: NamespacePowerPoint}
+	attr := xml.Attr{Name: xml.Name{Local: "xmlns:p"}, Value: NamespacePowerPoint}
 	return attr, nil
 }
 
@@ -147,10 +142,8 @@ func resolveName(a xml.Name) xml.Name {
 		return xml.Name{Local: "x:" + a.Local}
 	case NamespaceWord:
 		return xml.Name{Local: "w:" + a.Local}
-	case NamespaceWord10:
-		return xml.Name{Local: "w10:" + a.Local}
 	case NamespacePowerPoint:
-		return xml.Name{Local: "pvml:" + a.Local}
+		return xml.Name{Local: "p:" + a.Local}
 	}
 
 	if len(a.Space) > 0 {

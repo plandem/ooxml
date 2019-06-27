@@ -2,7 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml/vml/internal"
+	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
 )
 
 //FillType is direct mapping of ST_FillType
@@ -41,9 +41,7 @@ type Fill struct {
 	Title            string      `xml:"title,attr,omitempty" namespace:"o"`
 	Type             FillType    `xml:"type,attr,omitempty"`
 	Extended         *FillExtended
-
-	//FIXME: 'r:id' conflicts with 'id'
-	//RID              string            `xml:"r id,attr,omitempty"`
+	Relations
 }
 
 type FillExtended struct {
@@ -53,5 +51,5 @@ type FillExtended struct {
 }
 
 func (s *Fill) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }

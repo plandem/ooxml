@@ -2,7 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml/vml/internal"
+	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
 )
 
 //PathConnectType is direct mapping of ST_ConnectType
@@ -29,5 +29,5 @@ type Path struct {
 }
 
 func (s *Path) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }

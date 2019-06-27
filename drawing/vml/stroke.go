@@ -2,8 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	//"github.com/plandem/ooxml/ml"
-	"github.com/plandem/ooxml/vml/internal"
+	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
 )
 
 //StrokeDashStyle
@@ -56,9 +55,7 @@ type StrokeAttributes struct {
 	StartArrowWidth  StrokeArrowWidth  `xml:"startarrowwidth,attr,omitempty"`
 	Title            string            `xml:"title,attr,omitempty" namespace:"o"`
 	Weight           string            `xml:"weight,attr,omitempty"`
-
-	//FIXME: 'r:id' conflicts with 'id'
-	//RID              string            `xml:"r id,attr,omitempty"`
+	Relations
 }
 
 //Stroke is direct mapping of CT_Stroke
@@ -74,5 +71,5 @@ type Stroke struct {
 }
 
 func (s *Stroke) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal.Encode(s, e)
+	return internal2.Encode(s, e)
 }
