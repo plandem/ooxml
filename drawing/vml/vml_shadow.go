@@ -3,6 +3,7 @@ package vml
 import (
 	"encoding/xml"
 	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 )
 
 //ShadowType is direct mapping of ST_ShadowType
@@ -22,8 +23,10 @@ type Shadow struct {
 	Offset2  string     `xml:"offset2,attr,omitempty"`
 	Origin   string     `xml:"origin,attr,omitempty"`
 	Matrix   string     `xml:"matrix,attr,omitempty"`
+	ml.ReservedAttributes
 }
 
 func (s *Shadow) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	resolveAttributesName(s.Attrs)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

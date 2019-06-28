@@ -275,7 +275,7 @@ func toNumber(n string) Number {
 
 //UnmarshalXMLAttr unmarshal Fraction
 func (f *Fraction) UnmarshalXMLAttr(attr xml.Attr) error {
-	parsed := regExpNumber.FindStringSubmatch(attr.Value)
+	parsed := regExpFraction.FindStringSubmatch(attr.Value)
 	if parsed != nil {
 		if v, err := strconv.ParseFloat(parsed[1], 10); err != nil {
 			return err

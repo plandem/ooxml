@@ -9,7 +9,6 @@ import (
 type Shape struct {
 	XMLName xml.Name `xml:"shape"`
 	Type    string   `xml:"type,attr,omitempty"`
-
 	ShapeType
 }
 

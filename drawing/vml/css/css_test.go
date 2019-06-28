@@ -85,6 +85,7 @@ func TestFraction(t *testing.T) {
 	require.Empty(t, err)
 	require.Equal(t, entity, decoded)
 
+	decoded = Entity{}
 	err = xml.Unmarshal([]byte(`"<Entity opacity="50%"></Entity>"`), &decoded)
 	require.Empty(t, err)
 	require.Equal(t, entity, decoded)

@@ -85,6 +85,8 @@ func resolveName(a xml.Name) xml.Name {
 		return xml.Name{Local: NamespaceWordPrefix + ":" + a.Local}
 	case NamespacePowerPoint:
 		return xml.Name{Local: NamespacePowerPointPrefix + ":" + a.Local}
+	case ml.NamespaceRelationships:
+		return xml.Name{Local: ml.NamespaceRelationshipsPrefix + ":" + a.Local}
 	}
 
 	return a
@@ -129,21 +131,9 @@ func (r *PowerPoint) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 
 //MarshalXML marshal Reserved
 func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	r.Name = resolveName(r.Name)
-	r.Attrs = start.Attr
+	r.XMLName = resolveName(r.XMLName)
 	resolveAttributesName(r.Attrs)
 
 	mr := ml.Reserved(*r)
 	return e.Encode(&mr)
-}
-
-//UnmarshalXML unmarshal Reserved
-func (r *Reserved) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var mr ml.Reserved
-	if err := d.DecodeElement(&mr, &start); err != nil {
-		return err
-	}
-
-	*r = Reserved(mr)
-	return nil
 }

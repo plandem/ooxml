@@ -3,7 +3,7 @@ package vml
 import (
 	"encoding/xml"
 	"github.com/plandem/ooxml"
-	"github.com/plandem/ooxml/drawing/vml/relation"
+	"github.com/plandem/ooxml/ml"
 )
 
 //imageAttributes is direct mapping of AG_ImageAttributes
@@ -33,10 +33,11 @@ type ImageData struct {
 	ChromaKey        string   `xml:"chromakey,attr,omitempty"`
 	EmbossColor      string   `xml:"embosscolor,attr,omitempty"`
 	ReColorTarget    string   `xml:"recolortarget,attr,omitempty"`
+	ml.ReservedAttributes
 	imageAttributes
-	relation.Relations
 }
 
 func (s *ImageData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	resolveAttributesName(s.Attrs)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

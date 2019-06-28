@@ -3,6 +3,7 @@ package vml
 import (
 	"encoding/xml"
 	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 )
 
 //Handles is direct mapping of CT_Handles
@@ -22,6 +23,7 @@ type Handle struct {
 	XRange      string `xml:"xrange,attr,omitempty"`
 	YRange      string `xml:"yrange,attr,omitempty"`
 	RadiusRange string `xml:"radiusrange,attr,omitempty"`
+	ml.ReservedAttributes
 }
 
 func (s *Handles) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
@@ -33,5 +35,6 @@ func (s *Handles) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 }
 
 func (s *Handle) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	resolveAttributesName(s.Attrs)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

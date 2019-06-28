@@ -3,6 +3,7 @@ package vml
 import (
 	"encoding/xml"
 	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 )
 
 //PathConnectType is direct mapping of ST_ConnectType
@@ -26,8 +27,10 @@ type Path struct {
 	TextpathOK      *bool           `xml:"textpathok,attr,omitempty"`
 	InsetPenOK      *bool           `xml:"insetpenok,attr,omitempty"`
 	ExtrusionOK     *bool           `xml:"extrusionok,attr,omitempty" namespace:"o"`
+	ml.ReservedAttributes
 }
 
 func (s *Path) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	resolveAttributesName(s.Attrs)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

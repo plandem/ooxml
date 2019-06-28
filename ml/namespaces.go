@@ -6,4 +6,7 @@ const (
 
 	//NamespaceRelationships is a namespace for OOXML relationships
 	NamespaceRelationships = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+
+	//NamespaceRelationshipsPrefix is a prefix for relationships namespace
+	NamespaceRelationshipsPrefix = "r"
 )

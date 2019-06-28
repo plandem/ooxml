@@ -28,3 +28,6 @@ type Ink = Reserved
 
 //Diagram is direct mapping of CT_Diagram
 type Diagram = Reserved
+
+//FillExtended is alias for CT_Fill (but office extension, not CT_Fill from VML definition)
+type FillExtended = Reserved

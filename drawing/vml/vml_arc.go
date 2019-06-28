@@ -3,6 +3,7 @@ package vml
 import (
 	"encoding/xml"
 	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 )
 
 //arc is alias of CT_Arc
@@ -10,6 +11,7 @@ type arc struct {
 	XMLName    xml.Name `xml:"arc"`
 	StartAngle int      `xml:"startAngle,attr,omitempty"`
 	EndAngle   int      `xml:"endAngle,attr,omitempty"`
+	ml.ReservedAttributes
 	coreAttributes
 	shapeAttributes
 	shapeElements
@@ -24,5 +26,6 @@ func Arc() *arc {
 }
 
 func (s *arc) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	resolveAttributesName(s.Attrs)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

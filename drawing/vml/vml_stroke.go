@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"github.com/plandem/ooxml"
 	"github.com/plandem/ooxml/drawing/vml/relation"
+	"github.com/plandem/ooxml/ml"
 )
 
 //StrokeDashStyle
@@ -69,8 +70,10 @@ type Stroke struct {
 	Column  *StrokeAttributes `xml:"column" namespace:"o"`
 	ID      string            `xml:"id,attr,omitempty"`
 	StrokeAttributes
+	ml.ReservedAttributes
 }
 
 func (s *Stroke) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	resolveAttributesName(s.Attrs)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

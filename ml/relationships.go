@@ -60,12 +60,12 @@ func (r *TargetMode) UnmarshalXMLAttr(attr xml.Attr) error {
 }
 
 func (r *RID) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "r:id"}, Value: string(*r)}
+	attr := xml.Attr{Name: xml.Name{Local: NamespaceRelationshipsPrefix + ":id"}, Value: string(*r)}
 	return attr, nil
 }
 
 func (r *RIDName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:r"}, Value: NamespaceRelationships}
+	attr := xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceRelationshipsPrefix}, Value: NamespaceRelationships}
 	return attr, nil
 }
 
