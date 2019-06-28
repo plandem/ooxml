@@ -2,15 +2,15 @@ package vml
 
 import (
 	"encoding/xml"
-	css2 "github.com/plandem/ooxml/drawing/vml/css"
-	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
+	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/drawing/vml/css"
 )
 
 //TextPath is direct mapping of CT_TextPath
 type TextPath struct {
-	XMLName  xml.Name   `xml:"textpath,omitempty" namespace:"v"`
+	XMLName  xml.Name   `xml:"textpath"`
 	ID       string     `xml:"id,attr,omitempty"`
-	Style    css2.Style `xml:"style,attr,omitempty"`
+	Style    *css.Style `xml:"style,attr,omitempty"`
 	Text     string     `xml:"string,attr,omitempty"`
 	On       bool       `xml:"on,attr,omitempty"`
 	FitShape bool       `xml:"fitshape,attr,omitempty"`
@@ -20,5 +20,5 @@ type TextPath struct {
 }
 
 func (s *TextPath) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal2.Encode(s, e)
+	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

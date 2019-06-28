@@ -2,14 +2,14 @@ package vml
 
 import (
 	"encoding/xml"
-	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
+	"github.com/plandem/ooxml"
 )
 
 //ClientData is direct mapping of CT_ClientData
 type ClientData struct {
-	XMLName         xml.Name    `xml:"ClientData,omitempty" namespace:"x"`
+	XMLName xml.Name `xml:"ClientData,omitempty"`
 }
 
 func (s *ClientData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal2.Encode(s, e)
+	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix("x", start.Name)})
 }

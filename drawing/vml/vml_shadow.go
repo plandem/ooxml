@@ -2,7 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
+	"github.com/plandem/ooxml"
 )
 
 //ShadowType is direct mapping of ST_ShadowType
@@ -10,7 +10,7 @@ type ShadowType string //enum
 
 //Shadow is direct mapping of CT_Shadow
 type Shadow struct {
-	XMLName  xml.Name   `xml:"shadow" namespace:"v"`
+	XMLName  xml.Name   `xml:"shadow"`
 	ID       string     `xml:"id,attr,omitempty"`
 	On       bool       `xml:"on,attr,omitempty"`
 	Type     ShadowType `xml:"type,attr,omitempty"`
@@ -25,5 +25,5 @@ type Shadow struct {
 }
 
 func (s *Shadow) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal2.Encode(s, e)
+	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

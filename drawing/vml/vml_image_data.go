@@ -2,11 +2,12 @@ package vml
 
 import (
 	"encoding/xml"
-	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
+	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/drawing/vml/relation"
 )
 
-//ImageAttributes is direct mapping of AG_ImageAttributes
-type ImageAttributes struct {
+//imageAttributes is direct mapping of AG_ImageAttributes
+type imageAttributes struct {
 	Src           string  `xml:"src,attr,omitempty"`
 	CropLeft      float64 `xml:"cropleft,attr,omitempty"`
 	CropTop       float64 `xml:"croptop,attr,omitempty"`
@@ -21,7 +22,7 @@ type ImageAttributes struct {
 
 //ImageData is direct mapping of CT_ImageData
 type ImageData struct {
-	XMLName          xml.Name `xml:"imagedata" namespace:"v"`
+	XMLName          xml.Name `xml:"imagedata"`
 	ID               string   `xml:"id,attr,omitempty"`
 	AltHRef          string   `xml:"althref,attr,omitempty" namespace:"o"`
 	HRef             string   `xml:"href,attr,omitempty" namespace:"o"`
@@ -32,10 +33,10 @@ type ImageData struct {
 	ChromaKey        string   `xml:"chromakey,attr,omitempty"`
 	EmbossColor      string   `xml:"embosscolor,attr,omitempty"`
 	ReColorTarget    string   `xml:"recolortarget,attr,omitempty"`
-	ImageAttributes
-	Relations
+	imageAttributes
+	relation.Relations
 }
 
 func (s *ImageData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal2.Encode(s, e)
+	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

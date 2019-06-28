@@ -1,4 +1,4 @@
-package vml
+package relation
 
 import "github.com/plandem/ooxml/ml"
 

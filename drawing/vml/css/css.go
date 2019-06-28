@@ -3,6 +3,7 @@ package css
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/plandem/ooxml"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -29,6 +30,9 @@ type NumberPc float64
 
 //NumberCm is helper type to encode 'px' numbers
 type NumberPx int
+
+//Fraction is helper type to encode fraction, that can be from 0.0 to 1.0 or in percentage, e.g. 50%
+type Fraction float32
 
 type position byte
 type visibility byte
@@ -68,8 +72,9 @@ var (
 	toPosition   map[string]position
 	fromPosition map[position]string
 
-	regExpCss    = regexp.MustCompile("(?P<key>[a-zA-z-]+):(?P<value>[0-9a-z.]+)+")
-	regExpNumber = regexp.MustCompile("^([0-9.]+)(cm|mm|in|pt|pc|px)?$")
+	regExpCss      = regexp.MustCompile("(?P<key>[a-zA-z-]+):(?P<value>[0-9a-z.]+)+")
+	regExpNumber   = regexp.MustCompile("^([0-9.]+)(cm|mm|in|pt|pc|px)?$")
+	regExpFraction = regexp.MustCompile("^([0-9.]+)(%)?$")
 )
 
 func init() {
@@ -159,7 +164,7 @@ func (s Style) Encode() string {
 	for i := 0; i < vt.NumField(); i++ {
 		tags := vt.Field(i).Tag
 		field := v.Field(i)
-		if cssName, ok := tags.Lookup("css"); ok && cssName != "" && field.IsValid() && !isEmptyValue(field) {
+		if cssName, ok := tags.Lookup("css"); ok && cssName != "" && field.IsValid() && !ooxml.IsEmptyValue(field) {
 			switch field.Kind() {
 			case reflect.Interface:
 				result = append(result, fmt.Sprintf("%s:%s", cssName, fromNumber(field.Interface())))
@@ -268,20 +273,20 @@ func toNumber(n string) Number {
 	return NumberPx(0)
 }
 
-func isEmptyValue(v reflect.Value) bool {
-	switch v.Kind() {
-	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
-		return v.Len() == 0
-	case reflect.Bool:
-		return !v.Bool()
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return v.Int() == 0
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		return v.Uint() == 0
-	case reflect.Float32, reflect.Float64:
-		return v.Float() == 0
-	case reflect.Interface, reflect.Ptr:
-		return v.IsNil()
+//UnmarshalXMLAttr unmarshal Fraction
+func (f *Fraction) UnmarshalXMLAttr(attr xml.Attr) error {
+	parsed := regExpNumber.FindStringSubmatch(attr.Value)
+	if parsed != nil {
+		if v, err := strconv.ParseFloat(parsed[1], 10); err != nil {
+			return err
+		} else {
+			if parsed[2] == "%" {
+				*f = Fraction(v / 100)
+			} else {
+				*f = Fraction(v)
+			}
+		}
 	}
-	return false
+
+	return nil
 }

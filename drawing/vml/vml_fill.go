@@ -2,7 +2,8 @@ package vml
 
 import (
 	"encoding/xml"
-	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
+	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/drawing/vml/relation"
 )
 
 //FillType is direct mapping of ST_FillType
@@ -13,7 +14,7 @@ type FillMethod string //enum
 
 //Fill is direct mapping of CT_Fill
 type Fill struct {
-	XMLName          xml.Name    `xml:"fill" namespace:"v"`
+	XMLName          xml.Name    `xml:"fill"`
 	AlignShape       *bool       `xml:"alignshape,attr,omitempty"`
 	AltHRef          string      `xml:"althref,attr,omitempty" namespace:"o"`
 	Angle            *int        `xml:"angle,attr,omitempty"`
@@ -41,15 +42,19 @@ type Fill struct {
 	Title            string      `xml:"title,attr,omitempty" namespace:"o"`
 	Type             FillType    `xml:"type,attr,omitempty"`
 	Extended         *FillExtended
-	Relations
+	relation.Relations
 }
 
 type FillExtended struct {
-	XMLName xml.Name `xml:"fill" namespace:"o"`
+	XMLName xml.Name `xml:"fill"`
 	Type    FillType `xml:"type,attr,omitempty"`
 	Ext     Ext      `xml:"ext,attr,omitempty" namespace:"v"`
 }
 
 func (s *Fill) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return internal2.Encode(s, e)
+	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
+}
+
+func (s *FillExtended) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix("o", start.Name)})
 }

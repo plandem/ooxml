@@ -2,13 +2,13 @@ package vml
 
 import (
 	"encoding/xml"
-	internal2 "github.com/plandem/ooxml/drawing/vml/internal"
+	"github.com/plandem/ooxml"
 )
 
 //Handles is direct mapping of CT_Handles
 type Handles struct {
-	XMLName xml.Name  `xml:"handles" namespace:"v"`
-	List    []*Handle `xml:"h" namespace:"v"`
+	XMLName xml.Name `xml:"handles"`
+	List    []Handle `xml:"h"`
 }
 
 //Handle is direct mapping of CT_H
@@ -26,8 +26,12 @@ type Handle struct {
 
 func (s *Handles) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if len(s.List) > 0 {
-		return internal2.Encode(s, e)
+		return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 	}
 
 	return nil
+}
+
+func (s *Handle) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }
