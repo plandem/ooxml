@@ -3,7 +3,6 @@ package vml
 import (
 	"encoding/xml"
 	"github.com/plandem/ooxml"
-	"github.com/plandem/ooxml/drawing/vml/relation"
 	"github.com/plandem/ooxml/ml"
 )
 
@@ -30,7 +29,6 @@ type StrokeLineStyle string //enum
 
 //StrokeAttributes is direct mapping of AG_StrokeAttributes
 type StrokeAttributes struct {
-	AltHRef          string            `xml:"althref,attr,omitempty" namespace:"o"`
 	Color            string            `xml:"color,attr,omitempty"`
 	Color2           string            `xml:"color2,attr,omitempty"`
 	DashStyle        StrokeDashStyle   `xml:"dashstyle,attr,omitempty"`
@@ -39,8 +37,6 @@ type StrokeAttributes struct {
 	EndArrowWidth    StrokeArrowWidth  `xml:"endarrowwidth,attr,omitempty"`
 	EndCap           StrokeEndCap      `xml:"endcap,attr,omitempty"`
 	FillType         FillType          `xml:"filltype,attr,omitempty"`
-	ForceDash        *bool             `xml:"forcedash,attr,omitempty" namespace:"o"`
-	HRef             string            `xml:"href,attr,omitempty" namespace:"o"`
 	ImageAlignShape  *bool             `xml:"imagealignshape,attr,omitempty"`
 	ImageAspect      ImageAspect       `xml:"imageaspect,attr,omitempty"`
 	ImageSize        string            `xml:"imagesize,attr,omitempty"`
@@ -50,30 +46,32 @@ type StrokeAttributes struct {
 	MiterLimit       *int              `xml:"miterlimit,attr,omitempty"`
 	On               *bool             `xml:"on,attr,omitempty"`
 	Opacity          string            `xml:"opacity,attr,omitempty"`
-	RelID            string            `xml:"relid,attr,omitempty" namespace:"o"`
 	Src              string            `xml:"src,attr,omitempty"`
 	StartArrow       StrokeArrowType   `xml:"startarrow,attr,omitempty"`
 	StartArrowLength StrokeArrowLength `xml:"startarrowlength,attr,omitempty"`
 	StartArrowWidth  StrokeArrowWidth  `xml:"startarrowwidth,attr,omitempty"`
-	Title            string            `xml:"title,attr,omitempty" namespace:"o"`
 	Weight           string            `xml:"weight,attr,omitempty"`
-	relation.Relations
+	ml.ReservedAttributes
 }
 
 //Stroke is direct mapping of CT_Stroke
 type Stroke struct {
 	XMLName xml.Name          `xml:"stroke"`
-	Left    *StrokeAttributes `xml:"left" namespace:"o"`
-	Top     *StrokeAttributes `xml:"top" namespace:"o"`
-	Right   *StrokeAttributes `xml:"right" namespace:"o"`
-	Bottom  *StrokeAttributes `xml:"bottom" namespace:"o"`
-	Column  *StrokeAttributes `xml:"column" namespace:"o"`
+	Left    *StrokeAttributes `xml:"left,omitempty"`
+	Top     *StrokeAttributes `xml:"top,omitempty"`
+	Right   *StrokeAttributes `xml:"right,omitempty"`
+	Bottom  *StrokeAttributes `xml:"bottom,omitempty"`
+	Column  *StrokeAttributes `xml:"column,omitempty"`
 	ID      string            `xml:"id,attr,omitempty"`
 	StrokeAttributes
-	ml.ReservedAttributes
 }
 
 func (s *Stroke) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	resolveAttributesName(s.Attrs)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
+}
+
+func (s *StrokeAttributes) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	resolveAttributesName(s.Attrs)
+	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceOfficePrefix, start.Name)})
 }

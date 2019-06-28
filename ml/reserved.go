@@ -9,7 +9,7 @@ type Reserved struct {
 	ReservedAttributes
 }
 
-//ReservedAttributes is a special type that catches all not captured attributes AS IS to save original information
+//ReservedAttributes is a special type that catches all not captured attributes AS IS to save original information - used to mark 'non implemented' attributes
 type ReservedAttributes struct {
 	Attrs []xml.Attr `xml:",any,attr"`
 }
