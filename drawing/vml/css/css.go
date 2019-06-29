@@ -31,7 +31,7 @@ type NumberPc float64
 //NumberCm is helper type to encode 'px' numbers
 type NumberPx int
 
-//Fraction is helper type to encode fraction, that can be from 0.0 to 1.0 or in percentage, e.g. 50%
+//Fraction is helper type to encode VgFraction type, that can be from 0.0 to 1.0 or in percentage, e.g. 50%
 type Fraction float32
 
 type position byte

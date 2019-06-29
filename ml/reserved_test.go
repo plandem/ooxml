@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestReserved1(t *testing.T) {
+func TestReserved(t *testing.T) {
 	type Entity struct {
 		XMLName xml.Name
 		Root    *ml.Reserved `xml:"ext"`

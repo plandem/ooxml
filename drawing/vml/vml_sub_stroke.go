@@ -18,9 +18,6 @@ type StrokeArrowWidth string //enum
 //StrokeArrowLength is direct mapping of ST_StrokeArrowLength
 type StrokeArrowLength string //enum
 
-//StrokeJoinStyle is direct mapping of ST_StrokeJoinStyle
-type StrokeJoinStyle string //enum
-
 //StrokeEndCap is direct mapping of ST_StrokeEndCap
 type StrokeEndCap string //enum
 

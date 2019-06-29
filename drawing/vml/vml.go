@@ -7,7 +7,6 @@ import (
 )
 
 type officeDrawing struct {
-	XMLName     xml.Name     `xml:"xml"`
 	ShapeLayout *ShapeLayout `xml:"shapelayout,omitempty"`
 	ShapeType   []*ShapeType `xml:"shapetype,omitempty"`
 	Shape       []*Shape     `xml:"shape,omitempty"`
@@ -33,7 +32,7 @@ const (
 
 	NamespaceVMLPrefix        = "v"
 	NamespaceOfficePrefix     = "o"
-	NamespaceExcelPrefix      = "e"
+	NamespaceExcelPrefix      = "x"
 	NamespaceWordPrefix       = "w"
 	NamespacePowerPointPrefix = "p"
 )
@@ -75,22 +74,22 @@ func resolveElementsName(nested ml.ReservedElements) {
 
 //attachNamespaces transform list of namespaces into list of related attributes
 func attachNamespaces(namespaces ...string) []xml.Attr {
-	attrs := make([]xml.Attr, len(namespaces))
+	attrs := make([]xml.Attr, 0, len(namespaces))
 
-	for i, namespace := range namespaces {
+	for _, namespace := range namespaces {
 		switch namespace {
 		case NamespaceVML:
-			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceVMLPrefix}, Value: NamespaceVML}
+			attrs = append(attrs, xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceVMLPrefix}, Value: NamespaceVML})
 		case NamespaceOffice:
-			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceOfficePrefix}, Value: NamespaceOffice}
+			attrs = append(attrs, xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceOfficePrefix}, Value: NamespaceOffice})
 		case NamespaceExcel:
-			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceExcelPrefix}, Value: NamespaceExcel}
+			attrs = append(attrs, xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceExcelPrefix}, Value: NamespaceExcel})
 		case NamespaceWord:
-			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceWordPrefix}, Value: NamespaceWord}
+			attrs = append(attrs, xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceWordPrefix}, Value: NamespaceWord})
 		case NamespacePowerPoint:
-			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespacePowerPointPrefix}, Value: NamespacePowerPoint}
+			attrs = append(attrs, xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespacePowerPointPrefix}, Value: NamespacePowerPoint})
 		case ml.NamespaceRelationships:
-			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + ml.NamespaceRelationshipsPrefix}, Value: ml.NamespaceRelationships}
+			attrs = append(attrs, xml.Attr{Name: xml.Name{Local: "xmlns:" + ml.NamespaceRelationshipsPrefix}, Value: ml.NamespaceRelationships})
 		}
 	}
 
@@ -99,7 +98,7 @@ func attachNamespaces(namespaces ...string) []xml.Attr {
 
 //MarshalXML marshals Excel Drawings
 func (o *Excel) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Name = o.XMLName
+	start.Name = xml.Name{Local: "xml"}
 	start.Attr = append(start.Attr, attachNamespaces(
 		NamespaceVML,
 		NamespaceOffice,
@@ -112,7 +111,7 @@ func (o *Excel) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 //MarshalXML marshals Word Drawings
 func (o *Word) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Name = o.XMLName
+	start.Name = xml.Name{Local: "xml"}
 	start.Attr = append(start.Attr, attachNamespaces(
 		NamespaceVML,
 		NamespaceOffice,
@@ -125,7 +124,7 @@ func (o *Word) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 //MarshalXML marshals PowerPoint Drawings
 func (o *PowerPoint) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Name = o.XMLName
+	start.Name = xml.Name{Local: "xml"}
 	start.Attr = append(start.Attr, attachNamespaces(
 		NamespaceVML,
 		NamespaceOffice,

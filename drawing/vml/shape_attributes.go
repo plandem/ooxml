@@ -14,9 +14,9 @@ import (
 // can't capture namespaced and common attribute same time (e.g.: id and r:id), so theoretically it's possible to have collision.
 type shapeAttributes struct {
 	InsetMode    InsetModeType `xml:"insetmode,attr,omitempty"`
-	Spt          string        `xml:"spt,attr,omitempty" namespace:"o"`
+	Spt          Spt           `xml:"spt,attr,omitempty"`
 	ID           string        `xml:"id,attr,omitempty"`
-	Style        string        `xml:"style,attr,omitempty"`
+	Style        *css.Style    `xml:"style,attr,omitempty"`
 	CoordSize    string        `xml:"coordsize,attr,omitempty"`
 	Filled       bool          `xml:"filled,attr,omitempty"`
 	FillColor    string        `xml:"fillcolor,attr,omitempty"`
