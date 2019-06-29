@@ -15,6 +15,6 @@ type ShapeLayout struct {
 }
 
 func (s *ShapeLayout) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveNestedName(s.ReservedElements)
+	resolveElementsName(s.ReservedElements)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceOfficePrefix, start.Name)})
 }

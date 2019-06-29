@@ -2,61 +2,27 @@ package vml
 
 import (
 	"encoding/xml"
+	"github.com/plandem/ooxml"
 	"github.com/plandem/ooxml/ml"
 )
 
-//Name type used to encode VML namespace
-type Name string
-
-//OfficeName type used to encode Office namespace
-type OfficeName string
-
-//ExcelName type used to encode Excel namespace
-type ExcelName string
-
-//WordName type used to encode Word namespace
-type WordName string
-
-//PowerPointName type used to encode PowerPoint namespace
-type PowerPointName string
-
-//Group is alias for CT_Group
-//type Group = Reserved
-
-//Basic support of Office VML
-type Office struct {
+type officeDrawing struct {
 	XMLName     xml.Name     `xml:"xml"`
-	Name        Name         `xml:",attr"`
-	RIDName     ml.RIDName   `xml:",attr"`
-	OfficeName  OfficeName   `xml:",attr"`
 	ShapeLayout *ShapeLayout `xml:"shapelayout,omitempty"`
 	ShapeType   []*ShapeType `xml:"shapetype,omitempty"`
 	Shape       []*Shape     `xml:"shape,omitempty"`
-	//Group       []*Group     `xml:"group,omitempty"`
 	predefinedShapes
 	ml.ReservedElements
 }
 
-//Basic support for Excel specific VML
-type Excel struct {
-	Office
-	ExcelName `xml:",attr"`
-}
+//Excel is type for Excel VML Drawings
+type Excel officeDrawing
 
-//Basic support for Word specific VML
-type Word struct {
-	Office
-	WordName `xml:",attr"`
-}
+//Word is type for Word VML Drawings
+type Word officeDrawing
 
-//Basic support for PowerPoint specific VML
-type PowerPoint struct {
-	Office
-	PowerPointName `xml:",attr"`
-}
-
-//Reserved is special type that catches all inner content AS IS to save original information - used to mark 'non implemented' elements. Supports namespace prefixes.
-//type Reserved ml.Reserved
+//PowerPoint is type for PowerPoint VML Drawings
+type PowerPoint officeDrawing
 
 const (
 	NamespaceVML        = "urn:schemas-microsoft-com:vml"
@@ -76,72 +42,96 @@ const (
 func resolveName(a xml.Name) xml.Name {
 	switch a.Space {
 	case NamespaceVML:
-		return xml.Name{Local: NamespaceVMLPrefix + ":" + a.Local}
+		return ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, a)
 	case NamespaceOffice:
-		return xml.Name{Local: NamespaceOfficePrefix + ":" + a.Local}
+		return ooxml.ApplyNamespacePrefix(NamespaceOfficePrefix, a)
 	case NamespaceExcel:
-		return xml.Name{Local: NamespaceExcelPrefix + ":" + a.Local}
+		return ooxml.ApplyNamespacePrefix(NamespaceExcelPrefix, a)
 	case NamespaceWord:
-		return xml.Name{Local: NamespaceWordPrefix + ":" + a.Local}
+		return ooxml.ApplyNamespacePrefix(NamespaceWordPrefix, a)
 	case NamespacePowerPoint:
-		return xml.Name{Local: NamespacePowerPointPrefix + ":" + a.Local}
+		return ooxml.ApplyNamespacePrefix(NamespacePowerPointPrefix, a)
 	case ml.NamespaceRelationships:
-		return xml.Name{Local: ml.NamespaceRelationshipsPrefix + ":" + a.Local}
+		return ooxml.ApplyNamespacePrefix(ml.NamespaceRelationshipsPrefix, a)
 	}
 
 	return a
 }
 
-//resolveAttributesName tries to resolve namespace and apply prefix for it for all attributes
+//resolveAttributesName tries to resolve namespace and apply prefix for it for all reserved attributes
 func resolveAttributesName(reserved ml.ReservedAttributes) {
 	for i, attr := range reserved.Attrs {
 		reserved.Attrs[i].Name = resolveName(attr.Name)
 	}
 }
 
-//resolveAttributesName tries to resolve namespace and apply prefix for it for all attributes
-func resolveNestedName(nested ml.ReservedElements) {
+//resolveElementsName tries to resolve namespace and apply prefix for it for all reserved elements
+func resolveElementsName(nested ml.ReservedElements) {
 	for i, node := range nested.Nodes {
 		nested.Nodes[i].XMLName = resolveName(node.XMLName)
 		resolveAttributesName(node.ReservedAttributes)
 	}
 }
 
-//MarshalXMLAttr marshals VML namespace
-func (r *Name) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceVMLPrefix}, Value: NamespaceVML}
-	return attr, nil
+//attachNamespaces transform list of namespaces into list of related attributes
+func attachNamespaces(namespaces ...string) []xml.Attr {
+	attrs := make([]xml.Attr, len(namespaces))
+
+	for i, namespace := range namespaces {
+		switch namespace {
+		case NamespaceVML:
+			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceVMLPrefix}, Value: NamespaceVML}
+		case NamespaceOffice:
+			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceOfficePrefix}, Value: NamespaceOffice}
+		case NamespaceExcel:
+			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceExcelPrefix}, Value: NamespaceExcel}
+		case NamespaceWord:
+			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceWordPrefix}, Value: NamespaceWord}
+		case NamespacePowerPoint:
+			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespacePowerPointPrefix}, Value: NamespacePowerPoint}
+		case ml.NamespaceRelationships:
+			attrs[i] = xml.Attr{Name: xml.Name{Local: "xmlns:" + ml.NamespaceRelationshipsPrefix}, Value: ml.NamespaceRelationships}
+		}
+	}
+
+	return attrs
 }
 
-//MarshalXMLAttr marshals OfficeName namespace
-func (r *OfficeName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceOfficePrefix}, Value: NamespaceOffice}
-	return attr, nil
+//MarshalXML marshals Excel Drawings
+func (o *Excel) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Name = o.XMLName
+	start.Attr = append(start.Attr, attachNamespaces(
+		NamespaceVML,
+		NamespaceOffice,
+		NamespaceExcel,
+		ml.NamespaceRelationships,
+	)...)
+	resolveElementsName(o.ReservedElements)
+	return e.EncodeElement(*o, start)
 }
 
-//MarshalXMLAttr marshals ExcelName namespace
-func (r *ExcelName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceExcelPrefix}, Value: NamespaceExcel}
-	return attr, nil
+//MarshalXML marshals Word Drawings
+func (o *Word) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Name = o.XMLName
+	start.Attr = append(start.Attr, attachNamespaces(
+		NamespaceVML,
+		NamespaceOffice,
+		NamespaceWord,
+		ml.NamespaceRelationships,
+	)...)
+	resolveElementsName(o.ReservedElements)
+	return e.EncodeElement(*o, start)
 }
 
-//MarshalXMLAttr marshals WordName namespace
-func (r *WordName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespaceWordPrefix}, Value: NamespaceWord}
-	return attr, nil
+//MarshalXML marshals PowerPoint Drawings
+func (o *PowerPoint) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Name = o.XMLName
+	start.Attr = append(start.Attr, attachNamespaces(
+		NamespaceVML,
+		NamespaceOffice,
+		NamespacePowerPoint,
+		ml.NamespaceRelationships,
+	)...)
+	resolveElementsName(o.ReservedElements)
+	return e.EncodeElement(*o, start)
 }
-
-//MarshalXMLAttr marshals PowerPoint namespace
-func (r *PowerPoint) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:" + NamespacePowerPointPrefix}, Value: NamespacePowerPoint}
-	return attr, nil
-}
-
-//MarshalXML marshal Reserved
-//func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-//	r.XMLName = resolveName(r.XMLName)
-//	resolveAttributesName(r.ReservedAttributes)
-//
-//	mr := ml.Reserved(*r)
-//	return e.Encode(&mr)
-//}

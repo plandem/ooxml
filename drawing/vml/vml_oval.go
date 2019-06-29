@@ -19,6 +19,6 @@ func Oval() *oval {
 
 func (s *oval) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	resolveAttributesName(s.ReservedAttributes)
-	resolveNestedName(s.ReservedElements)
+	resolveElementsName(s.ReservedElements)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }
