@@ -35,6 +35,6 @@ func (s *Handles) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 }
 
 func (s *Handle) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.Attrs)
+	resolveAttributesName(s.ReservedAttributes)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

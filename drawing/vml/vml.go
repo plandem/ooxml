@@ -21,7 +21,7 @@ type WordName string
 type PowerPointName string
 
 //Group is alias for CT_Group
-type Group = Reserved
+//type Group = Reserved
 
 //Basic support of Office VML
 type Office struct {
@@ -32,9 +32,9 @@ type Office struct {
 	ShapeLayout *ShapeLayout `xml:"shapelayout,omitempty"`
 	ShapeType   []*ShapeType `xml:"shapetype,omitempty"`
 	Shape       []*Shape     `xml:"shape,omitempty"`
-	Group       []*Group     `xml:"group,omitempty"`
-	Diagram     []*Diagram   `xml:"diagram,omitempty"`
+	//Group       []*Group     `xml:"group,omitempty"`
 	predefinedShapes
+	ml.ReservedElements
 }
 
 //Basic support for Excel specific VML
@@ -56,7 +56,7 @@ type PowerPoint struct {
 }
 
 //Reserved is special type that catches all inner content AS IS to save original information - used to mark 'non implemented' elements. Supports namespace prefixes.
-type Reserved ml.Reserved
+//type Reserved ml.Reserved
 
 const (
 	NamespaceVML        = "urn:schemas-microsoft-com:vml"
@@ -93,9 +93,17 @@ func resolveName(a xml.Name) xml.Name {
 }
 
 //resolveAttributesName tries to resolve namespace and apply prefix for it for all attributes
-func resolveAttributesName(attrs []xml.Attr) {
-	for i, attr := range attrs {
-		attrs[i].Name = resolveName(attr.Name)
+func resolveAttributesName(reserved ml.ReservedAttributes) {
+	for i, attr := range reserved.Attrs {
+		reserved.Attrs[i].Name = resolveName(attr.Name)
+	}
+}
+
+//resolveAttributesName tries to resolve namespace and apply prefix for it for all attributes
+func resolveNestedName(nested ml.ReservedElements) {
+	for i, node := range nested.Nodes {
+		nested.Nodes[i].XMLName = resolveName(node.XMLName)
+		resolveAttributesName(node.ReservedAttributes)
 	}
 }
 
@@ -130,10 +138,10 @@ func (r *PowerPoint) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 }
 
 //MarshalXML marshal Reserved
-func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	r.XMLName = resolveName(r.XMLName)
-	resolveAttributesName(r.Attrs)
-
-	mr := ml.Reserved(*r)
-	return e.Encode(&mr)
-}
+//func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+//	r.XMLName = resolveName(r.XMLName)
+//	resolveAttributesName(r.ReservedAttributes)
+//
+//	mr := ml.Reserved(*r)
+//	return e.Encode(&mr)
+//}

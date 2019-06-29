@@ -3,16 +3,12 @@ package vml
 import (
 	"encoding/xml"
 	"github.com/plandem/ooxml"
-	"github.com/plandem/ooxml/ml"
 )
 
 //polyLine is direct mapping of CT_PolyLine
 type polyLine struct {
 	XMLName xml.Name `xml:"polyline"`
 	Points  string   `xml:"points,attr,omitempty"`
-	Ink     *Ink     `xml:"ink"`
-	ml.ReservedAttributes
-	coreAttributes
 	shapeAttributes
 	shapeElements
 }
@@ -25,6 +21,7 @@ func PolyLine() *polyLine {
 }
 
 func (s *polyLine) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.Attrs)
+	resolveAttributesName(s.ReservedAttributes)
+	resolveNestedName(s.ReservedElements)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

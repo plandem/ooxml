@@ -13,3 +13,8 @@ type Reserved struct {
 type ReservedAttributes struct {
 	Attrs []xml.Attr `xml:",any,attr"`
 }
+
+//ReservedElements is a special type that catches all not captured nested elements AS IS to save original information - used to mark 'non implemented' elements
+type ReservedElements struct {
+	Nodes []Reserved `xml:",any"`
+}

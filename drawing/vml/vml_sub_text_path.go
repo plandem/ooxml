@@ -22,6 +22,6 @@ type TextPath struct {
 }
 
 func (s *TextPath) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.Attrs)
+	resolveAttributesName(s.ReservedAttributes)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

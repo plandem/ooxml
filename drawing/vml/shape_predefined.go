@@ -1,5 +1,6 @@
 package vml
 
+//List of VML predefined shapes
 type predefinedShapes struct {
 	Arc       []*arc       `xml:"arc,omitempty"`
 	Curve     []*curve     `xml:"curve,omitempty"`

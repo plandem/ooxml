@@ -10,9 +10,8 @@ import (
 type image struct {
 	XMLName xml.Name `xml:"image"`
 	ml.ReservedAttributes
-	coreAttributes
-	shapeAttributes
 	imageAttributes
+	shapeAttributes
 	shapeElements
 }
 
@@ -22,6 +21,7 @@ func Image() *image {
 }
 
 func (s *image) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.Attrs)
+	resolveAttributesName(s.ReservedAttributes)
+	resolveNestedName(s.ReservedElements)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

@@ -29,16 +29,16 @@ type StrokeLineStyle string //enum
 
 //StrokeAttributes is direct mapping of AG_StrokeAttributes
 type StrokeAttributes struct {
-	Color            string            `xml:"color,attr,omitempty"`
-	Color2           string            `xml:"color2,attr,omitempty"`
-	DashStyle        StrokeDashStyle   `xml:"dashstyle,attr,omitempty"`
-	EndArrow         StrokeArrowType   `xml:"endarrow,attr,omitempty"`
-	EndArrowLength   StrokeArrowLength `xml:"endarrowlength,attr,omitempty"`
-	EndArrowWidth    StrokeArrowWidth  `xml:"endarrowwidth,attr,omitempty"`
-	EndCap           StrokeEndCap      `xml:"endcap,attr,omitempty"`
-	FillType         FillType          `xml:"filltype,attr,omitempty"`
-	ImageAlignShape  *bool             `xml:"imagealignshape,attr,omitempty"`
-	ImageAspect      ImageAspect       `xml:"imageaspect,attr,omitempty"`
+	Color           string            `xml:"color,attr,omitempty"`
+	Color2          string            `xml:"color2,attr,omitempty"`
+	DashStyle       StrokeDashStyle   `xml:"dashstyle,attr,omitempty"`
+	EndArrow        StrokeArrowType   `xml:"endarrow,attr,omitempty"`
+	EndArrowLength  StrokeArrowLength `xml:"endarrowlength,attr,omitempty"`
+	EndArrowWidth   StrokeArrowWidth  `xml:"endarrowwidth,attr,omitempty"`
+	EndCap          StrokeEndCap      `xml:"endcap,attr,omitempty"`
+	FillType        FillType          `xml:"filltype,attr,omitempty"`
+	ImageAlignShape *bool             `xml:"imagealignshape,attr,omitempty"`
+	//ImageAspect      ImageAspect       `xml:"imageaspect,attr,omitempty"`
 	ImageSize        string            `xml:"imagesize,attr,omitempty"`
 	InsetPen         string            `xml:"insetpen,attr,omitempty"`
 	JoinStyle        StrokeJoinStyle   `xml:"joinstyle,attr,omitempty"`
@@ -67,11 +67,11 @@ type Stroke struct {
 }
 
 func (s *Stroke) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.Attrs)
+	resolveAttributesName(s.ReservedAttributes)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }
 
 func (s *StrokeAttributes) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.Attrs)
+	resolveAttributesName(s.ReservedAttributes)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceOfficePrefix, start.Name)})
 }

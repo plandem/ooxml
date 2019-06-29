@@ -3,7 +3,6 @@ package vml
 import (
 	"encoding/xml"
 	"github.com/plandem/ooxml"
-	"github.com/plandem/ooxml/ml"
 )
 
 //curve is direct mapping of CT_Curve
@@ -13,8 +12,6 @@ type curve struct {
 	To       string   `xml:"to,attr,omitempty"`
 	Control1 string   `xml:"control1,attr,omitempty"`
 	Control2 string   `xml:"control2,attr,omitempty"`
-	ml.ReservedAttributes
-	coreAttributes
 	shapeAttributes
 	shapeElements
 }
@@ -30,6 +27,7 @@ func Curve() *curve {
 }
 
 func (s *curve) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.Attrs)
+	resolveAttributesName(s.ReservedAttributes)
+	resolveNestedName(s.ReservedElements)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }

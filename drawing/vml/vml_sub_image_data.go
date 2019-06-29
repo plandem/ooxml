@@ -22,22 +22,13 @@ type imageAttributes struct {
 
 //ImageData is direct mapping of CT_ImageData
 type ImageData struct {
-	XMLName          xml.Name `xml:"imagedata"`
-	ID               string   `xml:"id,attr,omitempty"`
-	AltHRef          string   `xml:"althref,attr,omitempty" namespace:"o"`
-	HRef             string   `xml:"href,attr,omitempty" namespace:"o"`
-	Title            string   `xml:"title,attr,omitempty" namespace:"o"`
-	DetectMouseClick *bool    `xml:"detectmouseclick,attr,omitempty" namespace:"o"`
-	Movie            float64  `xml:"movie,attr,omitempty" namespace:"o"`
-	RelID            string   `xml:"relid,attr,omitempty" namespace:"o"`
-	ChromaKey        string   `xml:"chromakey,attr,omitempty"`
-	EmbossColor      string   `xml:"embosscolor,attr,omitempty"`
-	ReColorTarget    string   `xml:"recolortarget,attr,omitempty"`
+	XMLName xml.Name `xml:"imagedata"`
+	ID      string   `xml:"id,attr,omitempty"`
 	ml.ReservedAttributes
 	imageAttributes
 }
 
 func (s *ImageData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.Attrs)
+	resolveAttributesName(s.ReservedAttributes)
 	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
 }
