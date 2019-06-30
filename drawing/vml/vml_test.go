@@ -167,7 +167,7 @@ func TestVML(t *testing.T) {
 	//check decoded shape type
 	require.Equal(t, "_x0000_t202", excel.ShapeType[0].ID)
 	require.Equal(t, "21600,21600", excel.ShapeType[0].CoordSize)
-	require.Equal(t, Spt(202), excel.ShapeType[0].Spt)
+	require.Equal(t, 202, excel.ShapeType[0].Spt)
 	require.Equal(t, "m,l,21600r21600,l21600,xe", excel.ShapeType[0].Path)
 	require.Equal(t, StrokeJoinStyleMiter, excel.ShapeType[0].Stroke.JoinStyle)
 	require.Equal(t, ml.TriStateTrue, excel.ShapeType[0].PathSettings.GradientShapeOK)
