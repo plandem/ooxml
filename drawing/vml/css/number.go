@@ -1,111 +1,146 @@
 package css
 
 import (
+	"encoding/xml"
 	"fmt"
 	"regexp"
 	"strconv"
 )
 
-//Number is helper type which allow to encode integer as value in pixels and float as value in points. Eg. 10 => 10px, 10.5 => 10.5pt
-type Number interface{}
+//Number is helper type which allow to encode numbers with units. To simplify, integer as value in pixels and float as value in points. Eg. 10 => 10px, 10.5 => 10.5pt
+type Number struct {
+	val  interface{}
+	unit numberUnit
+}
 
-//NumberCm is helper type to encode 'cm' numbers
-type NumberCm float64
+type numberUnit byte
 
-//NumberCm is helper type to encode 'mm' numbers
-type NumberMm float64
-
-//NumberCm is helper type to encode 'in' numbers
-type NumberIn float64
-
-//NumberCm is helper type to encode 'pt' numbers
-type NumberPt float64
-
-//NumberCm is helper type to encode 'pc' numbers
-type NumberPc float64
-
-//NumberCm is helper type to encode 'px' numbers
-type NumberPx int
-
-var (
-	regExpNumber = regexp.MustCompile("^([0-9.]+)(cm|mm|in|pt|pc|px)?$")
+const (
+	unitUnknown    numberUnit = iota
+	UnitPx                    //used to encode 'px' numbers
+	UnitCm                    //used to encode 'cm' numbers
+	UnitMm                    //used to encode 'mm' numbers
+	UnitIn                    //used to encode 'in' numbers
+	UnitPt                    //used to encode 'pt' numbers
+	UnitPc                    //used to encode 'pc' numbers
+	UnitPercentage            //used to encode '%' numbers
 )
 
-func fromNumber(n Number) string {
-	switch v := n.(type) {
-	case NumberCm:
-		return fmt.Sprintf("%.2fcm", v)
-	case NumberMm:
-		return fmt.Sprintf("%.2fmm", v)
-	case NumberIn:
-		return fmt.Sprintf("%.2fin", v)
-	case NumberPt:
-		return fmt.Sprintf("%.2fpt", v)
-	case NumberPc:
-		return fmt.Sprintf("%.2fpc", v)
-	case NumberPx:
-		return fmt.Sprintf("%dpx", v)
-	case float32:
-		return fmt.Sprintf("%.2fpt", v)
-	case float64:
-		return fmt.Sprintf("%.2fpt", v)
-	case uint:
-		return fmt.Sprintf("%dpx", v)
-	case uint8:
-		return fmt.Sprintf("%dpx", v)
-	case uint16:
-		return fmt.Sprintf("%dpx", v)
-	case uint32:
-		return fmt.Sprintf("%dpx", v)
-	case uint64:
-		return fmt.Sprintf("%dpx", v)
-	case int:
-		return fmt.Sprintf("%dpx", v)
-	case int8:
-		return fmt.Sprintf("%dpx", v)
-	case int16:
-		return fmt.Sprintf("%dpx", v)
-	case int32:
-		return fmt.Sprintf("%dpx", v)
-	case int64:
-		return fmt.Sprintf("%dpx", v)
+var (
+	regExpNumber = regexp.MustCompile("^([0-9.]+)(cm|mm|in|pt|pc|px|%)?$")
+)
+
+//NewNumber returns a Number type for provided value
+func NewNumber(n interface{}, o ...numberUnit) Number {
+	if s, ok := n.(string); ok {
+		return fromString(s)
+	}
+
+	var u numberUnit
+	if len(o) > 0 {
+		u = o[0]
+	} else {
+		u = unitUnknown
+	}
+
+	//for numeric types we just need to resolve type of unit
+	switch n.(type) {
+	case float32, float64:
+		if u == unitUnknown || u == UnitPx {
+			u = UnitPt
+		}
+
+	case byte, uint, uint16, uint32, uint64, int, int8, int16, int32, int64:
+		if u != UnitPx && u != UnitPercentage {
+			u = UnitPx
+		}
+
+	default:
+		n = 0
+		u = UnitPx
+	}
+
+	return Number{n, u}
+}
+
+//String returns string presentation of Number
+func (t Number) String() string {
+	switch t.unit {
+	case UnitCm:
+		return fmt.Sprintf("%vcm", t.val)
+	case UnitMm:
+		return fmt.Sprintf("%vmm", t.val)
+	case UnitIn:
+		return fmt.Sprintf("%vin", t.val)
+	case UnitPt:
+		return fmt.Sprintf("%vpt", t.val)
+	case UnitPc:
+		return fmt.Sprintf("%vpc", t.val)
+	case UnitPx:
+		return fmt.Sprintf("%vpx", t.val)
+	case UnitPercentage:
+		return fmt.Sprintf("%v%%", t.val)
 	}
 
 	return ""
 }
 
-func toNumber(n string) Number {
+//MarshalXMLAttr marshal Number
+func (t Number) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	return xml.Attr{Name: name, Value: t.String()}, nil
+}
+
+//UnmarshalXMLAttr unmarshal Number
+func (t *Number) UnmarshalXMLAttr(attr xml.Attr) error {
+	*t = NewNumber(attr.Value)
+	return nil
+}
+
+//convert string into Number
+func fromString(n string) Number {
 	parsed := regExpNumber.FindStringSubmatch(n)
 	if parsed != nil {
 		switch parsed[2] {
 		case "cm":
 			if cm, err := strconv.ParseFloat(parsed[1], 10); err == nil {
-				return NumberCm(cm)
+				return Number{cm, UnitCm}
 			}
 		case "mm":
 			if mm, err := strconv.ParseFloat(parsed[1], 10); err == nil {
-				return NumberMm(mm)
+				return Number{mm, UnitMm}
 			}
 		case "in":
 			if in, err := strconv.ParseFloat(parsed[1], 10); err == nil {
-				return NumberIn(in)
+				return Number{in, UnitIn}
 			}
 		case "pt":
 			if pt, err := strconv.ParseFloat(parsed[1], 10); err == nil {
-				return NumberPt(pt)
+				return Number{pt, UnitPt}
 			}
 		case "pc":
 			if pc, err := strconv.ParseFloat(parsed[1], 10); err == nil {
-				return NumberPc(pc)
+				return Number{pc, UnitPc}
+			}
+		case "%":
+			if num, err := strconv.ParseInt(parsed[1], 10, 64); err == nil {
+				return Number{int(num), UnitPercentage}
+			} else {
+				if num, err := strconv.ParseFloat(parsed[1], 10); err == nil {
+					return Number{num, UnitPercentage}
+				}
 			}
 		case "px":
 			fallthrough
 		default:
 			if num, err := strconv.ParseInt(parsed[1], 10, 64); err == nil {
-				return NumberPx(num)
+				return Number{int(num), UnitPx}
+			} else {
+				if num, err := strconv.ParseFloat(parsed[1], 10); err == nil {
+					return Number{num, UnitPt}
+				}
 			}
 		}
 	}
 
-	return NumberPx(0)
+	return Number{0, UnitPx}
 }

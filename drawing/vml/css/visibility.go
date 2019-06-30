@@ -1,33 +1,60 @@
 package css
 
-type visibility byte
+import (
+	"encoding/xml"
+)
+
+type Visibility byte
 
 const (
-	VisibilityInherit visibility = iota
+	VisibilityInherit Visibility = iota
 	VisibilityHidden
 	VisibilityVisible
 	VisibilityCollapse
 )
 
 var (
-	toVisibility   map[string]visibility
-	fromVisibility map[visibility]string
+	toVisibility   map[string]Visibility
+	fromVisibility map[Visibility]string
 )
 
 func init() {
-	fromVisibility = map[visibility]string{
+	fromVisibility = map[Visibility]string{
 		VisibilityInherit:  "inherit",
 		VisibilityHidden:   "hidden",
 		VisibilityVisible:  "visible",
 		VisibilityCollapse: "collapse",
 	}
 
-	toVisibility = make(map[string]visibility, len(fromVisibility))
+	toVisibility = make(map[string]Visibility, len(fromVisibility))
 	for k, v := range fromVisibility {
 		toVisibility[v] = k
 	}
 }
 
-func (e visibility) String() string {
-	return fromVisibility[e]
+//String returns string presentation of Visibility
+func (t Visibility) String() string {
+	return fromVisibility[t]
+}
+
+//MarshalXMLAttr marshal Visibility
+func (t Visibility) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	attr := xml.Attr{Name: name}
+
+	if v, ok := fromVisibility[t]; ok {
+		attr.Value = v
+	} else {
+		attr = xml.Attr{}
+	}
+
+	return attr, nil
+}
+
+//UnmarshalXMLAttr unmarshal Visibility
+func (t *Visibility) UnmarshalXMLAttr(attr xml.Attr) error {
+	if v, ok := toVisibility[attr.Value]; ok {
+		*t = v
+	}
+
+	return nil
 }

@@ -177,11 +177,11 @@ func TestVML(t *testing.T) {
 	require.Equal(t, "_x0000_s1025", excel.Shape[0].ID)
 	require.Equal(t, &css.Style{
 		Position: css.PositionRelative,
-		Left:     css.NumberPt(234.75),
-		Top:      css.NumberPt(208.875),
-		Width:    css.NumberPt(235.25),
-		Height:   css.NumberPt(128.875),
-	}, excel.Shape[0].Style)
+		Left:     css.NewNumber(234.75),
+		Top:      css.NewNumber(208.875),
+		Width:    css.NewNumber(235.25),
+		Height:   css.NewNumber(128.875),
+	}, css.NewStyle(excel.Shape[0].Style))
 	require.Equal(t, "3765,2060", excel.Shape[0].CoordSize)
 	require.Equal(t, "m1285,251l1126,469,580,1009,,1285,25,1412,93,1547,194,1673,1017,2026,2312,2060,3209,1756,3765,1388,3278,680,3059,319,2976,,1285,251,1285,251xe", excel.Shape[0].Path)
 	require.Equal(t, "#bcbcd6", excel.Shape[0].FillColor)

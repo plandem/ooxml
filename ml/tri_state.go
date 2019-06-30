@@ -23,24 +23,18 @@ const (
 )
 
 //TriState is helper function that return TriState for boolean type
-func TriState(state bool) TriStateType {
-	if state {
-		return TriStateTrue
+func TriState(state interface{}) TriStateType {
+	if s, ok := state.(string); ok {
+		if v, err := stringToTriStateType(s, TriStateFalse); err == nil {
+			return v
+		}
+	} else {
+		if b, ok := state.(bool); ok && b {
+			return TriStateTrue
+		}
 	}
 
 	return TriStateFalse
-}
-
-//String returns string presentation of TriStateType
-func (t TriStateType) String() string {
-	switch t {
-	case TriStateTrue:
-		return strconv.FormatBool(true)
-	case TriStateFalse:
-		return strconv.FormatBool(false)
-	default:
-		return ""
-	}
 }
 
 func stringToTriStateType(s string, blank TriStateType) (TriStateType, error) {
@@ -53,6 +47,18 @@ func stringToTriStateType(s string, blank TriStateType) (TriStateType, error) {
 	}
 
 	return blank, nil
+}
+
+//String returns string presentation of TriStateType
+func (t TriStateType) String() string {
+	switch t {
+	case TriStateTrue:
+		return strconv.FormatBool(true)
+	case TriStateFalse:
+		return strconv.FormatBool(false)
+	default:
+		return ""
+	}
 }
 
 func (t *TriStateType) defaultUnmarshalXMLAttr(blank TriStateType, attr xml.Attr) error {

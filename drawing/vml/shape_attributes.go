@@ -17,7 +17,7 @@ type shapeAttributes struct {
 	Spt          int             `xml:"spt,attr,omitempty"`
 	Opacity      css.Fraction    `xml:"opacity,attr,omitempty"`
 	StrokeWeight css.Number      `xml:"strokeweight,attr,omitempty"`
-	Style        *css.Style      `xml:"style,attr,omitempty"`
+	Style        string          `xml:"style,attr,omitempty"`
 	ID           string          `xml:"id,attr,omitempty"`
 	CoordSize    string          `xml:"coordsize,attr,omitempty"`
 	FillColor    string          `xml:"fillcolor,attr,omitempty"`
