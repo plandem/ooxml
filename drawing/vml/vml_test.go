@@ -170,7 +170,7 @@ func TestVML(t *testing.T) {
 	require.Equal(t, Spt(202), excel.ShapeType[0].Spt)
 	require.Equal(t, "m,l,21600r21600,l21600,xe", excel.ShapeType[0].Path)
 	require.Equal(t, StrokeJoinStyleMiter, excel.ShapeType[0].Stroke.JoinStyle)
-	require.Equal(t, true, excel.ShapeType[0].PathSettings.GradientShapeOK)
+	require.Equal(t, ml.TriStateTrue, excel.ShapeType[0].PathSettings.GradientShapeOK)
 	require.Equal(t, ConnectTypeRect, excel.ShapeType[0].PathSettings.ConnectType)
 
 	//check decoded shape
@@ -185,8 +185,8 @@ func TestVML(t *testing.T) {
 	require.Equal(t, "3765,2060", excel.Shape[0].CoordSize)
 	require.Equal(t, "m1285,251l1126,469,580,1009,,1285,25,1412,93,1547,194,1673,1017,2026,2312,2060,3209,1756,3765,1388,3278,680,3059,319,2976,,1285,251,1285,251xe", excel.Shape[0].Path)
 	require.Equal(t, "#bcbcd6", excel.Shape[0].FillColor)
-	require.Equal(t, false, excel.Shape[0].Stroked)
-	require.Equal(t, true, excel.Shape[0].PathSettings.ArrowOK)
+	require.Equal(t, ml.TriStateFalse, excel.Shape[0].Stroked)
+	require.Equal(t, ml.TriStateTrue, excel.Shape[0].PathSettings.ArrowOK)
 
 	//check ClientData
 	//...
