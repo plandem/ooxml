@@ -147,8 +147,8 @@ func TestVML(t *testing.T) {
 			<x:SizeWithCells/>
 			<x:Anchor>1, 15, 0, 2, 3, 15, 3, 16</x:Anchor>
 			<x:AutoFill>False</x:AutoFill>
-			<x:Row>0</x:Row>
-			<x:Column>0</x:Column>
+			<x:Row>1</x:Row>
+			<x:Column>2</x:Column>
 		</x:ClientData>
 	</v:shape>
 </xml>
@@ -189,7 +189,16 @@ func TestVML(t *testing.T) {
 	require.Equal(t, ml.TriStateTrue, excel.Shape[0].PathSettings.ArrowOK)
 
 	//check ClientData
-	//...
+	require.Equal(t, &ClientData{
+		XMLName:       xml.Name{Space: "urn:schemas-microsoft-com:office:excel", Local: "ClientData"},
+		Type:          ObjectTypeNote,
+		MoveWithCells: ml.TriStateBlankTrue(ml.TriStateTrue),
+		SizeWithCells: ml.TriStateBlankTrue(ml.TriStateTrue),
+		AutoFill:      ml.TriStateBlankTrue(ml.TriStateFalse),
+		Anchor:        "1, 15, 0, 2, 3, 15, 3, 16",
+		Row:           1,
+		Column:        2,
+	}, excel.Shape[0].ClientData)
 
 	//check encode -> decode -> original
 	encoded, err := xml.MarshalIndent(excel, "", " ")
