@@ -17,6 +17,7 @@ type ShapeType struct {
 func (s *ShapeType) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	resolveAttributesName(s.ReservedAttributes)
 
+	//spt has namespace, so better to manually encode it, than create a special type for it
 	if s.Spt > 0 {
 		start.Attr = append(start.Attr, xml.Attr{
 			Name:  ooxml.ApplyNamespacePrefix(NamespaceOffice, xml.Name{Local: "spt"}),
