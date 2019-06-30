@@ -8,15 +8,14 @@ import (
 
 //Path is direct mapping of CT_Path
 type Path struct {
-	XMLName         xml.Name    `xml:"path"`
-	ID              string      `xml:"id,attr,omitempty"`
-	V               string      `xml:"v,attr,omitempty"`
-	ConnectType     ConnectType `xml:"connecttype,attr,omitempty"`
-	FillOK          *bool       `xml:"fillok,attr,omitempty"`
-	StrokeOK        *bool       `xml:"strokeok,attr,omitempty"`
-	ShadowOK        *bool       `xml:"shadowok,attr,omitempty"`
-	ArrowOK         bool        `xml:"arrowok,attr,omitempty"`
-	GradientShapeOK bool        `xml:"gradientshapeok,attr,omitempty"`
+	XMLName         xml.Name        `xml:"path"`
+	Value           string          `xml:"v,attr,omitempty"`
+	ConnectType     ConnectType     `xml:"connecttype,attr,omitempty"`
+	FillOK          ml.TriStateType `xml:"fillok,attr,omitempty"`
+	StrokeOK        ml.TriStateType `xml:"strokeok,attr,omitempty"`
+	ShadowOK        ml.TriStateType `xml:"shadowok,attr,omitempty"`
+	ArrowOK         ml.TriStateType `xml:"arrowok,attr,omitempty"`
+	GradientShapeOK ml.TriStateType `xml:"gradientshapeok,attr,omitempty"`
 	ml.ReservedAttributes
 }
 

@@ -11,9 +11,9 @@ type Formulas struct {
 	List    []Formula `xml:"f"`
 }
 
+//Formula is direct mapping of CT_F
 type Formula string
 
-//formula is direct mapping of CT_F
 type formula struct {
 	Eqn string `xml:"eqn,attr"`
 }

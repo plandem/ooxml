@@ -8,22 +8,21 @@ import (
 
 //imageAttributes is direct mapping of AG_ImageAttributes
 type imageAttributes struct {
-	Src           string  `xml:"src,attr,omitempty"`
-	CropLeft      float64 `xml:"cropleft,attr,omitempty"`
-	CropTop       float64 `xml:"croptop,attr,omitempty"`
-	CropRight     float64 `xml:"cropright,attr,omitempty"`
-	CropBottom    float64 `xml:"cropbottom,attr,omitempty"`
-	Gain          float64 `xml:"gain,attr,omitempty"`
-	BlackLevel    float64 `xml:"blacklevel,attr,omitempty"`
-	Gamma         float64 `xml:"gamma,attr,omitempty"`
-	GrayScale     bool    `xml:"grayscale,attr,omitempty"`
-	BlackAndWhite bool    `xml:"bilevel,attr,omitempty"`
+	Src           string          `xml:"src,attr,omitempty"`
+	CropLeft      float64         `xml:"cropleft,attr,omitempty"`
+	CropTop       float64         `xml:"croptop,attr,omitempty"`
+	CropRight     float64         `xml:"cropright,attr,omitempty"`
+	CropBottom    float64         `xml:"cropbottom,attr,omitempty"`
+	Gain          float64         `xml:"gain,attr,omitempty"`
+	BlackLevel    float64         `xml:"blacklevel,attr,omitempty"`
+	Gamma         float64         `xml:"gamma,attr,omitempty"`
+	GrayScale     ml.TriStateType `xml:"grayscale,attr,omitempty"`
+	BlackAndWhite ml.TriStateType `xml:"bilevel,attr,omitempty"`
 }
 
 //ImageData is direct mapping of CT_ImageData
 type ImageData struct {
 	XMLName xml.Name `xml:"imagedata"`
-	ID      string   `xml:"id,attr,omitempty"`
 	ml.ReservedAttributes
 	imageAttributes
 }

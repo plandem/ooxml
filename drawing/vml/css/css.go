@@ -76,7 +76,7 @@ var (
 
 	regExpCss      = regexp.MustCompile("(?P<key>[a-zA-z-]+):(?P<value>[0-9a-z.]+)+")
 	regExpNumber   = regexp.MustCompile("^([0-9.]+)(cm|mm|in|pt|pc|px)?$")
-	regExpFraction = regexp.MustCompile("^([0-9.]+)(%)?$")
+	regExpFraction = regexp.MustCompile("^([0-9.-]+)(%)?$")
 )
 
 func init() {

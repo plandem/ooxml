@@ -9,15 +9,14 @@ import (
 
 //TextPath is direct mapping of CT_TextPath
 type TextPath struct {
-	XMLName  xml.Name   `xml:"textpath"`
-	ID       string     `xml:"id,attr,omitempty"`
-	Style    *css.Style `xml:"style,attr,omitempty"`
-	Text     string     `xml:"string,attr,omitempty"`
-	On       bool       `xml:"on,attr,omitempty"`
-	FitShape bool       `xml:"fitshape,attr,omitempty"`
-	FitPath  bool       `xml:"fitpath,attr,omitempty"`
-	Trim     *bool      `xml:"trim,attr,omitempty"`
-	XScale   *bool      `xml:"xscale,attr,omitempty"`
+	XMLName  xml.Name        `xml:"textpath"`
+	Style    *css.Style      `xml:"style,attr,omitempty"`
+	Text     string          `xml:"string,attr,omitempty"`
+	On       ml.TriStateType `xml:"on,attr,omitempty"`
+	FitShape ml.TriStateType `xml:"fitshape,attr,omitempty"`
+	FitPath  ml.TriStateType `xml:"fitpath,attr,omitempty"`
+	Trim     ml.TriStateType `xml:"trim,attr,omitempty"`
+	XScale   ml.TriStateType `xml:"xscale,attr,omitempty"`
 	ml.ReservedAttributes
 }
 

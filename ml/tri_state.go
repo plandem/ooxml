@@ -9,10 +9,10 @@ import (
 //TriStateType is helper type to encode optional booleans 'true', 'false', 'default' to make it possible to omit 'default' or encode 'false' value if required
 type TriStateType byte
 
-//TriStateBlankTrue is subtype of TriStateType, but during decoding process convert blank value to true value
+//TriStateBlankTrue is subtype of TriStateType - during decoding process convert blank value to true value
 type TriStateBlankTrue TriStateType
 
-//TriStateBlankFalse is subtype of TriStateType, but during decoding process convert blank value to false value
+//TriStateBlankFalse is subtype of TriStateType - during decoding process convert blank value to false value
 type TriStateBlankFalse TriStateType
 
 //List of all possible values for TriStateType

@@ -10,7 +10,6 @@ import (
 //TextBox is direct mapping of CT_TextBox
 type TextBox struct {
 	XMLName   xml.Name      `xml:"textbox"`
-	ID        string        `xml:"id,attr,omitempty"`
 	Style     *css.Style    `xml:"style,attr,omitempty"`
 	Inset     string        `xml:"inset,attr,omitempty"`
 	InsetMode InsetModeType `xml:"insetmode,attr,omitempty"`
