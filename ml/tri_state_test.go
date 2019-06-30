@@ -72,7 +72,6 @@ func TestTriStateElementPersist(t *testing.T) {
 	require.Equal(t, entity, decoded)
 }
 
-
 func TestTriStateElement(t *testing.T) {
 	type Element struct {
 		State ml.TriStateType `xml:"state,omitempty"`
