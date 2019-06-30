@@ -52,6 +52,8 @@ type Style struct {
 	Height       Number     `css:"height"`
 	ZIndex       int        `css:"z-index"`
 	Visible      visibility `css:"visibility"`
+
+	//TODO: add MSO-attributes
 }
 
 const (
