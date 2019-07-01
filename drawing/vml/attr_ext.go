@@ -2,7 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 )
 
 //ExtType is a type to encode ST_Ext
@@ -41,7 +41,7 @@ func (t ExtType) String() string {
 
 //MarshalXMLAttr marshal ExtType
 func (t ExtType) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, name)}
+	attr := xml.Attr{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, name)}
 
 	if v, ok := fromExtType[t]; ok {
 		attr.Value = v

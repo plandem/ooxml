@@ -162,10 +162,3 @@ func IsEmptyValue(v reflect.Value) bool {
 	}
 	return false
 }
-
-//ApplyNamespacePrefix adds namespace prefix to Local name and drops Space name
-func ApplyNamespacePrefix(prefix string, name xml.Name) xml.Name {
-	return xml.Name{
-		Local: prefix + ":" + name.Local,
-	}
-}

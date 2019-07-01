@@ -156,3 +156,57 @@ func TestReservedElements(t *testing.T) {
 
 	require.Equal(t, data, string(encoded))
 }
+
+func TestReservedAttributes_ResolveNamespacePrefixes(t *testing.T) {
+	resolved := ml.ReservedAttributes{
+		Attrs: []xml.Attr{
+			{xml.Name{Space: "unknown", Local: "attr"}, "val"},
+			{xml.Name{Space: ml.NamespaceVML, Local: "attr"}, "val"},
+			{xml.Name{Space: ml.NamespaceVMLOffice, Local: "attr"}, "val"},
+			{xml.Name{Space: ml.NamespaceVMLPowerPoint, Local: "attr"}, "val"},
+			{xml.Name{Space: ml.NamespaceVMLWord, Local: "attr"}, "val"},
+			{xml.Name{Space: ml.NamespaceVMLExcel, Local: "attr"}, "val"},
+			{xml.Name{Space: ml.NamespaceRelationships, Local: "attr"}, "val"},
+		},
+	}
+
+	resolved.ResolveNamespacePrefixes()
+	require.Equal(t, ml.ReservedAttributes{
+		Attrs: []xml.Attr{
+			{xml.Name{Space: "unknown", Local: "attr"}, "val"},
+			{xml.Name{Local: "v:attr"}, "val"},
+			{xml.Name{Local: "o:attr"}, "val"},
+			{xml.Name{Local: "p:attr"}, "val"},
+			{xml.Name{Local: "w:attr"}, "val"},
+			{xml.Name{Local: "x:attr"}, "val"},
+			{xml.Name{Local: "r:attr"}, "val"},
+		},
+	}, resolved)
+}
+
+func TestReservedElements_ResolveNamespacePrefixes(t *testing.T) {
+	resolved := ml.ReservedElements{
+		Nodes: []ml.Reserved{
+			{xml.Name{Space: "unknown", Local: "node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Space: "unknown", Local: "attr"}, "val"}}}},
+			{xml.Name{Space: ml.NamespaceVML, Local: "node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Space: ml.NamespaceVML, Local: "attr"}, "val"}}}},
+			{xml.Name{Space: ml.NamespaceVMLOffice, Local: "node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Space: ml.NamespaceVMLOffice, Local: "attr"}, "val"}}}},
+			{xml.Name{Space: ml.NamespaceVMLPowerPoint, Local: "node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Space: ml.NamespaceVMLPowerPoint, Local: "attr"}, "val"}}}},
+			{xml.Name{Space: ml.NamespaceVMLWord, Local: "node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Space: ml.NamespaceVMLWord, Local: "attr"}, "val"}}}},
+			{xml.Name{Space: ml.NamespaceVMLExcel, Local: "node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Space: ml.NamespaceVMLExcel, Local: "attr"}, "val"}}}},
+			{xml.Name{Space: ml.NamespaceRelationships, Local: "node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Space: ml.NamespaceRelationships, Local: "attr"}, "val"}}}},
+		},
+	}
+
+	resolved.ResolveNamespacePrefixes()
+	require.Equal(t, ml.ReservedElements{
+		Nodes: []ml.Reserved{
+			{xml.Name{Space: "unknown", Local: "node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Space: "unknown", Local: "attr"}, "val"}}}},
+			{xml.Name{Local: "v:node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Local: "v:attr"}, "val"}}}},
+			{xml.Name{Local: "o:node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Local: "o:attr"}, "val"}}}},
+			{xml.Name{Local: "p:node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Local: "p:attr"}, "val"}}}},
+			{xml.Name{Local: "w:node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Local: "w:attr"}, "val"}}}},
+			{xml.Name{Local: "x:node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Local: "x:attr"}, "val"}}}},
+			{xml.Name{Local: "r:node"}, "content", ml.ReservedAttributes{Attrs: []xml.Attr{{xml.Name{Local: "r:attr"}, "val"}}}},
+		},
+	}, resolved)
+}

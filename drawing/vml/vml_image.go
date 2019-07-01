@@ -2,7 +2,6 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
 	"github.com/plandem/ooxml/ml"
 )
 
@@ -21,7 +20,7 @@ func Image() *image {
 }
 
 func (s *image) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.ReservedAttributes)
-	resolveElementsName(s.ReservedElements)
-	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
+	s.ReservedAttributes.ResolveNamespacePrefixes()
+	s.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)})
 }

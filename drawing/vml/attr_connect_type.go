@@ -2,7 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 )
 
 //ConnectType is direct mapping of ST_ConnectType
@@ -15,7 +15,8 @@ var (
 
 //List of all possible values for ConnectType
 const (
-	ConnectTypeNone ConnectType = iota
+	_ ConnectType = iota
+	ConnectTypeNone
 	ConnectTypeRect
 	ConnectTypeSegments
 	ConnectTypeCustom
@@ -42,9 +43,9 @@ func (t ConnectType) String() string {
 
 //MarshalXMLAttr marshal ConnectType
 func (t ConnectType) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: ooxml.ApplyNamespacePrefix(NamespaceOfficePrefix, name)}
+	attr := xml.Attr{Name: ml.ApplyNamespacePrefix(ml.NamespaceVMLOffice, name)}
 
-	if v, ok := fromConnectType[t]; ok && t != ConnectTypeNone {
+	if v, ok := fromConnectType[t]; ok {
 		attr.Value = v
 	} else {
 		attr = xml.Attr{}

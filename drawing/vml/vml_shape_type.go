@@ -2,7 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 	"strconv"
 )
 
@@ -15,16 +15,16 @@ type ShapeType struct {
 }
 
 func (s *ShapeType) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.ReservedAttributes)
+	s.ReservedAttributes.ResolveNamespacePrefixes()
 
 	//spt has namespace, so better to manually encode it, than create a special type for it
 	if s.Spt > 0 {
 		start.Attr = append(start.Attr, xml.Attr{
-			Name:  ooxml.ApplyNamespacePrefix(NamespaceOffice, xml.Name{Local: "spt"}),
+			Name:  ml.ApplyNamespacePrefix(ml.NamespaceVMLOffice, xml.Name{Local: "spt"}),
 			Value: strconv.Itoa(int(s.Spt)),
 		})
 	}
 
-	resolveElementsName(s.ReservedElements)
-	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
+	s.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)})
 }

@@ -2,7 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 )
 
 //oval is direct mapping of CT_Oval
@@ -18,7 +18,7 @@ func Oval() *oval {
 }
 
 func (s *oval) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.ReservedAttributes)
-	resolveElementsName(s.ReservedElements)
-	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
+	s.ReservedAttributes.ResolveNamespacePrefixes()
+	s.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)})
 }

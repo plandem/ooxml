@@ -2,7 +2,6 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
 	"github.com/plandem/ooxml/ml"
 )
 
@@ -28,13 +27,13 @@ type Handle struct {
 
 func (s *Handles) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if len(s.List) > 0 {
-		return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
+		return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)})
 	}
 
 	return nil
 }
 
 func (s *Handle) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.ReservedAttributes)
-	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
+	s.ReservedAttributes.ResolveNamespacePrefixes()
+	return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)})
 }

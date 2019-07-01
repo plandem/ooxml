@@ -14,7 +14,8 @@ var (
 
 //List of all possible values for StrokeJoinStyle
 const (
-	StrokeJoinStyleRound StrokeJoinStyle = iota
+	_ StrokeJoinStyle = iota
+	StrokeJoinStyleRound
 	StrokeJoinStyleBevel
 	StrokeJoinStyleMiter
 )

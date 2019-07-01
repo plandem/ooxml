@@ -2,7 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 )
 
 //Formulas is direct mapping of CT_Formulas
@@ -20,7 +20,7 @@ type formula struct {
 
 func (s *Formulas) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if len(s.List) > 0 {
-		return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
+		return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)})
 	}
 
 	return nil
@@ -28,7 +28,7 @@ func (s *Formulas) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 func (s Formula) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return e.EncodeElement(formula{Eqn: string(s)}, xml.StartElement{
-		Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name),
+		Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name),
 	})
 }
 

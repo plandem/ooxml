@@ -14,6 +14,7 @@ func TestConnectType(t *testing.T) {
 	}
 
 	list := map[vml.ConnectType]string{
+		vml.ConnectType(0):      "",
 		vml.ConnectTypeNone:     vml.ConnectTypeNone.String(),
 		vml.ConnectTypeRect:     vml.ConnectTypeRect.String(),
 		vml.ConnectTypeSegments: vml.ConnectTypeSegments.String(),

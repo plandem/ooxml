@@ -66,7 +66,7 @@ mso-text-scale:1.5
 	require.Equal(t, &css.Style{
 		Width:  css.NewNumber(96),
 		Height: css.NewNumber(55),
-		Trim: ml.TriStateTrue,
+		Trim:   ml.TriStateTrue,
 		XScale: ml.TriStateFalse,
 	}, css.NewStyle(`width:96px;height:55px;trim:   true; xscale:false   `))
 

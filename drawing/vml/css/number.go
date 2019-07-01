@@ -87,6 +87,10 @@ func (t Number) String() string {
 
 //MarshalXMLAttr marshal Number
 func (t Number) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	if t.unit == unitUnknown {
+		return xml.Attr{}, nil
+	}
+
 	return xml.Attr{Name: name, Value: t.String()}, nil
 }
 

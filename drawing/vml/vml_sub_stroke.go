@@ -2,7 +2,6 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
 	"github.com/plandem/ooxml/drawing/vml/css"
 	"github.com/plandem/ooxml/ml"
 )
@@ -45,11 +44,11 @@ type Stroke struct {
 }
 
 func (s *Stroke) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.ReservedAttributes)
-	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceVMLPrefix, start.Name)})
+	s.ReservedAttributes.ResolveNamespacePrefixes()
+	return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)})
 }
 
 func (s *StrokeAttributes) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	resolveAttributesName(s.ReservedAttributes)
-	return e.EncodeElement(*s, xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceOfficePrefix, start.Name)})
+	s.ReservedAttributes.ResolveNamespacePrefixes()
+	return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVMLOffice, start.Name)})
 }

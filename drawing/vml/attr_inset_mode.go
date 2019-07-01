@@ -2,7 +2,7 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
+	"github.com/plandem/ooxml/ml"
 )
 
 //InsetModeType is a type to encode ST_InsetMode
@@ -39,7 +39,7 @@ func (t InsetModeType) String() string {
 
 //MarshalXMLAttr marshal InsetModeType
 func (t InsetModeType) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: ooxml.ApplyNamespacePrefix(NamespaceOfficePrefix, name)}
+	attr := xml.Attr{Name: ml.ApplyNamespacePrefix(ml.NamespaceVMLOffice, name)}
 
 	if v, ok := fromInsetMode[t]; ok {
 		attr.Value = v

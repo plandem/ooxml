@@ -2,7 +2,6 @@ package vml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml"
 	"github.com/plandem/ooxml/ml"
 )
 
@@ -45,8 +44,8 @@ type clientDataEncode struct {
 }
 
 func (s *ClientData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start = xml.StartElement{Name: ooxml.ApplyNamespacePrefix(NamespaceExcelPrefix, start.Name)}
-	resolveElementsName(s.ReservedElements)
+	start = xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVMLExcel, start.Name)}
+	s.ReservedElements.ResolveNamespacePrefixes()
 	namespacedClientData := clientDataEncode(*s)
 	return e.EncodeElement(namespacedClientData, start)
 }

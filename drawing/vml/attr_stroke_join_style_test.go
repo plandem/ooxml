@@ -14,6 +14,7 @@ func TestStrokeJoinStyle(t *testing.T) {
 	}
 
 	list := map[vml.StrokeJoinStyle]string{
+		vml.StrokeJoinStyle(0):   "",
 		vml.StrokeJoinStyleRound: vml.StrokeJoinStyleRound.String(),
 		vml.StrokeJoinStyleBevel: vml.StrokeJoinStyleBevel.String(),
 		vml.StrokeJoinStyleMiter: vml.StrokeJoinStyleMiter.String(),
