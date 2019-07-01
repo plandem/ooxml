@@ -8,8 +8,8 @@ import (
 //arc is alias of CT_Arc
 type arc struct {
 	XMLName    xml.Name `xml:"arc"`
-	StartAngle int      `xml:"startAngle,attr,omitempty"`
-	EndAngle   int      `xml:"endAngle,attr,omitempty"`
+	StartAngle int      `xml:"startangle,attr,omitempty"`
+	EndAngle   int      `xml:"endangle,attr,omitempty"`
 	shapeAttributes
 	shapeElements
 }

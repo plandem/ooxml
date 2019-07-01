@@ -21,8 +21,8 @@ func TestNumber(t *testing.T) {
 	//floats can't be px
 	require.Equal(t, css.NewNumber(1.0, css.UnitPt), css.NewNumber(1.0, css.UnitPx))
 
-	//ints can be only px and percentage
-	require.Equal(t, css.NewNumber(1, css.UnitPx), css.NewNumber(1, css.UnitPt))
+	//ints can be anything
+	require.Equal(t, css.NewNumber(1, css.UnitPt), css.NewNumber(1, css.UnitPt))
 
 	//typed
 	require.Equal(t, css.NewNumber(1.0, css.UnitCm), css.NewNumber("1.0cm"))

@@ -7,7 +7,7 @@ type predefinedShapes struct {
 	Image     []*image     `xml:"image,omitempty"`
 	Line      []*line      `xml:"line,omitempty"`
 	Oval      []*oval      `xml:"oval,omitempty"`
-	PolyLine  []*polyLine  `xml:"polyLine,omitempty"`
+	PolyLine  []*polyLine  `xml:"polyline,omitempty"`
 	Rect      []*rect      `xml:"rect,omitempty"`
 	RoundRect []*roundRect `xml:"roundrect,omitempty"`
 }

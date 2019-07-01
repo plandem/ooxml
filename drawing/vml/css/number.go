@@ -51,7 +51,7 @@ func NewNumber(n interface{}, o ...numberUnit) Number {
 		}
 
 	case byte, uint, uint16, uint32, uint64, int, int8, int16, int32, int64:
-		if u != UnitPx && u != UnitPercentage {
+		if u == unitUnknown {
 			u = UnitPx
 		}
 

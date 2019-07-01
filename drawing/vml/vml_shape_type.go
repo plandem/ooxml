@@ -15,9 +15,9 @@ type ShapeType struct {
 }
 
 func (s *ShapeType) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	s.ReservedAttributes.ResolveNamespacePrefixes()
-
-	//spt has namespace, so better to manually encode it, than create a special type for it
+	//FIXME: Go1.12 doesnt support namespace prefixes, but 'spt' has namespace,
+	//so better to manually encode it, than create a special type for it
+	spt := s.Spt
 	if s.Spt > 0 {
 		start.Attr = append(start.Attr, xml.Attr{
 			Name:  ml.ApplyNamespacePrefix(ml.NamespaceVMLOffice, xml.Name{Local: "spt"}),
@@ -25,6 +25,13 @@ func (s *ShapeType) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		})
 	}
 
+	start.Name = ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)
+	s.ReservedAttributes.ResolveNamespacePrefixes()
 	s.ReservedElements.ResolveNamespacePrefixes()
-	return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)})
+
+	//keep original spt, but make encoder to omit empty original spt, cause we already manually encoded spt
+	s.Spt = 0
+	err := e.EncodeElement(*s, start)
+	s.Spt = spt
+	return err
 }
