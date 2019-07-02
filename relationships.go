@@ -54,7 +54,18 @@ func (rels *Relationships) GetTargetById(id string) string {
 	return ""
 }
 
-// GetIdByTarget returns id of relation for provided target
+// GetTargetByType returns target of first relation for provided type
+func (rels *Relationships) GetTargetByType(t ml.RelationType) string {
+	for _, r := range rels.ml.Relationships {
+		if r.Type == t {
+			return r.Target
+		}
+	}
+
+	return ""
+}
+
+// GetIdByTarget returns id of first relation for provided target
 func (rels *Relationships) GetIdByTarget(target string) ml.RID {
 	for _, r := range rels.ml.Relationships {
 		rTarget := r.Target
