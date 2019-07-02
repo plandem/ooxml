@@ -18,8 +18,8 @@ type ClientData struct {
 	ColumnHidden  ml.TriStateBlankTrue `xml:"ColHidden"`
 	MultiLine     ml.TriStateBlankTrue `xml:"MultiLine"`
 	Visible       ml.TriStateBlankTrue `xml:"Visible"`
-	Row           uint                 `xml:"Row"`
-	Column        uint                 `xml:"Column"`
+	Row           int                  `xml:"Row"`
+	Column        int                  `xml:"Column"`
 	Anchor        string               `xml:"Anchor"`
 	ml.ReservedElements
 }
@@ -37,8 +37,8 @@ type clientDataEncode struct {
 	ColumnHidden  ml.TriStateBlankTrue `xml:"x:ColHidden,omitempty"`
 	MultiLine     ml.TriStateBlankTrue `xml:"x:MultiLine,omitempty"`
 	Visible       ml.TriStateBlankTrue `xml:"x:Visible,omitempty"`
-	Row           uint                 `xml:"x:Row,omitempty"`
-	Column        uint                 `xml:"x:Column,omitempty"`
+	Row           int                  `xml:"x:Row,omitempty"`
+	Column        int                  `xml:"x:Column,omitempty"`
 	Anchor        string               `xml:"x:Anchor,omitempty"`
 	ml.ReservedElements
 }
