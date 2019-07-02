@@ -26,7 +26,7 @@ func NewRelationships(f interface{}, pkg *PackageInfo) *Relationships {
 	rels.file.LoadIfRequired(nil)
 
 	if rels.file.IsNew() {
-		pkg.ContentTypes().RegisterContent(rels.file.FileName(), "application/vnd.openxmlformats-package.relationships+xml")
+		pkg.ContentTypes().RegisterContent(rels.file.FileName(), ContentTypeRelationships)
 		rels.file.MarkAsUpdated()
 	}
 

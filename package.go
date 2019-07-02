@@ -273,8 +273,8 @@ func (pkg *PackageInfo) initPackage() {
 	pkg.relationships = NewRelationships("_rels/.rels", pkg)
 
 	//add some default types
-	pkg.contentTypes.RegisterType("rels", "application/vnd.openxmlformats-package.relationships+xml")
-	pkg.contentTypes.RegisterType("vml", "application/vnd.openxmlformats-officedocument.vmlDrawing")
+	pkg.contentTypes.RegisterType("rels", ContentTypeRelationships)
+	pkg.contentTypes.RegisterType("vml", ContentTypeVmlDrawing)
 	pkg.contentTypes.RegisterType("png", "image/png")
 	pkg.contentTypes.RegisterType("jpeg", "image/jpeg")
 	pkg.contentTypes.RegisterType("jpg", "image/jpeg")
