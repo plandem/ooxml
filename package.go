@@ -213,15 +213,7 @@ func (pkg *PackageInfo) Files(pattern *regexp.Regexp) map[string]interface{} {
 
 	files := make(map[string]interface{})
 
-	for _, file := range pkg.files {
-		var fileName string
-
-		if f, ok := file.(*zip.File); ok {
-			fileName = f.Name
-		} else if f, ok := file.(string); ok {
-			fileName = f
-		}
-
+	for fileName, file := range pkg.files {
 		if pattern.MatchString(fileName) {
 			files[fileName] = file
 		}
