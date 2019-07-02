@@ -37,8 +37,8 @@ type clientDataEncode struct {
 	ColumnHidden  ml.TriStateBlankTrue `xml:"x:ColHidden,omitempty"`
 	MultiLine     ml.TriStateBlankTrue `xml:"x:MultiLine,omitempty"`
 	Visible       ml.TriStateBlankTrue `xml:"x:Visible,omitempty"`
-	Row           int                  `xml:"x:Row,omitempty"`
-	Column        int                  `xml:"x:Column,omitempty"`
+	Row           int                  `xml:"x:Row"`
+	Column        int                  `xml:"x:Column"`
 	Anchor        string               `xml:"x:Anchor,omitempty"`
 	ml.ReservedElements
 }
