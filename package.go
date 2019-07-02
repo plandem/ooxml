@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"regexp"
 )
 
 //Package is interface to expose some of PackageInfo methods via embedded struct
@@ -207,6 +208,27 @@ func (pkg *PackageInfo) Remove(fileName string) {
 //Files is a private method to get list of all files inside of package
 func (pkg *PackageInfo) Files() map[string]interface{} {
 	return pkg.files
+}
+
+//CountFiles return total number of files that match pattern
+func (pkg *PackageInfo) CountFiles(pattern *regexp.Regexp) int {
+	total := 0
+
+	for _, file := range pkg.files {
+		var fileName string
+
+		if f, ok := file.(*zip.File); ok {
+			fileName = f.Name
+		} else if f, ok := file.(string); ok {
+			fileName = f
+		}
+
+		if pattern.MatchString(fileName) {
+			total++
+		}
+	}
+
+	return total
 }
 
 //SavePackage is private method with implementation of saving OOXML document to file
