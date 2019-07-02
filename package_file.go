@@ -2,6 +2,7 @@ package ooxml
 
 import (
 	"archive/zip"
+	"fmt"
 )
 
 //PackageFile is helper object that implements common functionality for any file of package. E.g. lazy loading, marking as updated.
@@ -93,21 +94,21 @@ func (pf *PackageFile) LoadIfRequired(callback func()) {
 //ReadStream opens a zip file for manual reading as stream and return *StreamFileReader for it
 //Files that were opened as stream can't be marked as updated via MarkAsUpdated and will be saved as is
 //Files that were opened as stream must be manually closed via calling Close() to prevent memory leaks
-func (pf *PackageFile) ReadStream() *StreamFileReader {
+func (pf *PackageFile) ReadStream() (*StreamFileReader, error) {
 	if pf.isNew {
-		panic("Can't open a new file as stream.")
+		return nil, fmt.Errorf("can't open a new file as stream")
 	}
 
 	if pf.zipFile == nil {
-		panic("Can't open as stream file that was already fully loaded.")
+		return nil, fmt.Errorf("can't open as stream file that was already fully loaded")
 	}
 
 	stream, err := NewStreamFileReader(pf.zipFile)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return stream
+	return stream, nil
 }
 
 //WriteStream creates a zip file for manual writing as stream and return StreamFileWriter for it
