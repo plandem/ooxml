@@ -205,14 +205,13 @@ func (pkg *PackageInfo) Remove(fileName string) {
 	}
 }
 
-//Files is a private method to get list of all files inside of package
-func (pkg *PackageInfo) Files() map[string]interface{} {
-	return pkg.files
-}
+//Files is a private method to get list of all files inside of package, using regexp pattern if required
+func (pkg *PackageInfo) Files(pattern *regexp.Regexp) map[string]interface{} {
+	if pattern == nil {
+		return pkg.files
+	}
 
-//CountFiles return total number of files that match pattern
-func (pkg *PackageInfo) CountFiles(pattern *regexp.Regexp) int {
-	total := 0
+	files := make(map[string]interface{})
 
 	for _, file := range pkg.files {
 		var fileName string
@@ -224,11 +223,11 @@ func (pkg *PackageInfo) CountFiles(pattern *regexp.Regexp) int {
 		}
 
 		if pattern.MatchString(fileName) {
-			total++
+			files[fileName] = file
 		}
 	}
 
-	return total
+	return files
 }
 
 //SavePackage is private method with implementation of saving OOXML document to file
