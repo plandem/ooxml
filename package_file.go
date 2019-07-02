@@ -113,19 +113,19 @@ func (pf *PackageFile) ReadStream() (*StreamFileReader, error) {
 
 //WriteStream creates a zip file for manual writing as stream and return StreamFileWriter for it
 //File can be created as stream only once, any further requests will return previously created stream
-func (pf *PackageFile) WriteStream(finalize StreamWriterCallback) *StreamFileWriter {
+func (pf *PackageFile) WriteStream(finalize StreamWriterCallback) (*StreamFileWriter, error) {
 	if !pf.isNew {
-		panic("Can't overwrite already existing file.")
+		return nil, fmt.Errorf("can't overwrite already existing file")
 	}
 
 	//is stream already created, then return it
 	if s, ok := pf.source.(*StreamFileWriter); ok {
-		return s
+		return s, nil
 	}
 
 	stream := NewStreamFileWriter(pf.fileName, finalize)
 	pf.source = stream
 	pf.pkg.Add(pf.fileName, pf.source)
 
-	return stream
+	return stream, nil
 }
