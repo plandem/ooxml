@@ -42,7 +42,7 @@ func (s shapeAttributes) ResolvedID() int {
 	if s.resolvedID == 0 {
 		if matched := regexpShapeID.FindSubmatch([]byte(s.ID)); len(matched) > 0 {
 			if id, err := strconv.Atoi(string(matched[1])); err != nil {
-				panic(fmt.Errorf("can't get ID of shape: %s", matched))
+				panic(fmt.Errorf("can't get ID of shape: %s", s.ID))
 			} else {
 				s.resolvedID = id
 			}
