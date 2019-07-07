@@ -63,3 +63,16 @@ func (ct *ContentTypes) RemoveContent(fileName string) {
 		}
 	}
 }
+
+//CountTypes returns total number of contentType items
+func (ct *ContentTypes) CountTypes(contentType ml.ContentType) int {
+	total := 0
+
+	for _, part := range ct.ml.Overrides {
+		if part.ContentType == contentType {
+			total++
+		}
+	}
+
+	return total
+}

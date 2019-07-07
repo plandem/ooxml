@@ -4,21 +4,32 @@ import "encoding/xml"
 
 //Reserved is special type that catches all inner content AS IS to save original information - used to mark 'non implemented' elements
 type Reserved struct {
-	Name     xml.Name
-	Attrs    []xml.Attr `xml:",attr"`
-	InnerXML *struct {
-		XML string `xml:",innerxml"`
-	} `xml:",omitempty"`
+	XMLName  xml.Name
+	InnerXML string `xml:",innerxml"`
+	ReservedAttributes
 }
 
-func (r *Reserved) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Name = r.Name
-	start.Attr = r.Attrs
-	return e.EncodeElement(r.InnerXML, start)
+//ReservedAttributes is a special type that catches all not captured attributes AS IS to save original information - used to mark 'non implemented' attributes
+type ReservedAttributes struct {
+	Attrs []xml.Attr `xml:",any,attr"`
 }
 
-func (r *Reserved) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	r.Name = start.Name
-	r.Attrs = start.Attr
-	return d.DecodeElement(&r.InnerXML, &start)
+//ReservedElements is a special type that catches all not captured nested elements AS IS to save original information - used to mark 'non implemented' elements
+type ReservedElements struct {
+	Nodes []Reserved `xml:",any"`
+}
+
+//ResolveNamespacePrefixes transforms namespaces into namespaces prefixes
+func (r ReservedAttributes) ResolveNamespacePrefixes() {
+	for i, attr := range r.Attrs {
+		r.Attrs[i].Name = ApplyNamespacePrefix(attr.Name.Space, attr.Name)
+	}
+}
+
+//ResolveNamespacePrefixes tries to resolve namespace and apply prefix for it for all reserved elements
+func (r ReservedElements) ResolveNamespacePrefixes() {
+	for i, node := range r.Nodes {
+		r.Nodes[i].XMLName = ApplyNamespacePrefix(node.XMLName.Space, node.XMLName)
+		node.ResolveNamespacePrefixes()
+	}
 }

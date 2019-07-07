@@ -26,7 +26,7 @@ func NewRelationships(f interface{}, pkg *PackageInfo) *Relationships {
 	rels.file.LoadIfRequired(nil)
 
 	if rels.file.IsNew() {
-		pkg.ContentTypes().RegisterContent(rels.file.FileName(), "application/vnd.openxmlformats-package.relationships+xml")
+		pkg.ContentTypes().RegisterContent(rels.file.FileName(), ContentTypeRelationships)
 		rels.file.MarkAsUpdated()
 	}
 
@@ -54,7 +54,18 @@ func (rels *Relationships) GetTargetById(id string) string {
 	return ""
 }
 
-// GetIdByTarget returns id of relation for provided target
+// GetTargetByType returns target of first relation for provided type
+func (rels *Relationships) GetTargetByType(t ml.RelationType) string {
+	for _, r := range rels.ml.Relationships {
+		if r.Type == t {
+			return r.Target
+		}
+	}
+
+	return ""
+}
+
+// GetIdByTarget returns id of first relation for provided target
 func (rels *Relationships) GetIdByTarget(target string) ml.RID {
 	for _, r := range rels.ml.Relationships {
 		rTarget := r.Target

@@ -121,7 +121,7 @@ func ExampleStreamFileReader() {
 
 	reSheet := regexp.MustCompile(`xl/worksheets/[[:alpha:]]+[\d]+\.xml`)
 
-	files := odoc.PackageInfo.Files()
+	files := odoc.PackageInfo.Files(nil)
 	for _, file := range files {
 		if f, ok := file.(*zip.File); ok {
 			if reSheet.MatchString(f.Name) {

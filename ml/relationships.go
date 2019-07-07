@@ -60,13 +60,19 @@ func (r *TargetMode) UnmarshalXMLAttr(attr xml.Attr) error {
 }
 
 func (r *RID) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "r:id"}, Value: string(*r)}
-	return attr, nil
+	if prefix, ok := namespacePrefixes[NamespaceRelationships]; ok {
+		return xml.Attr{Name: xml.Name{Local: prefix + ":id"}, Value: string(*r)}, nil
+	}
+
+	return xml.Attr{}, errorNamespace(NamespaceRelationships)
 }
 
 func (r *RIDName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	attr := xml.Attr{Name: xml.Name{Local: "xmlns:r"}, Value: NamespaceRelationships}
-	return attr, nil
+	if prefix, ok := namespacePrefixes[NamespaceRelationships]; ok {
+		return xml.Attr{Name: xml.Name{Local: "xmlns:" + prefix}, Value: NamespaceRelationships}, nil
+	}
+
+	return xml.Attr{}, errorNamespace(NamespaceRelationships)
 }
 
 //BeforeMarshalXML mark Relationships as non valid in case if there is no any relations inside

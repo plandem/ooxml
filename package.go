@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"regexp"
 )
 
 //Package is interface to expose some of PackageInfo methods via embedded struct
@@ -204,9 +205,21 @@ func (pkg *PackageInfo) Remove(fileName string) {
 	}
 }
 
-//Files is a private method to get list of all files inside of package
-func (pkg *PackageInfo) Files() map[string]interface{} {
-	return pkg.files
+//Files is a private method to get list of all files inside of package, using regexp pattern if required
+func (pkg *PackageInfo) Files(pattern *regexp.Regexp) map[string]interface{} {
+	if pattern == nil {
+		return pkg.files
+	}
+
+	files := make(map[string]interface{})
+
+	for fileName, file := range pkg.files {
+		if pattern.MatchString(fileName) {
+			files[fileName] = file
+		}
+	}
+
+	return files
 }
 
 //SavePackage is private method with implementation of saving OOXML document to file
@@ -273,8 +286,8 @@ func (pkg *PackageInfo) initPackage() {
 	pkg.relationships = NewRelationships("_rels/.rels", pkg)
 
 	//add some default types
-	pkg.contentTypes.RegisterType("rels", "application/vnd.openxmlformats-package.relationships+xml")
-	pkg.contentTypes.RegisterType("vml", "application/vnd.openxmlformats-officedocument.vmlDrawing")
+	pkg.contentTypes.RegisterType("rels", ContentTypeRelationships)
+	pkg.contentTypes.RegisterType("vml", ContentTypeVmlDrawing)
 	pkg.contentTypes.RegisterType("png", "image/png")
 	pkg.contentTypes.RegisterType("jpeg", "image/jpeg")
 	pkg.contentTypes.RegisterType("jpg", "image/jpeg")
