@@ -43,7 +43,12 @@ func (r ReservedElements) ResolveNamespacePrefixes() {
 }
 
 //Hash builds hash code for all required values of Reserved to use as unique index
-func (reserved *Reserved) Hash() index.Code {
+func (r *Reserved) Hash() index.Code {
+	reserved := r
+	if reserved == nil {
+		reserved = &Reserved{}
+	}
+
 	result := make([]string, 0, len(reserved.Attrs))
 	result = append(result, reserved.InnerXML)
 
