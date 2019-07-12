@@ -36,3 +36,9 @@ func (i *Index) Get(o Indexer) (idx int, ok bool){
 	idx, ok = i.idx[o.Hash()]
 	return
 }
+
+//Has returns true if object's hash was found
+func (i *Index) Has(o Indexer) bool {
+	_, ok := i.idx[o.Hash()]
+	return ok
+}

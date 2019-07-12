@@ -27,9 +27,11 @@ func TestIndex(t *testing.T) {
 	i, ok := idx.Get(value(1))
 	require.Equal(t, 1, i)
 	require.Equal(t, true, ok)
+	require.Equal(t, true, idx.Has(value(1)))
 
 	i, ok = idx.Get(value(2))
 	require.Equal(t, 0, i)
 	require.Equal(t, false, ok)
+	require.Equal(t, false, idx.Has(value(2)))
 
 }
