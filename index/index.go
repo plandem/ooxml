@@ -42,3 +42,8 @@ func (i *Index) Has(o Indexer) bool {
 	_, ok := i.idx[o.Hash()]
 	return ok
 }
+
+//Count returns total number of hashed objects in index
+func (i *Index) Count() int {
+	return len(i.idx)
+}
