@@ -1,6 +1,14 @@
+// Copyright (c) 2017 Andrey Gayvoronsky <plandem@gmail.com>
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package ml
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/index"
+	"strings"
+)
 
 //Reserved is special type that catches all inner content AS IS to save original information - used to mark 'non implemented' elements
 type Reserved struct {
@@ -9,12 +17,12 @@ type Reserved struct {
 	ReservedAttributes
 }
 
-//ReservedAttributes is a special type that catches all not captured attributes AS IS to save original information - used to mark 'non implemented' attributes
+//ReservedAttributes is a special type that catches all not captured attributes AS IS to save original information
 type ReservedAttributes struct {
 	Attrs []xml.Attr `xml:",any,attr"`
 }
 
-//ReservedElements is a special type that catches all not captured nested elements AS IS to save original information - used to mark 'non implemented' elements
+//ReservedElements is a special type that catches all not captured nested elements AS IS to save original information
 type ReservedElements struct {
 	Nodes []Reserved `xml:",any"`
 }
@@ -32,4 +40,20 @@ func (r ReservedElements) ResolveNamespacePrefixes() {
 		r.Nodes[i].XMLName = ApplyNamespacePrefix(node.XMLName.Space, node.XMLName)
 		node.ResolveNamespacePrefixes()
 	}
+}
+
+//Hash builds hash code for all required values of Reserved to use as unique index
+func (reserved *Reserved) Hash() index.Code {
+	result := make([]string, 0, len(reserved.Attrs))
+	result = append(result, reserved.InnerXML)
+
+	for _, attr := range reserved.Attrs {
+		result = append(result,
+			attr.Name.Space,
+			attr.Name.Local,
+			attr.Value,
+		)
+	}
+
+	return index.Hash(strings.Join(result, ":"))
 }

@@ -1,3 +1,7 @@
+// Copyright (c) 2017 Andrey Gayvoronsky <plandem@gmail.com>
+// Use of this source code is governed by a MIT-style
+// license that can be found in the LICENSE file.
+
 package vml
 
 import (
@@ -20,6 +24,7 @@ type shapeAttributes struct {
 	Style        string          `xml:"style,attr,omitempty"`
 	ID           string          `xml:"id,attr,omitempty"`
 	CoordSize    string          `xml:"coordsize,attr,omitempty"`
+	CoordOrigin  string          `xml:"coordorigin,attr,omitempty"`
 	FillColor    string          `xml:"fillcolor,attr,omitempty"`
 	StrokeColor  string          `xml:"strokecolor,attr,omitempty"`
 	Filled       ml.TriStateType `xml:"filled,attr,omitempty"`
