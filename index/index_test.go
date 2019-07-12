@@ -20,9 +20,12 @@ func TestIndex(t *testing.T) {
 	idx := index.Index{}
 	require.Nil(t, idx.Add(value(1), 1))
 	require.NotNil(t, idx.Add(value(1), 1))
+	require.Equal(t, 1, idx.Count())
 
 	idx.Remove(value(1))
+	require.Equal(t, 0, idx.Count())
 	require.Nil(t, idx.Add(value(1), 1))
+	require.Equal(t, 1, idx.Count())
 
 	i, ok := idx.Get(value(1))
 	require.Equal(t, 1, i)
