@@ -6,7 +6,10 @@ package vml
 
 import (
 	"encoding/xml"
+	"github.com/plandem/ooxml/index"
 	"github.com/plandem/ooxml/ml"
+	"strconv"
+	"strings"
 )
 
 //Shape is direct mapping of CT_Shape
@@ -18,4 +21,14 @@ type Shape struct {
 
 func (s *Shape) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return e.EncodeElement(*s, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceVML, start.Name)})
+}
+
+//Hash builds hash code for all required values of Shape to use as unique index
+func (s *Shape) Hash() index.Code {
+	return index.Hash(strings.Join([]string{
+		s.Type,
+		strconv.FormatInt(int64(s.Spt), 10),
+		strconv.FormatInt(int64(s.ClientData.Column), 10),
+		strconv.FormatInt(int64(s.ClientData.Row), 10),
+	}, ":"))
 }
