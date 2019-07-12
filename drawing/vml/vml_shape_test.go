@@ -2,12 +2,15 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package vml
+package vml_test
 
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
+	"github.com/plandem/ooxml/drawing/vml"
 	"github.com/plandem/ooxml/drawing/vml/css"
+	"github.com/plandem/ooxml/index"
 	"github.com/plandem/ooxml/ml"
 	"github.com/stretchr/testify/require"
 	"strings"
@@ -37,7 +40,7 @@ func TestShape(t *testing.T) {
 	`)
 
 	decoder := xml.NewDecoder(bytes.NewReader([]byte(data)))
-	entity := &Excel{}
+	entity := &vml.Excel{}
 	err := decoder.DecodeElement(entity, nil)
 	require.Nil(t, err)
 
@@ -57,9 +60,9 @@ func TestShape(t *testing.T) {
 	require.Equal(t, ml.TriStateTrue, entity.Shape[0].PathSettings.ArrowOK)
 
 	//check ClientData
-	require.Equal(t, &ClientData{
+	require.Equal(t, &vml.ClientData{
 		XMLName:       xml.Name{Space: "urn:schemas-microsoft-com:office:excel", Local: "ClientData"},
-		Type:          ObjectTypeNote,
+		Type:          vml.ObjectTypeNote,
 		MoveWithCells: ml.TriStateBlankTrue(ml.TriStateTrue),
 		SizeWithCells: ml.TriStateBlankTrue(ml.TriStateTrue),
 		AutoFill:      ml.TriStateBlankTrue(ml.TriStateFalse),
@@ -73,4 +76,36 @@ func TestShape(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, data, string(encoded))
+}
+
+func TestShape_Hash(t *testing.T) {
+	idx := index.Index{}
+	require.Nil(t, idx.Add(&vml.Shape{}, 1))
+	require.NotNil(t, idx.Add((*vml.Shape)(nil), 1))
+
+	shape := &vml.Shape{}
+	shape.ID = fmt.Sprintf("_x0000_s%d", 1025)
+	shape.Type = "#_x0000_t202"
+	shape.FillColor = "#ffeeee"
+	shape.InsetMode = vml.InsetModeAuto
+
+	shape.ClientData = &vml.ClientData{
+		Column: 1,
+		Row:    2,
+	}
+
+	require.Nil(t, idx.Add(shape, 1))
+
+	shape = &vml.Shape{}
+	shape.ID = fmt.Sprintf("_x0000_s%d", 1025)
+	shape.FillColor = "#ffeeee"
+	shape.InsetMode = vml.InsetModeAuto
+	shape.Spt = 202
+
+	shape.ClientData = &vml.ClientData{
+		Column: 1,
+		Row:    2,
+	}
+
+	require.Nil(t, idx.Add(shape, 1))
 }
