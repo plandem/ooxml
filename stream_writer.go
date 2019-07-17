@@ -49,6 +49,11 @@ func NewStreamFileWriter(f string, memory bool) (*StreamFileWriter, error) {
 		return nil, err
 	}
 
+	_, err = zipFile.Write([]byte(xml.Header))
+	if err != nil {
+		return nil, err
+	}
+
 	enc := xml.NewEncoder(zipFile)
 	return &StreamFileWriter{
 		enc,
