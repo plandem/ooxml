@@ -30,10 +30,10 @@ func TestTextPath(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, &vml.TextPath{
-		XMLName: xml.Name{ Space: "urn:schemas-microsoft-com:vml", Local: "textpath"},
-		On: ml.TriStateTrue,
-		Text: "VML Text",
-		Style: "font:normal normal normal 36pt Arial",
+		XMLName: xml.Name{Space: "urn:schemas-microsoft-com:vml", Local: "textpath"},
+		On:      ml.TriStateTrue,
+		Text:    "VML Text",
+		Style:   "font:normal normal normal 36pt Arial",
 	}, entity.Shape[0].TextPath)
 
 	//encode

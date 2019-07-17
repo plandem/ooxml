@@ -32,7 +32,7 @@ func (i *Index) Remove(o Indexer) {
 }
 
 //Get object's hash and state - same as regular map result
-func (i *Index) Get(o Indexer) (idx int, ok bool){
+func (i *Index) Get(o Indexer) (idx int, ok bool) {
 	idx, ok = i.idx[o.Hash()]
 	return
 }

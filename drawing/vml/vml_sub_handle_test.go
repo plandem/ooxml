@@ -31,12 +31,12 @@ func TestHandle(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, &vml.Handles{
-		XMLName: xml.Name{ Space: "urn:schemas-microsoft-com:vml", Local: "handles"},
+		XMLName: xml.Name{Space: "urn:schemas-microsoft-com:vml", Local: "handles"},
 		List: []vml.Handle{
 			{
 				Position: "#0,#1",
-				XRange: "0,21600",
-				YRange: "0,10800",
+				XRange:   "0,21600",
+				YRange:   "0,10800",
 			},
 		},
 	}, entity.Shape[0].Handles)

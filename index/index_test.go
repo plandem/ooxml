@@ -12,6 +12,7 @@ import (
 )
 
 type value int
+
 func (v value) Hash() index.Code {
 	return index.Hash(strconv.Itoa(int(v)))
 }

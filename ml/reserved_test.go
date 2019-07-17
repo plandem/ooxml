@@ -222,11 +222,11 @@ func TestReserved_Hash(t *testing.T) {
 	require.NotNil(t, idx.Add((*ml.Reserved)(nil), 1))
 
 	//XMLName is not critical (can be empty if manually created - not via unmarshal)
-	require.NotNil(t, idx.Add(&ml.Reserved{ XMLName:xml.Name{Local: "a"}}, 1))
+	require.NotNil(t, idx.Add(&ml.Reserved{XMLName: xml.Name{Local: "a"}}, 1))
 
 	//InnerXML and attributes are critical
-	require.Nil(t, idx.Add(&ml.Reserved{ InnerXML: "<b/>"}, 1))
-	require.NotNil(t, idx.Add(&ml.Reserved{ InnerXML: "<b/>"}, 1))
-	require.Nil(t, idx.Add(&ml.Reserved{ InnerXML: "<a/>"}, 1))
-	require.Nil(t, idx.Add(&ml.Reserved{ InnerXML: "<a/>", ReservedAttributes: ml.ReservedAttributes{ Attrs: []xml.Attr{ { Name: xml.Name{Local: "attr"}, Value: "1"}}}}, 1))
+	require.Nil(t, idx.Add(&ml.Reserved{InnerXML: "<b/>"}, 1))
+	require.NotNil(t, idx.Add(&ml.Reserved{InnerXML: "<b/>"}, 1))
+	require.Nil(t, idx.Add(&ml.Reserved{InnerXML: "<a/>"}, 1))
+	require.Nil(t, idx.Add(&ml.Reserved{InnerXML: "<a/>", ReservedAttributes: ml.ReservedAttributes{Attrs: []xml.Attr{{Name: xml.Name{Local: "attr"}, Value: "1"}}}}, 1))
 }

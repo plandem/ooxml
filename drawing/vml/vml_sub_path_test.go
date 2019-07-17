@@ -29,8 +29,8 @@ func TestPath(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, &vml.Path{
-		XMLName: xml.Name{ Space: "urn:schemas-microsoft-com:vml", Local: "path"},
-		Value: "m 1,1 l 1,200, 200,200, 200,1 x e",
+		XMLName: xml.Name{Space: "urn:schemas-microsoft-com:vml", Local: "path"},
+		Value:   "m 1,1 l 1,200, 200,200, 200,1 x e",
 	}, entity.Shape[0].PathSettings)
 
 	//encode

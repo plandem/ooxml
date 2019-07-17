@@ -34,7 +34,7 @@ func TestFormula(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, &vml.Formulas{
-		XMLName: xml.Name{ Space: "urn:schemas-microsoft-com:vml", Local: "formulas"},
+		XMLName: xml.Name{Space: "urn:schemas-microsoft-com:vml", Local: "formulas"},
 		List: []vml.Formula{
 			"sum 33030 0 #0",
 			"prod #0 4 3",
