@@ -65,6 +65,10 @@ func NewStreamFileWriter(f string, memory bool) (*StreamFileWriter, error) {
 //Close previously allocated resources for writing
 func (s *StreamFileWriter) Close() error {
 	if s.writer != nil {
+		if err := s.Flush(); err != nil {
+			return err
+		}
+
 		var writer io.Closer
 		writer, s.writer = s.writer, nil
 		return writer.Close()
