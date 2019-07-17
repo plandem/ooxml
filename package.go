@@ -129,7 +129,9 @@ func (pkg *PackageInfo) Close() error {
 	//close all opened reading streams
 	for _, content := range pkg.files {
 		if sr, ok := content.(*StreamFileReader); ok {
-			sr.Close()
+			if err := sr.Close(); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -242,8 +244,7 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 
 	var err error
 
-	buf := bytes.NewBuffer(nil)
-	zipper := zip.NewWriter(buf)
+	zipper := zip.NewWriter(f)
 
 	//add files to zip
 	for fileName, content := range pkg.files {
@@ -252,11 +253,15 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 			//file was not updated, so lets copy it as is
 			err = CopyZipFile(ft, zipper)
 		case *StreamFileWriter:
-			//file was created as write stream, so need an additional callback execution to finalize postponed updates
+			//file was created as write stream, so copy it as is
 			err = ft.Save(zipper)
 		default:
 			//file was probably updated, so let's marshal it and save with a new content
 			err = MarshalZipFile(fileName, content, zipper)
+		}
+
+		if err != nil {
+			return err
 		}
 	}
 
@@ -266,9 +271,7 @@ func (pkg *PackageInfo) SavePackage(f io.Writer) error {
 		return err
 	}
 
-	//physically save file
-	_, err = buf.WriteTo(f)
-	return err
+	return nil
 }
 
 //Relationships is a getter that returns top-level relationships of package

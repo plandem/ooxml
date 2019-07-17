@@ -6,7 +6,7 @@ package index
 
 import "fmt"
 
-//Index is helper type to internal indexes
+//Index is helper type for internal indexes
 type Index struct {
 	idx map[Code]int
 }
