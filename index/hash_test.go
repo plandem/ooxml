@@ -19,5 +19,5 @@ func TestHash(t *testing.T) {
 	//different hash for different value
 	require.NotEqual(t, index.Hash(s), index.Hash("another string"))
 
-	require.Equal(t, "0xe7bffdf20d5b21ad",  index.Hash(s).String())
+	require.Equal(t, "0xe7bffdf20d5b21ad", index.Hash(s).String())
 }

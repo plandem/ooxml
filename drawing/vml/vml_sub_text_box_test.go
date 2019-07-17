@@ -29,8 +29,8 @@ func TestTextBox(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, &vml.TextBox{
-		XMLName: xml.Name{ Space: "urn:schemas-microsoft-com:vml", Local: "textbox"},
-		Text: "VML Text",
+		XMLName: xml.Name{Space: "urn:schemas-microsoft-com:vml", Local: "textbox"},
+		Text:    "VML Text",
 	}, entity.Shape[0].TextBox)
 
 	//encode

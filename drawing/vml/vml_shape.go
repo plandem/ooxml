@@ -32,7 +32,7 @@ func (s *Shape) Hash() index.Code {
 
 	clientData := shape.ClientData
 	if clientData == nil {
-		clientData= &ClientData{}
+		clientData = &ClientData{}
 	}
 
 	return index.Hash(strings.Join([]string{

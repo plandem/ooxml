@@ -30,8 +30,8 @@ func TestShadow(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, &vml.Shadow{
-		XMLName: xml.Name{ Space: "urn:schemas-microsoft-com:vml", Local: "shadow"},
-		On: ml.TriStateTrue,
+		XMLName: xml.Name{Space: "urn:schemas-microsoft-com:vml", Local: "shadow"},
+		On:      ml.TriStateTrue,
 	}, entity.Shape[0].Shadow)
 
 	//encode

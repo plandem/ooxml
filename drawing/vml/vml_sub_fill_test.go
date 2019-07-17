@@ -29,10 +29,10 @@ func TestFill(t *testing.T) {
 	require.Nil(t, err)
 
 	require.Equal(t, &vml.Fill{
-		XMLName: xml.Name{ Space: "urn:schemas-microsoft-com:vml", Local: "fill"},
-		Color: "blue",
-		Color2: "yellow",
-		Type: vml.FillTypeGradient,
+		XMLName: xml.Name{Space: "urn:schemas-microsoft-com:vml", Local: "fill"},
+		Color:   "blue",
+		Color2:  "yellow",
+		Type:    vml.FillTypeGradient,
 	}, entity.Shape[0].Fill)
 
 	//encode
