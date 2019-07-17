@@ -10,15 +10,9 @@ import (
 	"fmt"
 	"github.com/plandem/ooxml"
 	"github.com/plandem/ooxml/ml"
-	"regexp"
 )
 
 func ExampleStreamFileReader() {
-	type OOXmlDoc struct {
-		*ooxml.PackageInfo
-	}
-
-	//Cell is a direct mapping of XSD CT_Cell
 	type Cell struct {
 		Formula   *ml.Reserved     `xml:"f,omitempty"`
 		Value     string           `xml:"v,omitempty"`
@@ -35,7 +29,7 @@ func ExampleStreamFileReader() {
 	type Row struct {
 		Cells        []*Cell      `xml:"c"`
 		ExtLst       *ml.Reserved `xml:"extLst,omitempty"`
-		Ref          int          `xml:"r,attr,omitempty"` //1-based index
+		Ref          int          `xml:"r,attr,omitempty"`
 		Spans        string       `xml:"spans,attr,omitempty"`
 		Style        int          `xml:"s,attr,omitempty"`
 		CustomFormat bool         `xml:"customFormat,attr,omitempty"`
@@ -49,42 +43,36 @@ func ExampleStreamFileReader() {
 		Phonetic     bool         `xml:"ph,attr,omitempty"`
 	}
 
-	factory := func(pkg *ooxml.PackageInfo) (interface{}, error) {
-		return &OOXmlDoc{pkg}, nil
-	}
+	openSheet := func(cb func(f *zip.File)) {
+		z, err := zip.OpenReader(`./test_files/example_simple.xlsx`)
+		if err != nil {
+			panic(err)
+		}
 
-	//ok for zip.ReadCloser
-	doc, _ := ooxml.Open("./test_files/example_simple.xlsx", factory)
-	odoc, _ := doc.(*OOXmlDoc)
-	defer odoc.Close()
+		defer z.Close()
 
-	var sheetStream *ooxml.StreamFileReader
-
-	reSheet := regexp.MustCompile(`xl/worksheets/[[:alpha:]]+[\d]+\.xml`)
-
-	files := odoc.PackageInfo.Files(nil)
-	for _, file := range files {
-		if f, ok := file.(*zip.File); ok {
-			if reSheet.MatchString(f.Name) {
-				sheetStream, _ = ooxml.NewStreamFileReader(f)
+		for _, f := range z.File {
+			if f.Name == `xl/worksheets/sheet1.xml` {
+				cb(f)
 				break
 			}
 		}
 	}
 
-	if sheetStream != nil {
+	openSheet(func(f *zip.File) {
+		stream, _ := ooxml.NewStreamFileReader(f)
+
 		for {
-			// Read tokens from the XML document in a stream.
-			t, _ := sheetStream.Token()
+			t, _ := stream.Token()
 			if t == nil {
 				break
 			}
 
-			switch se := t.(type) {
+			switch start := t.(type) {
 			case xml.StartElement:
-				if se.Name.Local == "row" {
+				if start.Name.Local == "row" {
 					var row Row
-					if sheetStream.DecodeElement(&row, &se) == nil {
+					if stream.DecodeElement(&row, &start) == nil {
 						for _, c := range row.Cells {
 							if c.Type == "s" || c.Value == "" {
 								continue
@@ -97,8 +85,8 @@ func ExampleStreamFileReader() {
 			}
 		}
 
-		_ = sheetStream.Close()
-	}
+		_ = stream.Close()
+	})
 
 	//Output:
 	// 1
