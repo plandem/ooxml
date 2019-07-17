@@ -85,6 +85,8 @@ func TestStreamFileWriter(t *testing.T) {
 			zipper := zip.NewWriter(buf)
 
 			//add stream file into the target
+			err = sheetStream.Close()
+			require.Nil(tt, err)
 			err = sheetStream.Save(zipper)
 			require.Nil(tt, err)
 
