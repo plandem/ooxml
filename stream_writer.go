@@ -8,52 +8,100 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/xml"
+	"io"
+	"io/ioutil"
+	"os"
+	"path"
 )
-
-//StreamWriterCallback is type that defines a callback that will be called to get postponed updates
-type StreamWriterCallback func(encoder *xml.Encoder)
-
-//StreamWriter is a generic stream writer
-type StreamWriter struct {
-	*xml.Encoder
-}
 
 //StreamFileWriter is stream writer for *zip.File
 type StreamFileWriter struct {
-	*StreamWriter
-	buff     *bytes.Buffer
-	cb       StreamWriterCallback
-	fileName string
+	*xml.Encoder
+	target interface{}
+	writer *zip.Writer
 }
 
-//NewStreamFileWriter returns a StreamFileWriter for fileName f
-func NewStreamFileWriter(f string, cb StreamWriterCallback) *StreamFileWriter {
-	buff := &bytes.Buffer{}
-	enc := xml.NewEncoder(buff)
+//NewStreamFileWriter returns a StreamFileWriter for fileName
+func NewStreamFileWriter(f string, memory bool) (*StreamFileWriter, error) {
+	var writer *zip.Writer
+	var target interface{}
 
-	return &StreamFileWriter{
-		&StreamWriter{enc},
-		buff,
-		cb,
-		f,
+	if memory {
+		//stream to memory
+		buf := bytes.NewBuffer(nil)
+		writer = zip.NewWriter(buf)
+		target = buf
+	} else {
+		//stream to disk
+		tmpFile, err := ioutil.TempFile("", path.Base(f))
+		if err != nil {
+			return nil, err
+		}
+
+		writer = zip.NewWriter(tmpFile)
+		target = tmpFile
 	}
+
+	zipFile, err := writer.Create(f)
+	if err != nil {
+		return nil, err
+	}
+
+	enc := xml.NewEncoder(zipFile)
+	return &StreamFileWriter{
+		enc,
+		target,
+		writer,
+	}, nil
 }
 
-//Save saves current state of stream and postponed changes to *zip.Writer
+//close zipper if required
+func (s *StreamFileWriter) close() error {
+	if s.writer != nil {
+		var writer io.Closer
+		writer, s.writer = s.writer, nil
+		return writer.Close()
+	}
+
+	return nil
+}
+
+//Save current state of stream to *zip.Writer
 func (s *StreamFileWriter) Save(to *zip.Writer) error {
-	writer, err := to.Create(s.fileName)
-	if err != nil {
+	//close zipper if required
+	if err := s.close(); err != nil {
 		return err
 	}
 
-	//save current state of stream
-	writer.Write(s.buff.Bytes())
+	if buf, ok := s.target.(*bytes.Buffer); ok {
+		//stored in memory
+		readerAt := bytes.NewReader(buf.Bytes())
+		if zipReader, err := zip.NewReader(readerAt, int64(readerAt.Len())); err != nil {
+			return err
+		} else {
+			zipFile := zipReader.File[0]
+			if err := CopyZipFile(zipFile, to); err != nil {
+				return err
+			}
+		}
+	} else if file, ok := s.target.(*os.File); ok {
+		//stored at disk
+		if zipReader, err := zip.OpenReader(file.Name()); err != nil {
+			return err
+		} else {
+			zipFile := zipReader.File[0]
+			if err := CopyZipFile(zipFile, to); err != nil {
+				return err
+			}
 
-	//if there is a callback to get postponed changes, then stream it directly to zip writer
-	if s.cb != nil {
-		finalizeEnc := xml.NewEncoder(writer)
-		s.cb(finalizeEnc)
+			if err = zipReader.Close(); err != nil {
+				return err
+			}
+
+			os.Remove(file.Name())
+		}
 	}
 
+	s.target = nil
 	return nil
 }
