@@ -21,6 +21,8 @@ type StreamFileWriter struct {
 	writer *zip.Writer
 }
 
+var _ io.Closer = (*StreamFileWriter)(nil)
+
 //NewStreamFileWriter returns a StreamFileWriter for fileName
 func NewStreamFileWriter(f string, memory bool) (*StreamFileWriter, error) {
 	var writer *zip.Writer
@@ -55,8 +57,8 @@ func NewStreamFileWriter(f string, memory bool) (*StreamFileWriter, error) {
 	}, nil
 }
 
-//close zipper if required
-func (s *StreamFileWriter) close() error {
+//Close previously allocated resources for writing
+func (s *StreamFileWriter) Close() error {
 	if s.writer != nil {
 		var writer io.Closer
 		writer, s.writer = s.writer, nil
@@ -68,11 +70,6 @@ func (s *StreamFileWriter) close() error {
 
 //Save current state of stream to *zip.Writer
 func (s *StreamFileWriter) Save(to *zip.Writer) error {
-	//close zipper if required
-	if err := s.close(); err != nil {
-		return err
-	}
-
 	if buf, ok := s.target.(*bytes.Buffer); ok {
 		//stored in memory
 		readerAt := bytes.NewReader(buf.Bytes())
