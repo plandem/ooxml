@@ -14,17 +14,21 @@ import (
 	"path"
 )
 
+//StreamFileWriterFinalizer is callback that will be called to do final processing before closing stream
+type StreamFileWriterFinalizer func() error
+
 //StreamFileWriter is stream writer for *zip.File
 type StreamFileWriter struct {
 	*xml.Encoder
-	target interface{}
-	writer *zip.Writer
+	target    interface{}
+	writer    *zip.Writer
+	finalizer StreamFileWriterFinalizer
 }
 
 var _ io.Closer = (*StreamFileWriter)(nil)
 
 //NewStreamFileWriter returns a StreamFileWriter for fileName
-func NewStreamFileWriter(f string, memory bool) (*StreamFileWriter, error) {
+func NewStreamFileWriter(f string, memory bool, finalizer StreamFileWriterFinalizer) (*StreamFileWriter, error) {
 	var writer *zip.Writer
 	var target interface{}
 
@@ -59,16 +63,26 @@ func NewStreamFileWriter(f string, memory bool) (*StreamFileWriter, error) {
 		enc,
 		target,
 		writer,
+		finalizer,
 	}, nil
 }
 
 //Close previously allocated resources for writing
 func (s *StreamFileWriter) Close() error {
 	if s.writer != nil {
+		//call finalizer, if required
+		if s.finalizer != nil {
+			if err := s.finalizer(); err != nil {
+				return err
+			}
+		}
+
+		//flush zipper
 		if err := s.Flush(); err != nil {
 			return err
 		}
 
+		//close writer
 		var writer io.Closer
 		writer, s.writer = s.writer, nil
 		return writer.Close()
@@ -79,6 +93,10 @@ func (s *StreamFileWriter) Close() error {
 
 //Save current state of stream to *zip.Writer
 func (s *StreamFileWriter) Save(to *zip.Writer) error {
+	if err := s.Close(); err != nil {
+		return err
+	}
+
 	if buf, ok := s.target.(*bytes.Buffer); ok {
 		//stored in memory
 		readerAt := bytes.NewReader(buf.Bytes())
