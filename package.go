@@ -21,7 +21,7 @@ import (
 type Package interface {
 	io.Closer
 	Save() error
-	SaveAs(fileName string) error
+	SaveAs(target interface{}) error
 }
 
 //DocumentFactoryFn is factory to in a OOXML type specific type
@@ -168,15 +168,23 @@ func (pkg *PackageInfo) Save() error {
 	return os.Rename(tmpFile.Name(), pkg.fileName)
 }
 
-//SaveAs saves current OOXML package with fileName
-func (pkg *PackageInfo) SaveAs(fileName string) error {
-	f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
-	if err != nil {
+//SaveAs saves current OOXML package with fileName or io.Writer
+func (pkg *PackageInfo) SaveAs(target interface{}) error {
+	switch tt := target.(type) {
+	case io.Writer:
+		return pkg.SavePackage(tt)
+	case string:
+		f, err := os.OpenFile(tt, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
+		if err != nil {
+			return err
+		}
+
+		err = pkg.SavePackage(f)
+		f.Close()
 		return err
 	}
 
-	defer f.Close()
-	return pkg.SavePackage(f)
+	return fmt.Errorf("unsupported type of target. It must be name of file or io.Writer")
 }
 
 //FileName is a private method that returns filename of opened file
