@@ -41,9 +41,13 @@ func TestStreamFileWriter(t *testing.T) {
 		{"memory", true},
 	}
 
+	streamClosed := false
 	for _, info := range tests {
 		t.Run(info.name, func(tt *testing.T) {
-			sheetStream, err := ooxml.NewStreamFileWriter(fileName, info.memory)
+			sheetStream, err := ooxml.NewStreamFileWriter(fileName, info.memory, func() error {
+				streamClosed = true
+				return nil
+			})
 			require.IsType(tt, &ooxml.StreamFileWriter{}, sheetStream)
 			require.Nil(tt, err)
 
@@ -85,9 +89,8 @@ func TestStreamFileWriter(t *testing.T) {
 			zipper := zip.NewWriter(buf)
 
 			//add stream file into the target
-			err = sheetStream.Close()
-			require.Nil(tt, err)
 			err = sheetStream.Save(zipper)
+			require.Equal(tt, true, streamClosed)
 			require.Nil(tt, err)
 
 			err = zipper.Close()
