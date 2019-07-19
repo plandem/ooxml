@@ -88,3 +88,24 @@ func TestClose(t *testing.T) {
 	odoc, _ = doc.(*OOXmlDoc)
 	odoc.Close()
 }
+
+func TestSaveAs(t *testing.T) {
+	type OOXmlDoc struct {
+		*ooxml.PackageInfo
+	}
+
+	factory := func(pkg *ooxml.PackageInfo) (interface{}, error) {
+		return &OOXmlDoc{pkg}, nil
+	}
+
+	doc, _ := ooxml.Open("./test_files/example_simple.xlsx", factory)
+	require.NotNil(t, doc)
+	require.Implements(t, (*ooxml.Package)(nil), doc)
+
+	odoc, _ := doc.(*OOXmlDoc)
+	err := odoc.SaveAs("./test_files/example_simple_saved.xlsx")
+	assert.Nil(t, err)
+
+	err = odoc.Close()
+	assert.Nil(t, err)
+}
