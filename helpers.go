@@ -6,7 +6,6 @@ package ooxml
 
 import (
 	"archive/zip"
-	"bytes"
 	"encoding/xml"
 	"io"
 	"reflect"
@@ -100,18 +99,9 @@ func CopyZipFile(from *zip.File, to *zip.Writer) error {
 		return err
 	}
 
-	buff := bytes.NewBuffer(nil)
-	_, err = io.Copy(buff, reader)
-	if err != nil {
-		return err
-	}
-
-	_, err = writer.Write(buff.Bytes())
-	if err != nil {
-		return err
-	}
-
-	return nil
+	defer reader.Close()
+	_, err = io.Copy(writer, reader)
+	return err
 }
 
 //UniqueName returns next valid unique name with a valid length
