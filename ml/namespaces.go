@@ -36,6 +36,12 @@ const (
 
 	//NamespaceDrawingExcel is a namespace for Excel DrawingML definition
 	NamespaceDrawingExcel = "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing"
+
+	//NamespaceDrawingWord is a namespace for Word DrawingML definition
+	NamespaceDrawingWord = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+
+	//NamespaceDrawingChart is a namespace for Chart DrawingML definition
+	NamespaceDrawingChart = "http://schemas.openxmlformats.org/drawingml/2006/chart"
 )
 
 var (
@@ -52,6 +58,8 @@ func init() {
 		NamespaceVMLPowerPoint: "p",
 		NamespaceDrawing:       "a",
 		NamespaceDrawingExcel:  "xdr",
+		NamespaceDrawingWord:   "wp",
+		NamespaceDrawingChart:  "c",
 	}
 }
 
