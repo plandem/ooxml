@@ -63,15 +63,11 @@ func (r *TargetMode) UnmarshalXMLAttr(attr xml.Attr) error {
 	return nil
 }
 
-func (r *RID) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	if prefix, ok := namespacePrefixes[NamespaceRelationships]; ok {
-		return xml.Attr{Name: xml.Name{Local: prefix + ":id"}, Value: string(*r)}, nil
-	}
-
-	return xml.Attr{}, errorNamespace(NamespaceRelationships)
+func (r RID) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	return xml.Attr{Name: ApplyNamespacePrefix(NamespaceRelationships, name), Value: string(r)}, nil
 }
 
-func (r *RIDName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+func (r RIDName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	if prefix, ok := namespacePrefixes[NamespaceRelationships]; ok {
 		return xml.Attr{Name: xml.Name{Local: "xmlns:" + prefix}, Value: NamespaceRelationships}, nil
 	}
