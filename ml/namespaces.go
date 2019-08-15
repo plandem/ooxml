@@ -63,13 +63,20 @@ func init() {
 	}
 }
 
-func errorNamespace(namespace string) error {
+//ErrorNamespace returns error for unknown namespace
+func ErrorNamespace(namespace string) error {
 	return fmt.Errorf("can't resolve prefix for: %s", namespace)
+}
+
+//ResolveNamespacePrefix is helper function that tries to resolve prefix for known namespace
+func ResolveNamespacePrefix(namespace string) (prefix string, ok bool) {
+	prefix, ok = namespacePrefixes[namespace]
+	return
 }
 
 //ApplyNamespacePrefix adds namespace prefix to Local name and drops Space name
 func ApplyNamespacePrefix(namespace string, name xml.Name) xml.Name {
-	if prefix, ok := namespacePrefixes[namespace]; ok {
+	if prefix, ok := ResolveNamespacePrefix(namespace); ok {
 		return xml.Name{
 			Local: prefix + ":" + name.Local,
 		}
@@ -83,7 +90,7 @@ func Namespaces(namespaces ...string) []xml.Attr {
 	attrs := make([]xml.Attr, 0, len(namespaces))
 
 	for _, namespace := range namespaces {
-		if prefix, ok := namespacePrefixes[namespace]; ok {
+		if prefix, ok := ResolveNamespacePrefix(namespace); ok {
 			attrs = append(attrs, xml.Attr{Name: xml.Name{Local: "xmlns:" + prefix}, Value: namespace})
 		}
 	}

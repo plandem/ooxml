@@ -68,11 +68,11 @@ func (r RID) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 }
 
 func (r RIDName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	if prefix, ok := namespacePrefixes[NamespaceRelationships]; ok {
+	if prefix, ok := ResolveNamespacePrefix(NamespaceRelationships); ok {
 		return xml.Attr{Name: xml.Name{Local: "xmlns:" + prefix}, Value: NamespaceRelationships}, nil
 	}
 
-	return xml.Attr{}, errorNamespace(NamespaceRelationships)
+	return xml.Attr{}, ErrorNamespace(NamespaceRelationships)
 }
 
 //BeforeMarshalXML mark Relationships as non valid in case if there is no any relations inside
