@@ -54,7 +54,7 @@ func (p *PropertyBool) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 			*p = PropertyBool(b)
 		}
 	} else {
-		*p = PropertyBool(true)
+		*p = true
 	}
 
 	return d.Skip()
