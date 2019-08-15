@@ -44,8 +44,8 @@ const (
 	NamespaceDrawingChart = "http://schemas.openxmlformats.org/drawingml/2006/chart"
 )
 
-//DrawingName is a helper type for marshaling namespace for DrawingML
-type DrawingName string
+//DMLName is a helper type for marshaling namespace for DrawingML
+type DMLName string
 
 var (
 	namespacePrefixes map[string]string
@@ -101,7 +101,7 @@ func Namespaces(namespaces ...string) []xml.Attr {
 	return attrs
 }
 
-func (d DrawingName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+func (d DMLName) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	if prefix, ok := ResolveNamespacePrefix(NamespaceDrawing); ok {
 		return xml.Attr{Name: xml.Name{Local: "xmlns:" + prefix}, Value: NamespaceDrawing}, nil
 	}

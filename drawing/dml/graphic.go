@@ -2,11 +2,11 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-package ml
+package dml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml/drawing/ml/chart"
+	"github.com/plandem/ooxml/drawing/dml/chart"
 	"github.com/plandem/ooxml/ml"
 )
 
