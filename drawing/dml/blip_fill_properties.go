@@ -7,4 +7,9 @@ package dml
 import "github.com/plandem/ooxml/ml"
 
 //BlipFillProperties is a direct mapping of XSD CT_BlipFillProperties
-type BlipFillProperties = ml.Reserved
+type BlipFillProperties struct {
+	Blip            *Blip `xml:"blip,omitempty"`
+	Dpi             int   `xml:"dpi,attr,omitempty"`
+	RotateWithShape bool  `xml:"rotWithShape,attr,omitempty"`
+	ml.ReservedElements
+}
