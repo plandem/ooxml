@@ -13,7 +13,7 @@ import (
 //ChartSpace is a direct mapping of XSD CT_ChartSpace
 type ChartSpace struct {
 	XMLName         xml.Name         `xml:"http://schemas.openxmlformats.org/drawingml/2006/chart chartSpace"`
-	DMLName         ml.DMLName       `xml:",attr"`
+	DMLName         Name             `xml:",attr"`
 	Lang            ml.Property      `xml:"lang,omitempty"`
 	Style           ml.PropertyInt   `xml:"style,omitempty"`
 	Date1904        *ml.PropertyBool `xml:"date1904,omitempty"`       //default true
