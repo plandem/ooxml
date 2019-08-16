@@ -10,23 +10,14 @@ import (
 	"github.com/plandem/ooxml/ml"
 )
 
-//Graphic is a direct mapping of XSD CT_GraphicalObject
-type Graphic struct {
-	Data *GraphicData `xml:"graphicData"`
-}
-
-//GraphicData is a direct mapping of XSD CT_GraphicalObjectData
-type GraphicData struct {
+//GraphicalObjectData is a direct mapping of XSD CT_GraphicalObjectData
+type GraphicalObjectData struct {
 	Uri   string     `xml:"uri,attr"`
 	Chart *chart.Ref `xml:"chart,omitempty"`
 	ml.ReservedElements
 }
 
-func (n *Graphic) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawing, start.Name)})
-}
-
-func (n *GraphicData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (n *GraphicalObjectData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
 
 	if n.Chart != nil {
