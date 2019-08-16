@@ -6,7 +6,8 @@ package dml
 
 import "github.com/plandem/ooxml/ml"
 
-//NonVisualGraphicFrameProperties is a direct mapping of XSD CT_NonVisualGraphicFrameProperties
-type NonVisualGraphicFrameProperties struct {
+//NonVisualShapeProperties is a direct mapping of XSD CT_NonVisualDrawingShapeProps
+type NonVisualShapeProperties struct {
+	ml.ReservedAttributes
 	ml.ReservedElements
 }

@@ -8,6 +8,7 @@ import "github.com/plandem/ooxml/ml"
 
 //NonVisualGroupProperties is a direct mapping of XSD CT_NonVisualGroupDrawingShapeProps
 type NonVisualGroupProperties struct {
+	ml.ReservedAttributes
 	ml.ReservedElements
 }
 

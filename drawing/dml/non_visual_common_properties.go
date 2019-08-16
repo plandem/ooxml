@@ -6,8 +6,8 @@ package dml
 
 import "github.com/plandem/ooxml/ml"
 
-//NonVisualDrawingProperties is a direct mapping of XSD CT_NonVisualDrawingProps
-type NonVisualDrawingProperties struct {
+//NonVisualCommonProperties is a direct mapping of XSD CT_NonVisualDrawingProps
+type NonVisualCommonProperties struct {
 	ID          int    `xml:"id,attr"`
 	Name        string `xml:"name,attr"`
 	Description string `xml:"descr,attr,omitempty"`

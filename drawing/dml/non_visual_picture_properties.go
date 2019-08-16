@@ -6,8 +6,9 @@ package dml
 
 import "github.com/plandem/ooxml/ml"
 
-//NonVisualConnectorProperties is a direct mapping of XSD CT_NonVisualConnectorProperties
-type NonVisualConnectorProperties struct {
+//NonVisualPictureProperties is a direct mapping of XSD CT_NonVisualPictureProperties
+type NonVisualPictureProperties struct {
 	ml.ReservedAttributes
 	ml.ReservedElements
 }
+

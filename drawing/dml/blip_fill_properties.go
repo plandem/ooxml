@@ -6,8 +6,5 @@ package dml
 
 import "github.com/plandem/ooxml/ml"
 
-//NonVisualConnectorProperties is a direct mapping of XSD CT_NonVisualConnectorProperties
-type NonVisualConnectorProperties struct {
-	ml.ReservedAttributes
-	ml.ReservedElements
-}
+//BlipFillProperties is a direct mapping of XSD CT_BlipFillProperties
+type BlipFillProperties = ml.Reserved
