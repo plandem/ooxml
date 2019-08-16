@@ -7,4 +7,3 @@ package chart
 //PlotArea is a direct mapping of XSD CT_PlotArea
 type PlotArea struct {
 }
-

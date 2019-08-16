@@ -10,4 +10,3 @@ import "github.com/plandem/ooxml/ml"
 type Title struct {
 	ml.ReservedElements
 }
-
