@@ -9,7 +9,7 @@ import (
 )
 
 //FillProperties is a direct mapping of XSD EG_FillProperties
-type FillProperties struct {
+type fillProperties struct {
 	Blip     *BlipFillProperties `xml:"blipFill,omitempty"`
 	No       *ml.Reserved        `xml:"noFill,omitempty"`
 	Solid    *ml.Reserved        `xml:"solidFill,omitempty"`

@@ -6,8 +6,8 @@ package dml
 
 import "github.com/plandem/ooxml/ml"
 
-//Geometry is a direct mapping of XSD EG_Geometry
-type Geometry struct {
+//geometry is a direct mapping of XSD EG_Geometry
+type geometry struct {
 	Custom *CustomGeometry2D `xml:"custGeom,omitempty"`
 	Preset *PresetGeometry2D `xml:"prstGeom,omitempty"`
 }
