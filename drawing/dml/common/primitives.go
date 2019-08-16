@@ -3,7 +3,8 @@ package common
 import "github.com/plandem/ooxml/ml"
 
 //Coordinate is a direct mapping of XSD ST_Coordinate
-type Coordinate string //ST_CoordinateUnqualified s:ST_UniversalMeasure
+//Office will read either a length followed by a unit or EMUs with no unit present, but will write only EMUs when no units are present.
+type Coordinate int
 
 //Point2D is a direct mapping of XSD CT_Point2D
 type Point2D struct {
@@ -25,11 +26,3 @@ type Transform2D struct {
 	FlipVertical   bool            `xml:"flipV,attr,omitempty"`
 	Rotation       ml.PropertyInt  `xml:"rot,attr,omitempty"`
 }
-
-//func (n *Point2D) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-//	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawingExcel, start.Name)})
-//}
-//
-//func (n *PositiveSize2D) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-//	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawingExcel, start.Name)})
-//}
