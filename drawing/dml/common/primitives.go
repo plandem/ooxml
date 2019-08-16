@@ -20,7 +20,7 @@ type PositiveSize2D struct {
 //Transform2D is a direct mapping of XSD CT_Transform2D
 type Transform2D struct {
 	Offset         *Point2D        `xml:"off,omitempty"`
-	Extent         *PositiveSize2D `xml:"ext,omitempty"`
+	Size           *PositiveSize2D `xml:"ext,omitempty"`
 	FlipHorizontal bool            `xml:"flipH,attr,omitempty"`
 	FlipVertical   bool            `xml:"flipV,attr,omitempty"`
 	Rotation       ml.PropertyInt  `xml:"rot,attr,omitempty"`
