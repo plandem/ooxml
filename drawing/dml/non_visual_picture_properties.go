@@ -8,7 +8,14 @@ import "github.com/plandem/ooxml/ml"
 
 //NonVisualPictureProperties is a direct mapping of XSD CT_NonVisualPictureProperties
 type NonVisualPictureProperties struct {
-	ml.ReservedAttributes
+	Locking              *PictureLocking `xml:"picLocks,omitempty"`
+	PreferRelativeResize *bool           `xml:"preferRelativeResize,attr,omitempty"`
 	ml.ReservedElements
 }
 
+//PictureLocking is a direct mapping of XSD CT_PictureLocking
+type PictureLocking struct {
+	Locking
+	NoCrop bool `xml:"noCrop,attr,omitempty"`
+	ml.ReservedElements
+}
