@@ -17,8 +17,8 @@ type ShapeProperties struct {
 	Transform      *Transform2D    `xml:"xfrm,omitempty"`
 	LineProperties *LineProperties `xml:"ln,omitempty"`
 	Mode           BlackWhiteMode  `xml:"bwMode,attr,omitempty"`
-	*geometry
-	*fillProperties
+	geometry
+	fillProperties
 	ml.ReservedElements
 }
 
@@ -27,8 +27,8 @@ type shapeProperties struct {
 	Transform      *Transform2D    `xml:"a:xfrm,omitempty"`
 	LineProperties *LineProperties `xml:"a:ln,omitempty"`
 	Mode           BlackWhiteMode  `xml:"bwMode,attr,omitempty"`
-	*geometry
-	*fillProperties
+	geometry
+	fillProperties
 	ml.ReservedElements
 }
 
