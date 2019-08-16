@@ -27,7 +27,7 @@ type BlipFillProperties struct {
 	SourceRect      *ml.Reserved `xml:"srcRect,omitempty"`
 	Dpi             int          `xml:"dpi,attr,omitempty"`
 	RotateWithShape bool         `xml:"rotWithShape,attr,omitempty"`
-	*FillModeProperties
+	fillModeProperties
 }
 
 //Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
@@ -36,7 +36,7 @@ type blipFillProperties struct {
 	SourceRect      *ml.Reserved `xml:"a:srcRect,omitempty"`
 	Dpi             int          `xml:"dpi,attr,omitempty"`
 	RotateWithShape bool         `xml:"rotWithShape,attr,omitempty"`
-	*FillModeProperties
+	fillModeProperties
 }
 
 func (t *BlipFillProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {

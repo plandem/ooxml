@@ -5,23 +5,22 @@
 package dml
 
 import (
-	"encoding/xml"
 	"github.com/plandem/ooxml/ml"
 )
 
-//FillModeProperties is a direct mapping of EG_FillModeProperties
-type FillModeProperties struct {
+//fillModeProperties is a direct mapping of EG_FillModeProperties
+type fillModeProperties struct {
 	Stretch         *ml.Reserved `xml:"stretch,omitempty"`
 	Tile            *ml.Reserved `xml:"tile,omitempty"`
 }
 
-//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
-type fillModeProperties struct {
-	Stretch         *ml.Reserved `xml:"a:stretch,omitempty"`
-	Tile            *ml.Reserved `xml:"a:tile,omitempty"`
-
-}
-
-func (t *FillModeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(fillModeProperties(*t), start)
-}
+////Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
+//type fillModeProperties struct {
+//	Stretch         *ml.Reserved `xml:"a:stretch,omitempty"`
+//	Tile            *ml.Reserved `xml:"a:tile,omitempty"`
+//
+//}
+//
+//func (t *fillModeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+//	return e.EncodeElement(fillModeProperties(*t), start)
+//}
