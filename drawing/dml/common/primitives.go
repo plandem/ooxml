@@ -13,8 +13,8 @@ type Point2D struct {
 
 //PositiveSize2D is a direct mapping of XSD CT_PositiveSize2D
 type PositiveSize2D struct {
-	Cx uint `xml:"cx,attr"`
-	Cy uint `xml:"cy,attr"`
+	Height uint `xml:"cx,attr"` //cx - height in EMU
+	Width  uint `xml:"cy,attr"` //cy - width in EMU
 }
 
 //Transform2D is a direct mapping of XSD CT_Transform2D
