@@ -8,8 +8,8 @@ import "github.com/plandem/ooxml/ml"
 
 //geometry is a direct mapping of XSD EG_Geometry
 type geometry struct {
-	Custom *CustomGeometry2D `xml:"custGeom,omitempty"`
-	Preset *PresetGeometry2D `xml:"prstGeom,omitempty"`
+	CustomGeometry *CustomGeometry2D `xml:"custGeom,omitempty"`
+	PresetGeometry *PresetGeometry2D `xml:"prstGeom,omitempty"`
 }
 
 //CustomGeometry2D is a direct mapping of XSD CT_CustomGeometry2D
