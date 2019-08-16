@@ -1,10 +1,5 @@
 package common
 
-import (
-	"encoding/xml"
-	"github.com/plandem/ooxml/ml"
-)
-
 //Coordinate is a direct mapping of XSD ST_Coordinate
 type Coordinate string //ST_CoordinateUnqualified s:ST_UniversalMeasure
 
@@ -20,11 +15,11 @@ type PositiveSize2D struct {
 	Cy uint `xml:"cy,attr"`
 }
 
-func (n *Point2D) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawingExcel, start.Name)})
-}
-
-func (n *PositiveSize2D) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawingExcel, start.Name)})
-}
+//func (n *Point2D) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+//	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawingExcel, start.Name)})
+//}
+//
+//func (n *PositiveSize2D) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+//	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawingExcel, start.Name)})
+//}
 
