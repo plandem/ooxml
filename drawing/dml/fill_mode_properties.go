@@ -5,6 +5,7 @@
 package dml
 
 import (
+	"encoding/xml"
 	"github.com/plandem/ooxml/ml"
 )
 
@@ -15,12 +16,12 @@ type fillModeProperties struct {
 }
 
 ////Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
-//type fillModeProperties struct {
-//	Stretch         *ml.Reserved `xml:"a:stretch,omitempty"`
-//	Tile            *ml.Reserved `xml:"a:tile,omitempty"`
-//
-//}
-//
-//func (t *fillModeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-//	return e.EncodeElement(fillModeProperties(*t), start)
-//}
+type _fillModeProperties struct {
+	Stretch         *ml.Reserved `xml:"a:stretch,omitempty"`
+	Tile            *ml.Reserved `xml:"a:tile,omitempty"`
+
+}
+
+func (t *fillModeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(_fillModeProperties(*t), start)
+}
