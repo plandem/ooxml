@@ -4,7 +4,10 @@
 
 package dml
 
-import "github.com/plandem/ooxml/ml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/ml"
+)
 
 //NonVisualPictureProperties is a direct mapping of XSD CT_NonVisualPictureProperties
 type NonVisualPictureProperties struct {
@@ -18,4 +21,8 @@ type PictureLocking struct {
 	Locking
 	NoCrop bool `xml:"noCrop,attr,omitempty"`
 	ml.ReservedElements
+}
+
+func (p *PictureLocking) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(*p, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawing, start.Name)})
 }
