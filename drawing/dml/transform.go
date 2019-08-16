@@ -18,6 +18,7 @@ type Transform2D struct {
 	Rotation       ml.PropertyInt  `xml:"rot,attr,omitempty"`
 }
 
+//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
 type transform2D struct {
 	Offset         *Point2D        `xml:"a:off,omitempty"`
 	Size           *PositiveSize2D `xml:"a:ext,omitempty"`
