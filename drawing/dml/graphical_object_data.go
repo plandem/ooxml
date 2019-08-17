@@ -21,8 +21,8 @@ func (n *GraphicalObjectData) MarshalXML(e *xml.Encoder, start xml.StartElement)
 	n.ReservedElements.ResolveNamespacePrefixes()
 
 	if n.Chart != nil {
-		n.Uri = ml.NamespaceDrawingChart
+		n.Uri = ml.NamespaceDMLChart
 	}
 
-	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawing, start.Name)})
+	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
 }

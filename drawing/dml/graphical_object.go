@@ -15,5 +15,5 @@ type GraphicalObject struct {
 }
 
 func (n *GraphicalObject) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawing, start.Name)})
+	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
 }

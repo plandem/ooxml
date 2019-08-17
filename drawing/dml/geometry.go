@@ -4,7 +4,10 @@
 
 package dml
 
-import "github.com/plandem/ooxml/ml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/ml"
+)
 
 //geometry is a direct mapping of XSD EG_Geometry
 type geometry struct {
@@ -21,4 +24,14 @@ type CustomGeometry2D struct {
 type PresetGeometry2D struct {
 	Type TextShapeType `xml:"prst,attr,omitempty"`
 	ml.ReservedElements
+}
+
+func (n *CustomGeometry2D) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
+}
+
+func (n *PresetGeometry2D) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
 }

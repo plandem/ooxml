@@ -24,21 +24,17 @@ type Blip struct {
 //BlipFillProperties is a direct mapping of XSD CT_BlipFillProperties
 type BlipFillProperties struct {
 	Blip            *Blip        `xml:"blip,omitempty"`
-	SourceRect      *ml.Reserved `xml:"srcRect,omitempty"`
 	Dpi             int          `xml:"dpi,attr,omitempty"`
 	RotateWithShape bool         `xml:"rotWithShape,attr,omitempty"`
-	fillModeProperties
+	ml.ReservedElements
 }
 
-//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
-type blipFillProperties struct {
-	Blip            *Blip        `xml:"a:blip,omitempty"`
-	SourceRect      *ml.Reserved `xml:"a:srcRect,omitempty"`
-	Dpi             int          `xml:"dpi,attr,omitempty"`
-	RotateWithShape bool         `xml:"rotWithShape,attr,omitempty"`
-	fillModeProperties
+func (n *Blip) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
 }
 
-func (t *BlipFillProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(blipFillProperties(*t), start)
+func (n *BlipFillProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
 }

@@ -4,10 +4,19 @@
 
 package dml
 
-import "github.com/plandem/ooxml/ml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/ml"
+)
 
 //NonVisualConnectorProperties is a direct mapping of XSD CT_NonVisualConnectorProperties
 type NonVisualConnectorProperties struct {
 	ml.ReservedAttributes
 	ml.ReservedElements
+}
+
+func (n *NonVisualConnectorProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	n.ReservedAttributes.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, start)
 }

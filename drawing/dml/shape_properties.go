@@ -17,9 +17,9 @@ type ShapeProperties struct {
 	Transform      *Transform2D    `xml:"xfrm,omitempty"`
 	LineProperties *LineProperties `xml:"ln,omitempty"`
 	Mode           BlackWhiteMode  `xml:"bwMode,attr,omitempty"`
+	ml.ReservedElements
 	geometry
 	fillProperties
-	ml.ReservedElements
 }
 
 //Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
@@ -27,11 +27,12 @@ type shapeProperties struct {
 	Transform      *Transform2D    `xml:"a:xfrm,omitempty"`
 	LineProperties *LineProperties `xml:"a:ln,omitempty"`
 	Mode           BlackWhiteMode  `xml:"bwMode,attr,omitempty"`
+	ml.ReservedElements
 	geometry
 	fillProperties
-	ml.ReservedElements
 }
 
-func (t *ShapeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(shapeProperties(*t), start)
+func (n *ShapeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(shapeProperties(*n), start)
 }

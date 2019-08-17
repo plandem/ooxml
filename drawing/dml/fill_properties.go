@@ -4,15 +4,7 @@
 
 package dml
 
-import (
-	"github.com/plandem/ooxml/ml"
-)
-
-//FillProperties is a direct mapping of XSD EG_FillProperties
+//fillProperties is a direct mapping of XSD EG_FillProperties
 type fillProperties struct {
 	Blip     *BlipFillProperties `xml:"blipFill,omitempty"`
-	No       *ml.Reserved        `xml:"noFill,omitempty"`
-	Solid    *ml.Reserved        `xml:"solidFill,omitempty"`
-	Gradient *ml.Reserved        `xml:"gradFill,omitempty"`
-	Pattern  *ml.Reserved        `xml:"pattFill,omitempty"`
 }

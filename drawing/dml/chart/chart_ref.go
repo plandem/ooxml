@@ -15,9 +15,9 @@ type Ref struct {
 }
 
 func (n *Ref) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Name = ml.ApplyNamespacePrefix(ml.NamespaceDrawingChart, start.Name)
+	start.Name = ml.ApplyNamespacePrefix(ml.NamespaceDMLChart, start.Name)
 	start.Attr = append(start.Attr, ml.Namespaces(
-		ml.NamespaceDrawingChart,
+		ml.NamespaceDMLChart,
 		ml.NamespaceRelationships,
 	)...)
 

@@ -4,11 +4,20 @@
 
 package dml
 
-import "github.com/plandem/ooxml/ml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/ml"
+)
 
 //NonVisualGroupProperties is a direct mapping of XSD CT_NonVisualGroupDrawingShapeProps
 type NonVisualGroupProperties struct {
 	ml.ReservedAttributes
 	ml.ReservedElements
+}
+
+func (n *NonVisualGroupProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	n.ReservedAttributes.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, start)
 }
 

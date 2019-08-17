@@ -4,12 +4,14 @@
 
 package dml
 
-import (
-	"github.com/plandem/ooxml/ml"
-)
-
 //fillModeProperties is a direct mapping of EG_FillModeProperties
-type fillModeProperties struct {
-	Stretch         *ml.Reserved `xml:"stretch,omitempty"`
-	Tile            *ml.Reserved `xml:"tile,omitempty"`
-}
+//type fillModeProperties struct {
+	//ml.ReservedElements
+	//Stretch         *ml.Reserved `xml:"stretch,omitempty"`
+	//Tile            *ml.Reserved `xml:"tile,omitempty"`
+//}
+//
+//func (n fillModeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+//
+//	return nil
+//}

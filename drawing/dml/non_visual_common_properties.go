@@ -4,7 +4,10 @@
 
 package dml
 
-import "github.com/plandem/ooxml/ml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/ml"
+)
 
 //NonVisualCommonProperties is a direct mapping of XSD CT_NonVisualDrawingProps
 type NonVisualCommonProperties struct {
@@ -14,4 +17,9 @@ type NonVisualCommonProperties struct {
 	Title       string `xml:"title,attr,omitempty"`
 	Hidden      bool   `xml:"hidden,attr,omitempty"`
 	ml.ReservedElements
+}
+
+func (n *NonVisualCommonProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, start)
 }

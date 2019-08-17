@@ -18,11 +18,17 @@ type NonVisualPictureProperties struct {
 
 //PictureLocking is a direct mapping of XSD CT_PictureLocking
 type PictureLocking struct {
-	Locking
 	NoCrop bool `xml:"noCrop,attr,omitempty"`
 	ml.ReservedElements
+	locking
 }
 
-func (p *PictureLocking) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(*p, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDrawing, start.Name)})
+func (n *NonVisualPictureProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
+}
+
+func (n *PictureLocking) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
 }

@@ -24,9 +24,9 @@ type Entity1 struct {
 }
 
 func (c *Chart1) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Name = ml.ApplyNamespacePrefix(ml.NamespaceDrawingChart, start.Name)
+	start.Name = ml.ApplyNamespacePrefix(ml.NamespaceDMLChart, start.Name)
 	start.Attr = append(start.Attr, ml.Namespaces(
-		ml.NamespaceDrawingChart,
+		ml.NamespaceDMLChart,
 	)...)
 
 	return e.EncodeElement(*c, start)

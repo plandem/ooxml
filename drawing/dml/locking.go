@@ -4,8 +4,8 @@
 
 package dml
 
-//Locking is a direct mapping of XSD AG_Locking
-type Locking struct {
+//locking is a direct mapping of XSD AG_Locking
+type locking struct {
 	NoGroup            bool `xml:"noGrp,attr,omitempty"`
 	NoSelect           bool `xml:"noSelect,attr,omitempty"`
 	NoRotate           bool `xml:"noRot,attr,omitempty"`

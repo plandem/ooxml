@@ -25,9 +25,9 @@ type PositiveSize2D struct {
 }
 
 func (n Name) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	if prefix, ok := ml.ResolveNamespacePrefix(ml.NamespaceDrawing); ok {
-		return xml.Attr{Name: xml.Name{Local: "xmlns:" + prefix}, Value: ml.NamespaceDrawing}, nil
+	if prefix, ok := ml.ResolveNamespacePrefix(ml.NamespaceDML); ok {
+		return xml.Attr{Name: xml.Name{Local: "xmlns:" + prefix}, Value: ml.NamespaceDML}, nil
 	}
 
-	return xml.Attr{}, ml.ErrorNamespace(ml.NamespaceDrawing)
+	return xml.Attr{}, ml.ErrorNamespace(ml.NamespaceDML)
 }
