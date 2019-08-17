@@ -4,7 +4,26 @@
 
 package dml
 
-import "github.com/plandem/ooxml/ml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/ml"
+)
 
-//GroupProperties is a direct mapping of XSD CT_NonVisualGroupDrawingShapeProps
-type GroupProperties = ml.Reserved
+//GroupProperties is a direct mapping of XSD CT_GroupShapeProperties
+type GroupProperties struct {
+	Transform *GroupTransform2D `xml:"xfrm,omitempty"`
+	ml.ReservedElements
+	fillProperties
+}
+
+//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
+type groupProperties struct {
+	Transform *GroupTransform2D `xml:"a:xfrm,omitempty"`
+	ml.ReservedElements
+	fillProperties
+}
+
+func (n *GroupProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(groupProperties(*n), start)
+}
