@@ -36,5 +36,5 @@ func (n *Blip) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 func (n *BlipFillProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
-	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
+	return e.EncodeElement(*n, start)
 }
