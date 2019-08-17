@@ -9,13 +9,6 @@ import (
 	"github.com/plandem/ooxml/ml"
 )
 
-//NonVisualPictureProperties is a direct mapping of XSD CT_NonVisualPictureProperties
-type NonVisualPictureProperties struct {
-	Locking              *PictureLocking `xml:"picLocks,omitempty"`
-	PreferRelativeResize *bool           `xml:"preferRelativeResize,attr,omitempty"`
-	ml.ReservedElements
-}
-
 //PictureLocking is a direct mapping of XSD CT_PictureLocking
 type PictureLocking struct {
 	NoCrop bool `xml:"noCrop,attr,omitempty"`
@@ -23,12 +16,19 @@ type PictureLocking struct {
 	locking
 }
 
-func (n *NonVisualPictureProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	n.ReservedElements.ResolveNamespacePrefixes()
-	return e.EncodeElement(*n, start)
+//NonVisualPictureProperties is a direct mapping of XSD CT_NonVisualPictureProperties
+type NonVisualPictureProperties struct {
+	Locking              *PictureLocking `xml:"picLocks,omitempty"`
+	PreferRelativeResize *bool           `xml:"preferRelativeResize,attr,omitempty"`
+	ml.ReservedElements
 }
 
 func (n *PictureLocking) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
+}
+
+func (n *NonVisualPictureProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
 	return e.EncodeElement(*n, start)
 }
