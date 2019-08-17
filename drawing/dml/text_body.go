@@ -4,7 +4,17 @@
 
 package dml
 
-import "github.com/plandem/ooxml/ml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/ml"
+)
 
 //TextBody is a direct mapping of XSD CT_TextBody
-type TextBody = ml.Reserved
+type TextBody struct {
+	ml.ReservedElements
+}
+
+func (n *TextBody) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, start)
+}

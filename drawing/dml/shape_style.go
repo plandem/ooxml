@@ -4,7 +4,17 @@
 
 package dml
 
-import "github.com/plandem/ooxml/ml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/ml"
+)
 
 //ShapeStyle is a direct mapping of XSD CT_ShapeStyle
-type ShapeStyle = ml.Reserved
+type ShapeStyle struct {
+	ml.ReservedElements
+}
+
+func (n *ShapeStyle) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.EncodeElement(*n, start)
+}
