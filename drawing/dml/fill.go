@@ -4,7 +4,7 @@
 
 package dml
 
-//fillProperties is a direct mapping of XSD EG_FillProperties
-type fillProperties struct {
-	Blip     *BlipFillProperties `xml:"blipFill,omitempty"`
+//fill is a direct mapping of XSD EG_FillProperties
+type fill struct {
+	Blip *BlipFill `xml:"blipFill,omitempty"`
 }

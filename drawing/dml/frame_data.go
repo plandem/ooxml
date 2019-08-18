@@ -6,18 +6,17 @@ package dml
 
 import (
 	"encoding/xml"
-	"github.com/plandem/ooxml/drawing/dml/chart"
 	"github.com/plandem/ooxml/ml"
 )
 
-//GraphicalObjectData is a direct mapping of XSD CT_GraphicalObjectData
-type GraphicalObjectData struct {
-	Uri   string     `xml:"uri,attr"`
-	Chart *chart.Ref `xml:"chart,omitempty"`
+//FrameData is a direct mapping of XSD CT_GraphicalObjectData
+type FrameData struct {
+	Uri   string    `xml:"uri,attr"`
+	Chart *ChartRef `xml:"chart,omitempty"`
 	ml.ReservedElements
 }
 
-func (n *GraphicalObjectData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (n *FrameData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
 
 	if n.Chart != nil {

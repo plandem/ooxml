@@ -9,15 +9,14 @@ import (
 	"github.com/plandem/ooxml/ml"
 )
 
-//NonVisualGroupProperties is a direct mapping of XSD CT_NonVisualGroupDrawingShapeProps
-type NonVisualGroupProperties struct {
+//NonVisualShapeProperties is a direct mapping of XSD CT_NonVisualDrawingShapeProps
+type NonVisualShapeProperties struct {
 	ml.ReservedAttributes
 	ml.ReservedElements
 }
 
-func (n *NonVisualGroupProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (n *NonVisualShapeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
 	n.ReservedAttributes.ResolveNamespacePrefixes()
 	return e.EncodeElement(*n, start)
 }
-

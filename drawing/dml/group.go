@@ -9,21 +9,21 @@ import (
 	"github.com/plandem/ooxml/ml"
 )
 
-//GroupProperties is a direct mapping of XSD CT_GroupShapeProperties
-type GroupProperties struct {
+//Group is a direct mapping of XSD CT_GroupShapeProperties
+type Group struct {
 	Transform *GroupTransform2D `xml:"xfrm,omitempty"`
 	ml.ReservedElements
-	fillProperties
+	fill
 }
 
 //Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
-type groupProperties struct {
+type group struct {
 	Transform *GroupTransform2D `xml:"a:xfrm,omitempty"`
 	ml.ReservedElements
-	fillProperties
+	fill
 }
 
-func (n *GroupProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (n *Group) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
-	return e.EncodeElement(groupProperties(*n), start)
+	return e.EncodeElement(group(*n), start)
 }

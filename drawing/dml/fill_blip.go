@@ -6,6 +6,7 @@ package dml
 
 import (
 	"encoding/xml"
+
 	"github.com/plandem/ooxml/ml"
 )
 
@@ -21,11 +22,11 @@ type Blip struct {
 	ml.ReservedElements
 }
 
-//BlipFillProperties is a direct mapping of XSD CT_BlipFillProperties
-type BlipFillProperties struct {
-	Blip            *Blip        `xml:"blip,omitempty"`
-	Dpi             int          `xml:"dpi,attr,omitempty"`
-	RotateWithShape bool         `xml:"rotWithShape,attr,omitempty"`
+//BlipFill is a direct mapping of XSD CT_BlipFillProperties
+type BlipFill struct {
+	Blip            *Blip `xml:"blip,omitempty"`
+	Dpi             int   `xml:"dpi,attr,omitempty"`
+	RotateWithShape bool  `xml:"rotWithShape,attr,omitempty"`
 	ml.ReservedElements
 }
 
@@ -34,7 +35,7 @@ func (n *Blip) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
 }
 
-func (n *BlipFillProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (n *BlipFill) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
 	return e.EncodeElement(*n, start)
 }

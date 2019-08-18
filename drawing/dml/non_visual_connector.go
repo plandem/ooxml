@@ -9,13 +9,13 @@ import (
 	"github.com/plandem/ooxml/ml"
 )
 
-//NonVisualShapeProperties is a direct mapping of XSD CT_NonVisualDrawingShapeProps
-type NonVisualShapeProperties struct {
+//NonVisualConnectorProperties is a direct mapping of XSD CT_NonVisualConnectorProperties
+type NonVisualConnectorProperties struct {
 	ml.ReservedAttributes
 	ml.ReservedElements
 }
 
-func (n *NonVisualShapeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (n *NonVisualConnectorProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
 	n.ReservedAttributes.ResolveNamespacePrefixes()
 	return e.EncodeElement(*n, start)

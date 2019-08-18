@@ -9,12 +9,11 @@ import (
 	"github.com/plandem/ooxml/ml"
 )
 
-//LineProperties is a direct mapping of XSD CT_LineProperties
-type LineProperties struct {
-	ml.ReservedElements
+//Frame is a direct mapping of XSD CT_GraphicalObject
+type Frame struct {
+	Data *FrameData `xml:"graphicData"`
 }
 
-func (n *LineProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	n.ReservedElements.ResolveNamespacePrefixes()
+func (n *Frame) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
 }

@@ -6,9 +6,9 @@ package dml
 
 //fillModeProperties is a direct mapping of EG_FillModeProperties
 //type fillModeProperties struct {
-	//ml.ReservedElements
-	//Stretch         *ml.Reserved `xml:"stretch,omitempty"`
-	//Tile            *ml.Reserved `xml:"tile,omitempty"`
+//ml.ReservedElements
+//Stretch         *ml.Reserved `xml:"stretch,omitempty"`
+//Tile            *ml.Reserved `xml:"tile,omitempty"`
 //}
 //
 //func (n fillModeProperties) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
