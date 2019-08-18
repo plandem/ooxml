@@ -9,11 +9,11 @@ import (
 	"github.com/plandem/ooxml/ml"
 )
 
-//Frame is a direct mapping of XSD CT_GraphicalObject
-type Frame struct {
-	Data *FrameData `xml:"graphicData"`
+//GraphicFrame is a direct mapping of XSD CT_GraphicalObject
+type GraphicFrame struct {
+	Data *GraphicFrameData `xml:"graphicData"`
 }
 
-func (n *Frame) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (n *GraphicFrame) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	return e.EncodeElement(*n, xml.StartElement{Name: ml.ApplyNamespacePrefix(ml.NamespaceDML, start.Name)})
 }

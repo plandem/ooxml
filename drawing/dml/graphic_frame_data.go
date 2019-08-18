@@ -9,14 +9,14 @@ import (
 	"github.com/plandem/ooxml/ml"
 )
 
-//FrameData is a direct mapping of XSD CT_GraphicalObjectData
-type FrameData struct {
+//GraphicFrameData is a direct mapping of XSD CT_GraphicalObjectData
+type GraphicFrameData struct {
 	Uri   string    `xml:"uri,attr"`
 	Chart *ChartRef `xml:"chart,omitempty"`
 	ml.ReservedElements
 }
 
-func (n *FrameData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+func (n *GraphicFrameData) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
 
 	if n.Chart != nil {
