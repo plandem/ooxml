@@ -13,7 +13,7 @@ import (
 type PictureLocking struct {
 	NoCrop bool `xml:"noCrop,attr,omitempty"`
 	ml.ReservedElements
-	locking
+	Locking
 }
 
 //NonVisualPictureProperties is a direct mapping of XSD CT_NonVisualPictureProperties

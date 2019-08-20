@@ -18,21 +18,21 @@ type Shape struct {
 	Line      *Line          `xml:"ln,omitempty"`
 	Mode      BlackWhiteMode `xml:"bwMode,attr,omitempty"`
 	ml.ReservedElements
-	geometry
-	fill
-}
-
-//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
-type shape struct {
-	Transform *Transform2D   `xml:"a:xfrm,omitempty"`
-	Line      *Line          `xml:"a:ln,omitempty"`
-	Mode      BlackWhiteMode `xml:"bwMode,attr,omitempty"`
-	ml.ReservedElements
-	geometry
-	fill
+	Geometry
+	Fill
 }
 
 func (n *Shape) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
+	type alias struct {
+		Transform *Transform2D   `xml:"a:xfrm,omitempty"`
+		Line      *Line          `xml:"a:ln,omitempty"`
+		Mode      BlackWhiteMode `xml:"bwMode,attr,omitempty"`
+		ml.ReservedElements
+		Geometry
+		Fill
+	}
+
 	n.ReservedElements.ResolveNamespacePrefixes()
-	return e.EncodeElement(shape(*n), start)
+	return e.EncodeElement(alias(*n), start)
 }

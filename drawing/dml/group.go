@@ -13,17 +13,17 @@ import (
 type Group struct {
 	Transform *GroupTransform2D `xml:"xfrm,omitempty"`
 	ml.ReservedElements
-	fill
-}
-
-//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
-type group struct {
-	Transform *GroupTransform2D `xml:"a:xfrm,omitempty"`
-	ml.ReservedElements
-	fill
+	Fill
 }
 
 func (n *Group) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
+	type alias struct {
+		Transform *GroupTransform2D `xml:"a:xfrm,omitempty"`
+		ml.ReservedElements
+		Fill
+	}
+
 	n.ReservedElements.ResolveNamespacePrefixes()
-	return e.EncodeElement(group(*n), start)
+	return e.EncodeElement(alias(*n), start)
 }

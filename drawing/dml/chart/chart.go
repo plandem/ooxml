@@ -5,13 +5,11 @@
 package chart
 
 import (
-	"encoding/xml"
 	"github.com/plandem/ooxml/ml"
 )
 
 //Chart is a direct mapping of XSD CT_Chart
 type Chart struct {
-	XMLName                   xml.Name         `xml:"chart"`
 	Title                     *Title           `xml:"title,omitempty"`
 	PlotArea                  *PlotArea        `xml:"plotArea,omitempty"`
 	Legend                    *Legend          `xml:"legend,omitempty"`

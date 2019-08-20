@@ -18,15 +18,15 @@ type Transform2D struct {
 	Rotation       ml.PropertyInt  `xml:"rot,attr,omitempty"`
 }
 
-//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
-type transform2D struct {
-	Offset         *Point2D        `xml:"a:off,omitempty"`
-	Size           *PositiveSize2D `xml:"a:ext,omitempty"`
-	FlipHorizontal bool            `xml:"flipH,attr,omitempty"`
-	FlipVertical   bool            `xml:"flipV,attr,omitempty"`
-	Rotation       ml.PropertyInt  `xml:"rot,attr,omitempty"`
-}
-
 func (t *Transform2D) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	return e.EncodeElement(transform2D(*t), start)
+	//Go1.12 has limited support of namespace prefixes, so use special type with hardcoded prefixes for marshalling
+	type alias struct {
+		Offset         *Point2D        `xml:"a:off,omitempty"`
+		Size           *PositiveSize2D `xml:"a:ext,omitempty"`
+		FlipHorizontal bool            `xml:"flipH,attr,omitempty"`
+		FlipVertical   bool            `xml:"flipV,attr,omitempty"`
+		Rotation       ml.PropertyInt  `xml:"rot,attr,omitempty"`
+	}
+
+	return e.EncodeElement(alias(*t), start)
 }

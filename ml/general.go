@@ -30,8 +30,8 @@ var AttrPreserveSpace = xml.Attr{
 	Value: "preserve",
 }
 
-func (p *Property) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: string(*p)})
+func (p Property) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: string(p)})
 	return e.EncodeElement(struct{}{}, start)
 }
 
@@ -43,8 +43,8 @@ func (p *Property) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	return d.Skip()
 }
 
-func (p *PropertyBool) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: strconv.FormatBool(bool(*p))})
+func (p PropertyBool) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: strconv.FormatBool(bool(p))})
 	return e.EncodeElement(struct{}{}, start)
 }
 
@@ -60,8 +60,8 @@ func (p *PropertyBool) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 	return d.Skip()
 }
 
-func (p *PropertyInt) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: strconv.FormatInt(int64(*p), 10)})
+func (p PropertyInt) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: strconv.FormatInt(int64(p), 10)})
 	return e.EncodeElement(struct{}{}, start)
 }
 
@@ -75,8 +75,8 @@ func (p *PropertyInt) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 	return d.Skip()
 }
 
-func (p *PropertyDouble) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: strconv.FormatFloat(float64(*p), 'f', -1, 64)})
+func (p PropertyDouble) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	start.Attr = append(start.Attr, xml.Attr{Name: xml.Name{Local: "val"}, Value: strconv.FormatFloat(float64(p), 'f', -1, 64)})
 	return e.EncodeElement(struct{}{}, start)
 }
 
