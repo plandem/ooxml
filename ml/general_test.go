@@ -15,6 +15,7 @@ import (
 func TestProperty(t *testing.T) {
 	type Element struct {
 		Property ml.Property `xml:"property"`
+		PProperty *ml.Property `xml:"p_property"`
 	}
 
 	list := map[string]ml.Property{
@@ -25,11 +26,11 @@ func TestProperty(t *testing.T) {
 
 	for s, v := range list {
 		t.Run(s, func(tt *testing.T) {
-			entity := Element{Property: v}
+			entity := Element{Property: v, PProperty: &v}
 			encoded, err := xml.Marshal(&entity)
 
 			require.Empty(tt, err)
-			require.Equal(tt, fmt.Sprintf(`<Element><property val="%s"></property></Element>`, s), string(encoded))
+			require.Equal(tt, fmt.Sprintf(`<Element><property val="%s"></property><p_property val="%s"></p_property></Element>`, s, s), string(encoded))
 
 			var decoded Element
 			err = xml.Unmarshal(encoded, &decoded)
@@ -43,6 +44,7 @@ func TestProperty(t *testing.T) {
 func TestPropertyInt(t *testing.T) {
 	type Element struct {
 		Property ml.PropertyInt `xml:"property"`
+		PProperty *ml.PropertyInt `xml:"p_property"`
 	}
 
 	list := map[string]ml.PropertyInt{
@@ -55,11 +57,11 @@ func TestPropertyInt(t *testing.T) {
 
 	for s, v := range list {
 		t.Run(s, func(tt *testing.T) {
-			entity := Element{Property: v}
+			entity := Element{Property: v, PProperty: &v}
 			encoded, err := xml.Marshal(&entity)
 
 			require.Empty(tt, err)
-			require.Equal(tt, fmt.Sprintf(`<Element><property val="%s"></property></Element>`, s), string(encoded))
+			require.Equal(tt, fmt.Sprintf(`<Element><property val="%s"></property><p_property val="%s"></p_property></Element>`, s, s), string(encoded))
 
 			var decoded Element
 			err = xml.Unmarshal(encoded, &decoded)
@@ -73,6 +75,7 @@ func TestPropertyInt(t *testing.T) {
 func TestPropertyDouble(t *testing.T) {
 	type Element struct {
 		Property ml.PropertyDouble `xml:"property"`
+		PProperty *ml.PropertyDouble `xml:"p_property"`
 	}
 
 	list := map[string]ml.PropertyDouble{
@@ -85,11 +88,11 @@ func TestPropertyDouble(t *testing.T) {
 
 	for s, v := range list {
 		t.Run(s, func(tt *testing.T) {
-			entity := Element{Property: v}
+			entity := Element{Property: v, PProperty: &v}
 			encoded, err := xml.Marshal(&entity)
 
 			require.Empty(tt, err)
-			require.Equal(tt, fmt.Sprintf(`<Element><property val="%s"></property></Element>`, s), string(encoded))
+			require.Equal(tt, fmt.Sprintf(`<Element><property val="%s"></property><p_property val="%s"></p_property></Element>`, s, s), string(encoded))
 
 			var decoded Element
 			err = xml.Unmarshal(encoded, &decoded)
@@ -103,6 +106,7 @@ func TestPropertyDouble(t *testing.T) {
 func TestPropertyBool(t *testing.T) {
 	type Element struct {
 		Property ml.PropertyBool `xml:"property"`
+		PProperty *ml.PropertyBool `xml:"p_property"`
 	}
 
 	list := map[string]ml.PropertyBool{
@@ -112,11 +116,11 @@ func TestPropertyBool(t *testing.T) {
 
 	for s, v := range list {
 		t.Run(s, func(tt *testing.T) {
-			entity := Element{Property: v}
+			entity := Element{Property: v, PProperty: &v}
 			encoded, err := xml.Marshal(&entity)
 
 			require.Empty(tt, err)
-			require.Equal(tt, fmt.Sprintf(`<Element><property val="%s"></property></Element>`, s), string(encoded))
+			require.Equal(tt, fmt.Sprintf(`<Element><property val="%s"></property><p_property val="%s"></p_property></Element>`, s, s), string(encoded))
 
 			var decoded Element
 			err = xml.Unmarshal(encoded, &decoded)
