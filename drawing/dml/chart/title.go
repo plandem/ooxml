@@ -18,5 +18,5 @@ type Title struct {
 
 func (n *Title) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
-	return e.Encode(*n)
+	return e.EncodeElement(*n, start)
 }

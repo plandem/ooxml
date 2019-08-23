@@ -44,5 +44,5 @@ type PlotArea struct {
 
 func (n *PlotArea) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	n.ReservedElements.ResolveNamespacePrefixes()
-	return e.Encode(*n)
+	return e.EncodeElement(*n,start)
 }
