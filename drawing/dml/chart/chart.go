@@ -5,6 +5,7 @@
 package chart
 
 import (
+	"encoding/xml"
 	"github.com/plandem/ooxml/ml"
 )
 
@@ -17,10 +18,10 @@ type Chart struct {
 	AutoTitleIsDeleted        *ml.PropertyBool `xml:"autoTitleDeleted,omitempty"` //default true
 	PlotVisibleOnly           *ml.PropertyBool `xml:"plotVisOnly,omitempty"`      //default true
 	ShowDataLabelsOverMaximum *ml.PropertyBool `xml:"showDLblsOverMax,omitempty"` //default true
-	Floor                     *ml.Reserved     `xml:"floor,omitempty"`
-	SideWall                  *ml.Reserved     `xml:"sideWall,omitempty"`
-	BackWall                  *ml.Reserved     `xml:"backWall,omitempty"`
-	PivotFmts                 *ml.Reserved     `xml:"pivotFmts,omitempty"`
-	View3D                    *ml.Reserved     `xml:"view3D,omitempty"`
-	ExtLst                    *ml.Reserved     `xml:"extLst,omitempty"`
+	ml.ReservedElements
+}
+
+func (n *Chart) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.Encode(*n)
 }

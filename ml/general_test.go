@@ -14,7 +14,7 @@ import (
 
 func TestProperty(t *testing.T) {
 	type Element struct {
-		Property ml.Property `xml:"property"`
+		Property  ml.Property  `xml:"property"`
 		PProperty *ml.Property `xml:"p_property"`
 	}
 
@@ -43,7 +43,7 @@ func TestProperty(t *testing.T) {
 
 func TestPropertyInt(t *testing.T) {
 	type Element struct {
-		Property ml.PropertyInt `xml:"property"`
+		Property  ml.PropertyInt  `xml:"property"`
 		PProperty *ml.PropertyInt `xml:"p_property"`
 	}
 
@@ -74,7 +74,7 @@ func TestPropertyInt(t *testing.T) {
 
 func TestPropertyDouble(t *testing.T) {
 	type Element struct {
-		Property ml.PropertyDouble `xml:"property"`
+		Property  ml.PropertyDouble  `xml:"property"`
 		PProperty *ml.PropertyDouble `xml:"p_property"`
 	}
 
@@ -105,7 +105,7 @@ func TestPropertyDouble(t *testing.T) {
 
 func TestPropertyBool(t *testing.T) {
 	type Element struct {
-		Property ml.PropertyBool `xml:"property"`
+		Property  ml.PropertyBool  `xml:"property"`
 		PProperty *ml.PropertyBool `xml:"p_property"`
 	}
 

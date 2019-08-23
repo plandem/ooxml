@@ -105,7 +105,7 @@ func TestSpace(t *testing.T) {
 	encode, err := xml.Marshal(entity)
 	require.Nil(t, err)
 
-	//we can't compare directly, because reserved elements should keep namespace and we also add few more namespaces
+	//we can't compare directly, because 1) reserved elements should keep namespace and 2) we also add few more namespaces
 	data = strings.NewReplacer("\t", "", "\n", "").Replace(`
 <chartSpace xmlns="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
 	<lang val="en-US"></lang>

@@ -4,9 +4,19 @@
 
 package chart
 
-import "github.com/plandem/ooxml/ml"
+import (
+	"encoding/xml"
+	"github.com/plandem/ooxml/ml"
+)
 
 //Title is a direct mapping of XSD CT_Title
 type Title struct {
+	Overlay *ml.PropertyBool `xml:"overlay,omitempty"`
+	Text    *Text            `xml:"tx,omitempty"`
 	ml.ReservedElements
+}
+
+func (n *Title) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	n.ReservedElements.ResolveNamespacePrefixes()
+	return e.Encode(*n)
 }
